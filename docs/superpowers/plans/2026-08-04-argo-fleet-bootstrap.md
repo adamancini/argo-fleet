@@ -855,11 +855,33 @@ spec:
     spec:
       project: akkoma
       sources:
+      # valuesObject is an object-typed field (backed by RawExtension) --
+      # Argo CD's Go-template engine only substitutes into string fields, so
+      # `valuesObject: '{{.values}}'` can't work (same restriction the docs
+      # call out for syncPolicy). The structure has to be spelled out here,
+      # templating only the individual leaf values that genuinely vary by
+      # stage (all quoted strings -- the one documented-safe pattern).
+      # externalSecret.enabled and ingress.enabled are identical at every
+      # stage in this design, so they're plain YAML booleans, not templated --
+      # avoids relying on how an unquoted `{{...}}` in this position would
+      # even parse (raw, un-rendered `{{` is ambiguous with YAML flow-mapping
+      # syntax), and avoids Helm/Sprig `if` treating a quoted "false" string
+      # as truthy.
       - repoURL: ghcr.io/adamancini/charts
         chart: akkoma
         targetRevision: '{{.chartVersion}}'
         helm:
-          valuesObject: '{{.values}}'
+          valuesObject:
+            akkoma:
+              domain: '{{.values.akkoma.domain}}'
+              adminEmail: '{{.values.akkoma.adminEmail}}'
+            externalSecret:
+              enabled: true
+              name: '{{.values.externalSecret.name}}'
+            postgresql:
+              existingSecret: '{{.values.postgresql.existingSecret}}'
+            ingress:
+              enabled: false
       - repoURL: https://github.com/adamancini/argo-fleet.git
         targetRevision: HEAD
         path: '{{.path.path}}'
@@ -1218,11 +1240,30 @@ spec:
     spec:
       project: soju
       sources:
+      # valuesObject is an object-typed field (backed by RawExtension) --
+      # Argo CD's Go-template engine only substitutes into string fields, so
+      # `valuesObject: '{{.values}}'` can't work (same restriction the docs
+      # call out for syncPolicy). The structure has to be spelled out here,
+      # templating only the individual leaf values that genuinely vary by
+      # stage (all quoted strings -- the one documented-safe pattern).
+      # admin.enabled and ingress.enabled are identical at every stage in
+      # this design, so they're plain YAML booleans, not templated -- avoids
+      # relying on how an unquoted `{{...}}` in this position would even
+      # parse (raw, un-rendered `{{` is ambiguous with YAML flow-mapping
+      # syntax), and avoids Helm/Sprig `if` treating a quoted "false" string
+      # as truthy.
       - repoURL: ghcr.io/adamancini/charts
         chart: soju
         targetRevision: '{{.chartVersion}}'
         helm:
-          valuesObject: '{{.values}}'
+          valuesObject:
+            soju:
+              domain: '{{.values.soju.domain}}'
+            admin:
+              enabled: true
+              existingSecret: '{{.values.admin.existingSecret}}'
+            ingress:
+              enabled: false
       - repoURL: https://github.com/adamancini/argo-fleet.git
         targetRevision: HEAD
         path: '{{.path.path}}'
@@ -1339,9 +1380,19 @@ re-syncing on every upstream release.
    stage's config.
 3. `argocd/appset.yaml`: a `files` generator (not `directories`) reading
    `env/*/release.yaml`, templating a multi-source Application -- source 1
-   is the OCI chart at `{{.chartVersion}}` with
-   `helm.valuesObject: '{{.values}}'`, source 2 is this repo's own path for
-   that stage's `secret.sealed.yaml`, if any.
+   is the OCI chart at `{{.chartVersion}}` with the stage's values spelled
+   out under `helm.valuesObject`, templating only the individual string
+   leaf fields that genuinely vary by stage (e.g.
+   `domain: '{{.values.akkoma.domain}}'`, quoted). `valuesObject` is an
+   object-typed field, so `valuesObject: '{{.values}}'` does NOT work --
+   Argo CD's Go-template engine only substitutes into string fields (the
+   same restriction documented for `syncPolicy`). For a boolean flag that's
+   identical at every stage (e.g. `externalSecret.enabled`), just write it
+   as a plain YAML boolean instead of templating it -- an unquoted
+   `{{...}}` in that position is ambiguous with YAML flow-mapping syntax,
+   and a quoted `"false"` is a non-empty string, which Helm/Sprig `if`
+   treats as truthy. Source 2 is this repo's own path for that stage's
+   `secret.sealed.yaml`, if any.
 4. `kargo/tasks.yaml`: `git-clone` -> `yaml-update` (bump `chartVersion`) ->
    `git-commit` -> `git-push` -> `argocd-update`.
 
