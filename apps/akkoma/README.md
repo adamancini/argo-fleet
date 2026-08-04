@@ -26,19 +26,23 @@ deploying as-is would regenerate random secrets on every sync. Each stage's
 `release.yaml` sets `externalSecret.enabled`/`externalSecret.name` and
 `postgresql.existingSecret` instead, pointing at Secrets created by the
 `sealed-secrets` controller (see `infrastructure/sealed-secrets/`) from
-this app's `env/<stage>/secret.sealed.yaml` -- created via:
+this app's `env/<stage>/*.sealed.yaml` -- created via:
 
 ```bash
-task sealed-secrets:seal -- akkoma-dev akkoma-secrets apps/akkoma/env/dev/secret.sealed.yaml \
+task sealed-secrets:seal -- akkoma-dev akkoma-secrets apps/akkoma/env/dev/secret-app.sealed.yaml \
   secret-key-base=$(openssl rand -hex 32) \
   signing-salt=$(openssl rand -hex 4) \
   release-cookie=$(openssl rand -hex 32)
-task sealed-secrets:seal -- akkoma-dev akkoma-postgresql apps/akkoma/env/dev/secret.sealed.yaml \
+task sealed-secrets:seal -- akkoma-dev akkoma-postgresql apps/akkoma/env/dev/secret-postgresql.sealed.yaml \
   postgres-password=$(openssl rand -hex 16)
 ```
 
-Repeat per stage (`akkoma-staging`, `akkoma-prod` namespaces). Kargo never
-touches `secret.sealed.yaml` -- it isn't a release artifact.
+Two distinct output files per stage -- `sealed-secrets:seal` truncates its
+output path, so both commands must NOT share a filename or the second
+overwrites the first. Repeat both commands per stage (`akkoma-staging`,
+`akkoma-prod` namespaces), swapping the namespace and the `env/<stage>/`
+path each time. Kargo never touches either `*.sealed.yaml` file -- neither
+is a release artifact.
 
 ## Things to know
 
