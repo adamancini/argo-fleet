@@ -1,0 +1,12 @@
+chartVersion: 0.4.6
+values:
+  akkoma:
+    domain: akkoma-dev.example.com
+    adminEmail: admin@example.com
+  externalSecret:
+    enabled: true
+    name: akkoma-secrets
+  postgresql:
+    existingSecret: akkoma-postgresql
+  ingress:
+    enabled: false

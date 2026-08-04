@@ -1,0 +1,43 @@
+# One Argo CD Application per env/*/release.yaml. Multi-source: the OCI
+# chart at the version Kargo last promoted, plus this repo's own path for
+# the stage's SealedSecret (created via `task sealed-secrets:seal`, not by
+# Kargo -- it isn't a release artifact).
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: akkoma
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+  - git:
+      repoURL: https://github.com/adamancini/argo-fleet.git
+      revision: HEAD
+      files:
+      - path: "apps/akkoma/env/*/release.yaml"
+  template:
+    metadata:
+      name: 'akkoma-{{.path.basename}}'
+      annotations:
+        kargo.akuity.io/authorized-stage: 'akkoma:{{.path.basename}}'
+    spec:
+      project: akkoma
+      sources:
+      - repoURL: ghcr.io/adamancini/charts
+        chart: akkoma
+        targetRevision: '{{.chartVersion}}'
+        helm:
+          valuesObject: '{{.values}}'
+      - repoURL: https://github.com/adamancini/argo-fleet.git
+        targetRevision: HEAD
+        path: '{{.path.path}}'
+      destination:
+        name: '{{- if eq .path.basename "prod" }}demo2{{- else }}demo1{{- end }}'
+        namespace: 'akkoma-{{.path.basename}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
