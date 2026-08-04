@@ -19,6 +19,12 @@ staging ground before the eventual move to the real `annarchy.net`/
 
 ## Quickstart
 
+### Prerequisites
+
+- **go-task CLI**: Install via `brew install go-task`. Used for all repeatable operational commands.
+
+### Steps
+
 1. `task sealed-secrets:generate-keypair` — generates the shared Sealed
    Secrets keypair used by every cluster in this repo (see
    [`infrastructure/sealed-secrets/README.md`](infrastructure/sealed-secrets/README.md)).

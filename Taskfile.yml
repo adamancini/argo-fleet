@@ -9,12 +9,46 @@ vars:
 tasks:
   sealed-secrets:generate-keypair:
     desc: Generate the shared Sealed Secrets RSA keypair and install it as the active key on every cluster in CLUSTERS.
-    # Body added in Task 2.
+    cmds:
+      - mkdir -p {{.KEYPAIR_DIR}}
+      - |
+        openssl req -x509 -days 3650 -nodes -newkey rsa:4096 \
+          -keyout {{.KEYPAIR_KEY}} -out {{.KEYPAIR_CERT}} \
+          -subj "/CN=sealed-secret/O=argo-fleet"
+      - for: { var: CLUSTERS, split: ' ' }
+        cmd: |
+          kubectl --context {{.ITEM}} create namespace sealed-secrets --dry-run=client -o yaml | kubectl --context {{.ITEM}} apply -f -
+          kubectl --context {{.ITEM}} -n sealed-secrets create secret tls sealed-secrets-key \
+            --cert={{.KEYPAIR_CERT}} --key={{.KEYPAIR_KEY}} \
+            --dry-run=client -o yaml | kubectl --context {{.ITEM}} apply -f -
+          kubectl --context {{.ITEM}} -n sealed-secrets label secret sealed-secrets-key \
+            sealedsecrets.bitnami.com/sealed-secrets-key=active --overwrite
+      - echo "Shared keypair at {{.KEYPAIR_DIR}} -- back up {{.KEYPAIR_KEY}} out-of-band. It is gitignored and will NOT be committed."
 
   sealed-secrets:rotate-keypair:
     desc: Rotate to a new shared keypair and re-seal every existing SealedSecret against it.
-    # Body added in Task 2.
+    cmds:
+      - mv {{.KEYPAIR_CERT}} {{.KEYPAIR_DIR}}/tls.crt.previous
+      - mv {{.KEYPAIR_KEY}} {{.KEYPAIR_DIR}}/tls.key.previous
+      - task: sealed-secrets:generate-keypair
+      - for: { var: CLUSTERS, split: ' ' }
+        cmd: |
+          kubectl --context {{.ITEM}} -n sealed-secrets label secret sealed-secrets-key-previous \
+            sealedsecrets.bitnami.com/sealed-secrets-key- --overwrite 2>/dev/null || true
+      - echo "New key is active on every cluster. Re-seal each apps/*/env/*/secret.sealed.yaml by re-running the same 'task sealed-secrets:seal' command originally used to create it."
 
   sealed-secrets:seal:
     desc: 'Seal a plaintext secret. Usage: task sealed-secrets:seal -- <namespace> <name> <output-path> <key>=<value> [<key>=<value>...]'
-    # Body added in Task 2.
+    cmds:
+      - |
+        set -euo pipefail
+        NAMESPACE="{{index .CLI_ARGS 0}}"
+        NAME="{{index .CLI_ARGS 1}}"
+        OUTPUT="{{index .CLI_ARGS 2}}"
+        kubectl create secret generic "${NAME}" \
+          --namespace "${NAMESPACE}" \
+          $(echo "{{.CLI_ARGS}}" | cut -d' ' -f4- | xargs -n1 printf -- '--from-literal=%s ') \
+          --dry-run=client -o yaml \
+        | kubeseal --cert {{.KEYPAIR_CERT}} --format yaml \
+        > "${OUTPUT}"
+        echo "Wrote ${OUTPUT}"
