@@ -1,0 +1,7 @@
+.DS_Store
+*.swp
+.worktrees/
+.superpowers/
+/.task/
+*.key
+*.crt

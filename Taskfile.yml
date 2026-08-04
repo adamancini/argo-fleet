@@ -1,0 +1,20 @@
+version: '3'
+
+vars:
+  KEYPAIR_DIR: '{{.ROOT_DIR}}/.sealed-secrets-keypair'
+  KEYPAIR_CERT: '{{.KEYPAIR_DIR}}/tls.crt'
+  KEYPAIR_KEY: '{{.KEYPAIR_DIR}}/tls.key'
+  CLUSTERS: k3d-demo1 k3d-demo2
+
+tasks:
+  sealed-secrets:generate-keypair:
+    desc: Generate the shared Sealed Secrets RSA keypair and install it as the active key on every cluster in CLUSTERS.
+    # Body added in Task 2.
+
+  sealed-secrets:rotate-keypair:
+    desc: Rotate to a new shared keypair and re-seal every existing SealedSecret against it.
+    # Body added in Task 2.
+
+  sealed-secrets:seal:
+    desc: 'Seal a plaintext secret. Usage: task sealed-secrets:seal -- <namespace> <name> <output-path> <key>=<value> [<key>=<value>...]'
+    # Body added in Task 2.
