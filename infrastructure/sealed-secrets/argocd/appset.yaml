@@ -1,0 +1,37 @@
+# One Application per cluster, installing the upstream Sealed Secrets
+# controller. The shared keypair (see Taskfile.yml's sealed-secrets:*
+# tasks) is pre-created as a labeled Secret in the sealed-secrets namespace
+# before this syncs -- the chart detects the existing secret and uses it
+# instead of generating a new one.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: sealed-secrets
+  namespace: argocd
+spec:
+  generators:
+  - list:
+      elements:
+      - cluster: demo1
+      - cluster: demo2
+  template:
+    metadata:
+      name: 'sealed-secrets-{{cluster}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/bitnami-labs/sealed-secrets.git
+        targetRevision: v2.16.1
+        path: helm/sealed-secrets
+        helm:
+          valuesObject:
+            fullnameOverride: sealed-secrets
+      destination:
+        name: '{{cluster}}'
+        namespace: sealed-secrets
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
