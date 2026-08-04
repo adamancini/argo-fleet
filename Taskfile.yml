@@ -9,6 +9,9 @@ vars:
 tasks:
   sealed-secrets:generate-keypair:
     desc: Generate the shared Sealed Secrets RSA keypair and install it as the active key on every cluster in CLUSTERS.
+    preconditions:
+      - sh: '[ ! -f {{.KEYPAIR_KEY}} ]'
+        msg: "Keypair already exists at {{.KEYPAIR_KEY}} -- use 'task sealed-secrets:rotate-keypair' instead, or remove it manually if you really want to start over."
     cmds:
       - mkdir -p {{.KEYPAIR_DIR}}
       - |
