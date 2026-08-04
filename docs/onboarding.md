@@ -42,7 +42,13 @@ re-syncing on every upstream release.
    `{{...}}` in that position is ambiguous with YAML flow-mapping syntax,
    and a quoted `"false"` is a non-empty string, which Helm/Sprig `if`
    treats as truthy. Source 2 is this repo's own path for that stage's
-   `secret.sealed.yaml`, if any.
+   `secret.sealed.yaml`, if any -- it MUST set `directory.include:
+   '*.sealed.yaml'` on that source. Without it, this is a directory-type
+   source with no filter, so the repo-server tries to render every `.yaml`
+   in `env/<stage>/` as a manifest, including the plain-data
+   `release.yaml` (no `apiVersion`/`kind`), which fails manifest
+   generation for the Application permanently -- not just until secrets
+   are sealed.
 4. `kargo/tasks.yaml`: `git-clone` -> `yaml-update` (bump `chartVersion`) ->
    `git-commit` -> `git-push` -> `argocd-update`.
 

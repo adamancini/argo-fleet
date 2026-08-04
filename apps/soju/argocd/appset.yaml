@@ -47,6 +47,8 @@ spec:
       - repoURL: https://github.com/adamancini/argo-fleet.git
         targetRevision: HEAD
         path: '{{.path.path}}'
+        directory:
+          include: '*.sealed.yaml'
       destination:
         name: '{{- if eq .path.basename "prod" }}demo2{{- else }}demo1{{- end }}'
         namespace: 'soju-{{.path.basename}}'
