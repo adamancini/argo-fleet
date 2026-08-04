@@ -200,22 +200,36 @@ Replace the `# Body added in Task 2.` comment under `sealed-secrets:generate-key
   sealed-secrets:rotate-keypair:
     desc: Rotate to a new shared keypair and re-seal every existing SealedSecret against it.
     cmds:
-      # Preserve the current key server-side under a different name BEFORE
-      # generate-keypair overwrites `sealed-secrets-key` in place -- the
-      # controller still loads this for decrypting secrets sealed under the
-      # old key, it just won't be used to seal new ones (no `active` label).
+      # generate-keypair always writes to the fixed name `sealed-secrets-key`,
+      # so preserve the CURRENT local key material under a different name on
+      # every cluster first -- built fresh from the cert/key files via
+      # --dry-run=client (not fetched from the live object), so there's no
+      # stale resourceVersion/uid to strip before the apply. Per Sealed
+      # Secrets' own multi-key model, the controller retains every key
+      # sharing this label for decrypting old SealedSecrets and uses the
+      # newest for sealing new ones -- so the preserved key needs no label
+      # change, only a different Secret name than the one generate-keypair
+      # is about to overwrite.
       - for: { var: CLUSTERS, split: ' ' }
         cmd: |
           set -euo pipefail
-          kubectl --context {{.ITEM}} -n sealed-secrets get secret sealed-secrets-key -o yaml \
-            | sed 's/name: sealed-secrets-key$/name: sealed-secrets-key-previous/' \
-            | kubectl --context {{.ITEM}} apply -f -
+          kubectl --context {{.ITEM}} -n sealed-secrets create secret tls sealed-secrets-key-previous \
+            --cert={{.KEYPAIR_CERT}} --key={{.KEYPAIR_KEY}} \
+            --dry-run=client -o yaml | kubectl --context {{.ITEM}} apply -f -
           kubectl --context {{.ITEM}} -n sealed-secrets label secret sealed-secrets-key-previous \
-            sealedsecrets.bitnami.com/sealed-secrets-key- --overwrite
+            sealedsecrets.bitnami.com/sealed-secrets-key=active --overwrite
       - mv {{.KEYPAIR_CERT}} {{.KEYPAIR_DIR}}/tls.crt.previous
       - mv {{.KEYPAIR_KEY}} {{.KEYPAIR_DIR}}/tls.key.previous
       - task: sealed-secrets:generate-keypair
-      - echo "New key is active on every cluster; old key preserved as sealed-secrets-key-previous for decrypting not-yet-re-sealed secrets. Re-seal each apps/*/env/*/secret.sealed.yaml by re-running the same 'task sealed-secrets:seal' command originally used to create it."
+      # The controller only discovers labeled key Secrets on startup, so a
+      # manually-added key (unlike its own periodic --key-renew-period
+      # rotation) needs a restart to take effect.
+      - for: { var: CLUSTERS, split: ' ' }
+        cmd: |
+          set -euo pipefail
+          kubectl --context {{.ITEM}} -n sealed-secrets rollout restart deployment/sealed-secrets
+          kubectl --context {{.ITEM}} -n sealed-secrets rollout status deployment/sealed-secrets --timeout=60s
+      - echo "New key generated and active on every cluster; old key preserved as sealed-secrets-key-previous for decrypting not-yet-re-sealed secrets. Re-seal each apps/*/env/*/secret.sealed.yaml by re-running the same 'task sealed-secrets:seal' command originally used to create it."
 ```
 
 - [ ] **Step 3: Fill in `sealed-secrets:seal`**
