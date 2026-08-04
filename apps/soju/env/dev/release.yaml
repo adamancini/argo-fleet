@@ -1,0 +1,9 @@
+chartVersion: 0.1.7
+values:
+  soju:
+    domain: soju-dev.example.com
+  admin:
+    enabled: true
+    existingSecret: soju-admin
+  ingress:
+    enabled: false
