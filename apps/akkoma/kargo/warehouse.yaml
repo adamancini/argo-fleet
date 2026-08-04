@@ -1,0 +1,10 @@
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Warehouse
+metadata:
+  name: akkoma
+  namespace: akkoma
+spec:
+  subscriptions:
+  - chart:
+      repoURL: oci://ghcr.io/adamancini/charts/akkoma
+      semverConstraint: '>=0.4.6'

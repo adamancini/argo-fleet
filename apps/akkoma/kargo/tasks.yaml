@@ -1,0 +1,42 @@
+# Every promotion is a real commit to main that bumps chartVersion in the
+# stage's env/<stage>/release.yaml. Argo CD's multi-source Application
+# (see argocd/appset.yaml) reads that value as the OCI chart's
+# targetRevision, so git history on main doubles as the deployment history.
+apiVersion: kargo.akuity.io/v1alpha1
+kind: PromotionTask
+metadata:
+  name: promote
+  namespace: akkoma
+spec:
+  vars:
+  - name: repoURL
+    value: https://github.com/adamancini/argo-fleet.git
+  - name: chart
+    value: oci://ghcr.io/adamancini/charts/akkoma
+  steps:
+  - uses: git-clone
+    config:
+      repoURL: ${{ vars.repoURL }}
+      checkout:
+      - branch: main
+        path: ./src
+  - uses: yaml-update
+    as: update-chart-version
+    config:
+      path: ./src/apps/akkoma/env/${{ ctx.stage }}/release.yaml
+      updates:
+      - key: chartVersion
+        value: ${{ chartFrom(vars.chart).Version }}
+  - uses: git-commit
+    as: commit
+    config:
+      path: ./src
+      message: "akkoma/${{ ctx.stage }}: promote ${{ chartFrom(vars.chart).Version }}"
+  - uses: git-push
+    config:
+      path: ./src
+      targetBranch: main
+  - uses: argocd-update
+    config:
+      apps:
+      - name: akkoma-${{ ctx.stage }}
