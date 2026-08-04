@@ -1,0 +1,38 @@
+apiVersion: kargo.akuity.io/v1alpha1
+kind: PromotionTask
+metadata:
+  name: promote
+  namespace: soju
+spec:
+  vars:
+  - name: repoURL
+    value: https://github.com/adamancini/argo-fleet.git
+  - name: chart
+    value: oci://ghcr.io/adamancini/charts/soju
+  steps:
+  - uses: git-clone
+    config:
+      repoURL: ${{ vars.repoURL }}
+      checkout:
+      - branch: main
+        path: ./src
+  - uses: yaml-update
+    as: update-chart-version
+    config:
+      path: ./src/apps/soju/env/${{ ctx.stage }}/release.yaml
+      updates:
+      - key: chartVersion
+        value: ${{ chartFrom(vars.chart).Version }}
+  - uses: git-commit
+    as: commit
+    config:
+      path: ./src
+      message: "soju/${{ ctx.stage }}: promote ${{ chartFrom(vars.chart).Version }}"
+  - uses: git-push
+    config:
+      path: ./src
+      targetBranch: main
+  - uses: argocd-update
+    config:
+      apps:
+      - name: soju-${{ ctx.stage }}

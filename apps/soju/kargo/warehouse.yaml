@@ -1,0 +1,10 @@
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Warehouse
+metadata:
+  name: soju
+  namespace: soju
+spec:
+  subscriptions:
+  - chart:
+      repoURL: oci://ghcr.io/adamancini/charts/soju
+      semverConstraint: '>=0.1.7'
