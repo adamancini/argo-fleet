@@ -184,6 +184,7 @@ Replace the `# Body added in Task 2.` comment under `sealed-secrets:generate-key
           -subj "/CN=sealed-secret/O=argo-fleet"
       - for: { var: CLUSTERS, split: ' ' }
         cmd: |
+          set -euo pipefail
           kubectl --context {{.ITEM}} create namespace sealed-secrets --dry-run=client -o yaml | kubectl --context {{.ITEM}} apply -f -
           kubectl --context {{.ITEM}} -n sealed-secrets create secret tls sealed-secrets-key \
             --cert={{.KEYPAIR_CERT}} --key={{.KEYPAIR_KEY}} \
@@ -199,14 +200,22 @@ Replace the `# Body added in Task 2.` comment under `sealed-secrets:generate-key
   sealed-secrets:rotate-keypair:
     desc: Rotate to a new shared keypair and re-seal every existing SealedSecret against it.
     cmds:
+      # Preserve the current key server-side under a different name BEFORE
+      # generate-keypair overwrites `sealed-secrets-key` in place -- the
+      # controller still loads this for decrypting secrets sealed under the
+      # old key, it just won't be used to seal new ones (no `active` label).
+      - for: { var: CLUSTERS, split: ' ' }
+        cmd: |
+          set -euo pipefail
+          kubectl --context {{.ITEM}} -n sealed-secrets get secret sealed-secrets-key -o yaml \
+            | sed 's/name: sealed-secrets-key$/name: sealed-secrets-key-previous/' \
+            | kubectl --context {{.ITEM}} apply -f -
+          kubectl --context {{.ITEM}} -n sealed-secrets label secret sealed-secrets-key-previous \
+            sealedsecrets.bitnami.com/sealed-secrets-key- --overwrite
       - mv {{.KEYPAIR_CERT}} {{.KEYPAIR_DIR}}/tls.crt.previous
       - mv {{.KEYPAIR_KEY}} {{.KEYPAIR_DIR}}/tls.key.previous
       - task: sealed-secrets:generate-keypair
-      - for: { var: CLUSTERS, split: ' ' }
-        cmd: |
-          kubectl --context {{.ITEM}} -n sealed-secrets label secret sealed-secrets-key-previous \
-            sealedsecrets.bitnami.com/sealed-secrets-key- --overwrite 2>/dev/null || true
-      - echo "New key is active on every cluster. Re-seal each apps/*/env/*/secret.sealed.yaml by re-running the same 'task sealed-secrets:seal' command originally used to create it."
+      - echo "New key is active on every cluster; old key preserved as sealed-secrets-key-previous for decrypting not-yet-re-sealed secrets. Re-seal each apps/*/env/*/secret.sealed.yaml by re-running the same 'task sealed-secrets:seal' command originally used to create it."
 ```
 
 - [ ] **Step 3: Fill in `sealed-secrets:seal`**
@@ -217,12 +226,12 @@ Replace the `# Body added in Task 2.` comment under `sealed-secrets:generate-key
     cmds:
       - |
         set -euo pipefail
-        NAMESPACE="{{index .CLI_ARGS 0}}"
-        NAME="{{index .CLI_ARGS 1}}"
-        OUTPUT="{{index .CLI_ARGS 2}}"
+        NAMESPACE="{{index .CLI_ARGS_LIST 0}}"
+        NAME="{{index .CLI_ARGS_LIST 1}}"
+        OUTPUT="{{index .CLI_ARGS_LIST 2}}"
         kubectl create secret generic "${NAME}" \
           --namespace "${NAMESPACE}" \
-          $(echo "{{.CLI_ARGS}}" | cut -d' ' -f4- | xargs -n1 printf -- '--from-literal=%s ') \
+          {{range $i, $kv := .CLI_ARGS_LIST}}{{if ge $i 3}}--from-literal={{$kv}} {{end}}{{end}}\
           --dry-run=client -o yaml \
         | kubeseal --cert {{.KEYPAIR_CERT}} --format yaml \
         > "${OUTPUT}"
