@@ -3,5 +3,4 @@
 .worktrees/
 .superpowers/
 /.task/
-*.key
-*.crt
+/.sealed-secrets-keypair/
