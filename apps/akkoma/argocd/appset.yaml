@@ -24,11 +24,33 @@ spec:
     spec:
       project: akkoma
       sources:
+      # valuesObject is an object-typed field (backed by RawExtension) --
+      # Argo CD's Go-template engine only substitutes into string fields, so
+      # `valuesObject: '{{.values}}'` can't work (same restriction the docs
+      # call out for syncPolicy). The structure has to be spelled out here,
+      # templating only the individual leaf values that genuinely vary by
+      # stage (all quoted strings -- the one documented-safe pattern).
+      # externalSecret.enabled and ingress.enabled are identical at every
+      # stage in this design, so they're plain YAML booleans, not templated --
+      # avoids relying on how an unquoted `{{...}}` in this position would
+      # even parse (raw, un-rendered `{{` is ambiguous with YAML flow-mapping
+      # syntax), and avoids Helm/Sprig `if` treating a quoted "false" string
+      # as truthy.
       - repoURL: ghcr.io/adamancini/charts
         chart: akkoma
         targetRevision: '{{.chartVersion}}'
         helm:
-          valuesObject: '{{.values}}'
+          valuesObject:
+            akkoma:
+              domain: '{{.values.akkoma.domain}}'
+              adminEmail: '{{.values.akkoma.adminEmail}}'
+            externalSecret:
+              enabled: true
+              name: '{{.values.externalSecret.name}}'
+            postgresql:
+              existingSecret: '{{.values.postgresql.existingSecret}}'
+            ingress:
+              enabled: false
       - repoURL: https://github.com/adamancini/argo-fleet.git
         targetRevision: HEAD
         path: '{{.path.path}}'
