@@ -1,0 +1,33 @@
+# Discovers infrastructure/*/argocd and creates one Argo CD Application per
+# cluster-wide dependency. These have no Kargo pipeline -- they're
+# singletons that need to exist identically everywhere, not promoted.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: infra-apps
+  namespace: argocd
+spec:
+  generators:
+  - git:
+      repoURL: https://github.com/adamancini/argo-fleet.git
+      revision: HEAD
+      directories:
+      - path: infrastructure/*/argocd
+  template:
+    metadata:
+      name: 'infra-{{path[1]}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/adamancini/argo-fleet.git
+        targetRevision: HEAD
+        path: '{{path}}'
+        directory:
+          recurse: true
+      destination:
+        name: in-cluster
+        namespace: argocd
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

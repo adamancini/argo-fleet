@@ -1,0 +1,41 @@
+# Discovers apps/*/kargo/ and creates one Argo CD Application per app that
+# syncs that app's Kargo resources to the Kargo control plane (Argo CD
+# cluster named `kargo`).
+#
+# NOTE: automated sync is REQUIRED here. Without it, merged changes to
+# apps/*/kargo/*.yaml silently never reach the cluster, and promotions keep
+# running the stale task.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: kargo-apps
+  namespace: argocd
+spec:
+  generators:
+  - git:
+      repoURL: https://github.com/adamancini/argo-fleet.git
+      revision: HEAD
+      directories:
+      - path: apps/*/kargo
+      requeueAfterSeconds: 30
+  template:
+    metadata:
+      name: 'kargo-{{path[1]}}'
+    spec:
+      # Convention: the app directory name IS the Argo CD AppProject name
+      # and the Kargo Project name.
+      project: '{{path[1]}}'
+      source:
+        repoURL: https://github.com/adamancini/argo-fleet.git
+        targetRevision: HEAD
+        path: '{{path}}'
+        directory:
+          recurse: true
+      destination:
+        name: kargo
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true

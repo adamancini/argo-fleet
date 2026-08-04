@@ -1,0 +1,36 @@
+# Discovers apps/*/argocd/ and creates one Argo CD Application per app that
+# syncs that app's AppProject and ApplicationSet. Adding a new app directory
+# under apps/ is all that's needed -- no edits here.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: argocd-apps
+  namespace: argocd
+spec:
+  generators:
+  - git:
+      repoURL: https://github.com/adamancini/argo-fleet.git
+      revision: HEAD
+      directories:
+      - path: apps/*/argocd
+  template:
+    metadata:
+      name: 'argocd-{{path[1]}}'
+    spec:
+      # Default project avoids a bootstrap chicken-and-egg: each app's
+      # AppProject lives inside the argocd/ path this Application syncs, so
+      # the project can't exist before the Application is created.
+      project: default
+      source:
+        repoURL: https://github.com/adamancini/argo-fleet.git
+        targetRevision: HEAD
+        path: '{{path}}'
+        directory:
+          recurse: true
+      destination:
+        name: in-cluster
+        namespace: argocd
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
