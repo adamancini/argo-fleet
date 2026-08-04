@@ -78,12 +78,13 @@ argo-fleet/
 .DS_Store
 *.swp
 .worktrees/
+.superpowers/
 /.task/
 *.key
 *.crt
 ```
 
-The last two lines matter: `generate-keypair`/`rotate-keypair` (Task 2) write the shared private key to disk locally before you distribute it out-of-band — it must never be committed.
+`.superpowers/` excludes this plan's own SDD scratch workspace (ledger, briefs, review packages) from version control. The `*.key`/`*.crt` lines matter: `generate-keypair`/`rotate-keypair` (Task 2) write the shared private key to disk locally before you distribute it out-of-band — it must never be committed.
 
 - [ ] **Step 2: Write `README.md`**
 
@@ -1404,7 +1405,7 @@ cd /Users/ada/src/github.com/adamancini/argo-fleet
 fail=0
 while IFS= read -r f; do
   ruby -ryaml -e "YAML.load_stream(File.read('$f'))" 2>/dev/null && echo "OK   $f" || { echo "FAIL $f"; fail=1; }
-done < <(find . -name '*.yaml' -not -path './.git/*')
+done < <(find . -name '*.yaml' -not -path './.git/*' -not -path './.superpowers/*')
 exit $fail
 ```
 Expected: `OK` for every file, exit code `0`.
