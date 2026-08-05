@@ -8,13 +8,14 @@ parent: AF-q1il
 created_at: 2026-08-05T14:30:04Z
 created_by: ada
 updated_at: 2026-08-05T16:02:32Z
-content_hash: "sha256:3c43970b77b2f77c0f36dfa3453ab9730fe2cd086503bc3a848d07ae30fc60bc"
+content_hash: "sha256:02a81b1496928b986ebc4cb07d12519c990cf530b4399a50f5b24ea02e9ea3b0"
 was_blocked_by: [AF-4wcm]
 assignee: dev-AF-pydv
 follows: [AF-4wcm, AF-cu83, AF-qujb]
 labels: [accepted]
 closed_at: 2026-08-05T16:02:31Z
 close_reason: "Accepted via pvg story accept"
+led_to: [AF-uw18]
 ---
 
 ## Description
@@ -245,6 +246,7 @@ status: delivered
 - Parent: [[AF-q1il]]
 - Was blocked by: [[AF-4wcm]]
 - Follows: [[AF-4wcm]], [[AF-cu83]], [[AF-qujb]]
+- Led to: [[AF-uw18]]
 
 ## Comments
 

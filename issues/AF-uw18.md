@@ -1,17 +1,19 @@
 ---
 id: AF-uw18
 title: "Bug: cluster:register-agent fails on a fresh clone -- terraform/clusters/.kubeconfigs/ directory can never exist"
-status: open
+status: in_progress
 priority: 0
 type: bug
 labels: [discovered-by-dev]
 parent: AF-q1il
 created_at: 2026-08-05T15:54:11Z
 created_by: ada
-updated_at: 2026-08-05T15:54:11Z
-content_hash: "sha256:5765116aed38f831c4b9c2f35b60fc55d5f1d7bf788e0aeb5623f5a4f953eab8"
+updated_at: 2026-08-05T16:10:24Z
+content_hash: "sha256:2cd6a18631096a0edb1bb786c94336483e85af49b6aa4a6c7c71e046ff2d379a"
 blocks: [AF-tqmb, AF-cbot]
 was_blocked_by: [AF-pydv]
+assignee: dev-AF-uw18
+follows: [AF-pydv]
 ---
 
 ## Description
@@ -254,10 +256,14 @@ AF-pydv's own MANDATORY SKILLS entry).
 - 2026-08-05T15:54:18Z dep_added: blocks AF-tqmb
 - 2026-08-05T15:55:23Z dep_added: blocks AF-cbot
 - 2026-08-05T16:02:31Z dep_removed: was_blocked_by AF-pydv
+- 2026-08-05T16:10:24Z status: open -> in_progress
+- 2026-08-05T16:10:24Z auto-follows: linked to predecessor AF-pydv
+- 2026-08-05T16:10:24Z claimed by dev-AF-uw18
 
 ## Links
 - Parent: [[AF-q1il]]
 - Blocks: [[AF-tqmb]], [[AF-cbot]]
 - Was blocked by: [[AF-pydv]]
+- Follows: [[AF-pydv]]
 
 ## Comments
