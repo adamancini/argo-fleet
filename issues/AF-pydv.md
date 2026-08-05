@@ -8,7 +8,7 @@ parent: AF-q1il
 created_at: 2026-08-05T14:30:04Z
 created_by: ada
 updated_at: 2026-08-05T15:45:40Z
-content_hash: "sha256:c83a4bcd93ca3a8cfa2d8618ca5441f8585520ba9269aa9d45e7422ed4ff77d2"
+content_hash: "sha256:98e8545f82781dad2ed15604648803970ff7447c7b5475f995791a9490d640e8"
 blocks: [AF-cbot]
 was_blocked_by: [AF-4wcm]
 assignee: dev-AF-pydv
@@ -201,6 +201,16 @@ go-task in this repo).
 
 
 ## Notes
+
+
+## nd_contract
+status: delivered
+
+### evidence
+- Transitioned via pvg story deliver on 2026-08-05.
+
+### proof
+- [ ] Developer evidence block must remain authoritative above this contract.
 
 
 ## History
