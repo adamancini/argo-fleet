@@ -4,7 +4,7 @@ title: "Bug: cluster:register-agent fails on a fresh clone -- terraform/clusters
 status: closed
 priority: 0
 type: bug
-labels: [discovered-by-dev, delivered, accepted]
+labels: [discovered-by-dev, accepted]
 parent: AF-q1il
 created_at: 2026-08-05T15:54:11Z
 created_by: ada
