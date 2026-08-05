@@ -1,15 +1,17 @@
 ---
 id: AF-i2t5
 title: "Bug: AF-tqmb missing parent link to epic AF-q1il, causing epic close-eligible to falsely report full completion"
-status: open
+status: closed
 priority: 0
 type: bug
 labels: [discovered-by-pm]
 parent: AF-q1il
 created_at: 2026-08-05T16:33:32Z
 created_by: ada
-updated_at: 2026-08-05T16:34:14Z
-content_hash: "sha256:4a306332b732ebb12f3c15471b54e2ba9bd8a4744284622b5cc3a4f4ff0b1499"
+updated_at: 2026-08-05T16:34:23Z
+content_hash: "sha256:28a7109623c726f17e636a85ad11b16effb180fed5d3fac46db17bfb0a5add0d"
+closed_at: 2026-08-05T16:34:23Z
+close_reason: "Root cause identified (missing parent field on AF-tqmb) and fixed directly via nd update AF-tqmb --parent AF-q1il. Fix verified structurally: nd children/epic tree/close-eligible all now correctly reflect AF-tqmb as an open member of AF-q1il. Epic-wide audit found no other one-directional-link defects. No developer story needed -- this was a Sr PM vault-metadata repair."
 ---
 
 ## Description
@@ -142,7 +144,7 @@ EPIC-WIDE ONE-DIRECTIONAL-LINK AUDIT: Dumped parent/blocked_by/blocks/was_blocke
 Closing this bug now -- fix applied and structurally verified, no developer-claimable follow-up required.
 
 ## History
-
+- 2026-08-05T16:34:23Z status: open -> closed
 
 ## Links
 - Parent: [[AF-q1il]]
