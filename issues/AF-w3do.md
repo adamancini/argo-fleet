@@ -8,7 +8,8 @@ parent: AF-q1il
 created_at: 2026-08-05T18:23:22Z
 created_by: ada
 updated_at: 2026-08-05T18:23:22Z
-content_hash: "sha256:81bae82bcb08afb0019addacc2747a707cdd1ff7f13b3cbeb51d8770da22e651"
+content_hash: "sha256:4635aefc6a248b992baaa3b6a94fb49dcb522b0c0beb6ebb2f2c1fa19285f995"
+blocks: [AF-s8l0]
 ---
 
 ## Description
@@ -396,9 +397,10 @@ specific pattern applies).
 
 
 ## History
-
+- 2026-08-05T18:23:54Z dep_added: blocks AF-s8l0
 
 ## Links
 - Parent: [[AF-q1il]]
+- Blocks: [[AF-s8l0]]
 
 ## Comments

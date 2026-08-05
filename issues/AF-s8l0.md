@@ -9,7 +9,8 @@ parent: AF-q1il
 created_at: 2026-08-05T18:23:50Z
 created_by: ada
 updated_at: 2026-08-05T18:23:50Z
-content_hash: "sha256:cdf551a13ae2365f47a7ca01c6031a86687bd7427ab6612c4749133e661bb634"
+content_hash: "sha256:c389336e39bd077dd299da54ce3cbcd85fe658e9ae4a61c64ad4e4b3219d6311"
+blocked_by: [AF-w3do]
 ---
 
 ## Description
@@ -210,9 +211,10 @@ discretion, not a gate.
 
 
 ## History
-
+- 2026-08-05T18:23:54Z dep_added: blocked_by AF-w3do
 
 ## Links
 - Parent: [[AF-q1il]]
+- Blocked by: [[AF-w3do]]
 
 ## Comments
