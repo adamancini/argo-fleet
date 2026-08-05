@@ -1,15 +1,16 @@
 ---
 id: AF-qujb
 title: "Add gateway-api-crds infrastructure layer for demo1/demo2"
-status: open
+status: in_progress
 priority: 1
 type: task
 parent: AF-q1il
 created_at: 2026-08-05T14:32:18Z
 created_by: ada
-updated_at: 2026-08-05T14:37:35Z
-content_hash: "sha256:453fff64cc2e94460367fadbc9621733d68f7c8136739aeaf3345d5cf8e9ad4a"
+updated_at: 2026-08-05T14:49:10Z
+content_hash: "sha256:c633ea5ce41b0d52ee517e69bf0bbee017c2edb7b7c6ee644eefeaeab0e44da9"
 blocks: [AF-cbot]
+assignee: dev-AF-qujb
 ---
 
 ## Description
@@ -310,6 +311,8 @@ manifest review guidance before finalizing.
 
 ## History
 - 2026-08-05T14:33:41Z dep_added: blocks AF-cbot
+- 2026-08-05T14:49:10Z status: open -> in_progress
+- 2026-08-05T14:49:10Z claimed by dev-AF-qujb
 
 ## Links
 - Parent: [[AF-q1il]]
