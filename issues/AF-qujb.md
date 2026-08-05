@@ -8,11 +8,12 @@ parent: AF-q1il
 created_at: 2026-08-05T14:32:18Z
 created_by: ada
 updated_at: 2026-08-05T15:33:51Z
-content_hash: "sha256:64e10629bb2b7aaa9b1f47c8fc6947df593ef60e81f970f196f8ac772418ed09"
+content_hash: "sha256:e40260625acf058b313493caf36f826b5e96c0898ad01b6770ccb4d9f01880b9"
 assignee: dev-AF-qujb
 labels: [accepted]
 closed_at: 2026-08-05T15:33:50Z
 close_reason: "Byte-exact match to IMPLEMENTATION spec; sync-wave quoted as string (guards -1 int/string footgun); YAML validates OK; discovery wiring confirmed via bootstrap/infra-apps.yaml; README documents ordering/selfHeal. AC1-5 verified."
+led_to: [AF-cu83]
 ---
 
 ## Description
@@ -341,6 +342,7 @@ status: delivered
 
 ## Links
 - Parent: [[AF-q1il]]
+- Led to: [[AF-cu83]]
 
 ## Comments
 

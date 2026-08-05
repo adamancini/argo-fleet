@@ -8,12 +8,12 @@ labels: [discovered-by-pm]
 parent: AF-q1il
 created_at: 2026-08-05T15:22:58Z
 created_by: ada
-updated_at: 2026-08-05T15:30:27Z
-content_hash: "sha256:8e5e9aff461a72b1aa89f326481f331cb59af60dc5454b925a8b58f1b8b865ad"
+updated_at: 2026-08-05T15:34:02Z
+content_hash: "sha256:41577107a258f7f7579e02eebbfc2c48e60819e99e457cf19b0ad308cc39ed40"
 blocked_by: [AF-4wcm]
 blocks: [AF-tqmb]
 assignee: dev-AF-cu83
-follows: [AF-8ik8]
+follows: [AF-8ik8, AF-qujb]
 ---
 
 ## Description
@@ -269,11 +269,13 @@ this repo).
 - 2026-08-05T15:30:27Z status: open -> in_progress
 - 2026-08-05T15:30:27Z auto-follows: linked to predecessor AF-8ik8
 - 2026-08-05T15:30:27Z claimed by dev-AF-cu83
+- 2026-08-05T15:34:02Z status: in_progress -> in_progress
+- 2026-08-05T15:34:02Z auto-follows: linked to predecessor AF-qujb
 
 ## Links
 - Parent: [[AF-q1il]]
 - Blocks: [[AF-tqmb]]
 - Blocked by: [[AF-4wcm]]
-- Follows: [[AF-8ik8]]
+- Follows: [[AF-8ik8]], [[AF-qujb]]
 
 ## Comments
