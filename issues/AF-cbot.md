@@ -1,17 +1,19 @@
 ---
 id: AF-cbot
 title: "Full static verification of Terraform migration & new infrastructure layers"
-status: open
+status: in_progress
 priority: 1
 type: task
 labels: [capstone]
 parent: AF-q1il
 created_at: 2026-08-05T14:33:25Z
 created_by: ada
-updated_at: 2026-08-05T14:37:35Z
-content_hash: "sha256:f19da6eab3ed41d793c74886c15577306391454c04e78fcd6a023e40f4ff857d"
+updated_at: 2026-08-05T16:17:34Z
+content_hash: "sha256:b8588c8b4d105b79263097413f829f94975a058038cad1ac80009954240cd60b"
 blocks: [AF-tqmb]
 was_blocked_by: [AF-4wcm, AF-8ik8, AF-qujb, AF-pydv, AF-vwvq, AF-uw18]
+assignee: dev-AF-cbot
+follows: [AF-4wcm, AF-8ik8, AF-qujb, AF-pydv, AF-vwvq, AF-uw18]
 ---
 
 ## Description
@@ -216,10 +218,19 @@ interpreting any YAML validation failure.
 - 2026-08-05T16:02:31Z dep_removed: was_blocked_by AF-pydv
 - 2026-08-05T16:08:13Z dep_removed: was_blocked_by AF-vwvq
 - 2026-08-05T16:16:07Z dep_removed: was_blocked_by AF-uw18
+- 2026-08-05T16:17:34Z status: open -> in_progress
+- 2026-08-05T16:17:34Z auto-follows: linked to predecessor AF-4wcm
+- 2026-08-05T16:17:35Z auto-follows: linked to predecessor AF-8ik8
+- 2026-08-05T16:17:35Z auto-follows: linked to predecessor AF-qujb
+- 2026-08-05T16:17:35Z auto-follows: linked to predecessor AF-pydv
+- 2026-08-05T16:17:35Z auto-follows: linked to predecessor AF-vwvq
+- 2026-08-05T16:17:35Z auto-follows: linked to predecessor AF-uw18
+- 2026-08-05T16:17:35Z claimed by dev-AF-cbot
 
 ## Links
 - Parent: [[AF-q1il]]
 - Blocks: [[AF-tqmb]]
 - Was blocked by: [[AF-4wcm]], [[AF-8ik8]], [[AF-qujb]], [[AF-pydv]], [[AF-vwvq]], [[AF-uw18]]
+- Follows: [[AF-4wcm]], [[AF-8ik8]], [[AF-qujb]], [[AF-pydv]], [[AF-vwvq]], [[AF-uw18]]
 
 ## Comments

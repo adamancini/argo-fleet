@@ -9,12 +9,12 @@ parent: AF-q1il
 created_at: 2026-08-05T14:29:16Z
 created_by: ada
 updated_at: 2026-08-05T15:15:13Z
-content_hash: "sha256:5568a3e3fc5014ec6e8483ceaacf0cbf9a99f1b5ae1112ed48f0cd25f548f787"
+content_hash: "sha256:d73a2e30e40cad7911c215f3014c1daa324d3e39ba1dd3743b83046d7143c710"
 assignee: dev-AF-4wcm
 closed_at: 2026-08-05T15:15:12Z
 close_reason: "Accepted via pvg story accept"
 blocks: [AF-cu83]
-led_to: [AF-pydv]
+led_to: [AF-pydv, AF-cbot]
 ---
 
 ## Description
@@ -1254,7 +1254,7 @@ status: delivered
 ## Links
 - Parent: [[AF-q1il]]
 - Blocks: [[AF-cu83]]
-- Led to: [[AF-pydv]]
+- Led to: [[AF-pydv]], [[AF-cbot]]
 
 ## Comments
 
