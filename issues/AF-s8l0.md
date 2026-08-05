@@ -8,8 +8,8 @@ labels: [human-execution-required, external-integration]
 parent: AF-q1il
 created_at: 2026-08-05T18:23:50Z
 created_by: ada
-updated_at: 2026-08-05T18:48:50Z
-content_hash: "sha256:3df5e40c0c8f2d2c20907bd00ab0e84932dbf5b0758267a8c00fc4c85aac59d0"
+updated_at: 2026-08-05T18:51:26Z
+content_hash: "sha256:a52f73d6e3e1235b19171452a389cff34b379a50db6a88b7a4ad21ea5386fc9f"
 blocks: [AF-cbot]
 was_blocked_by: [AF-w3do]
 ---
@@ -231,3 +231,54 @@ discretion, not a gate.
 - Was blocked by: [[AF-w3do]]
 
 ## Comments
+
+### 2026-08-05T18:51:26Z ada
+AC3 / Step 1 baseline -- recorded by human operator (ada), literal command output before Step 2 (argocd app create) is attempted.
+
+$ argocd app list
+NAME                                    CLUSTER     NAMESPACE                        PROJECT                  STATUS     HEALTH   SYNCPOLICY  CONDITIONS  REPO                                            PATH                                  TARGET
+argocd/argocd-guestbook-helm            in-cluster  argocd                           default                  Synced     Healthy  Auto-Prune  <none>      https://github.com/adamancini/akp-platform.git  apps/guestbook-helm/argocd            HEAD
+argocd/argocd-guestbook-helm-rendered   in-cluster  argocd                           default                  Synced     Healthy  Auto-Prune  <none>      https://github.com/adamancini/akp-platform.git  apps/guestbook-helm-rendered/argocd   HEAD
+argocd/argocd-guestbook-kustomize       in-cluster  argocd                           default                  Synced     Healthy  Auto-Prune  <none>      https://github.com/adamancini/akp-platform.git  apps/guestbook-kustomize/argocd       HEAD
+argocd/argocd-guestbook-rendered        in-cluster  argocd                           default                  Synced     Healthy  Auto-Prune  <none>      https://github.com/adamancini/akp-platform.git  apps/guestbook-rendered/argocd        HEAD
+argocd/argocd-rollouts-app              in-cluster  argocd                           default                  Synced     Healthy  Auto-Prune  <none>      https://github.com/adamancini/akp-platform.git  apps/rollouts-app/argocd              HEAD
+argocd/guestbook-helm-dev               demo1       guestbook-helm-dev               guestbook-helm           OutOfSync  Missing  Manual      <none>      https://github.com/adamancini/akp-platform.git  apps/guestbook-helm/chart             HEAD
+argocd/guestbook-helm-prod              demo1       guestbook-helm-prod              guestbook-helm           OutOfSync  Missing  Manual      <none>      https://github.com/adamancini/akp-platform.git  apps/guestbook-helm/chart             HEAD
+argocd/guestbook-helm-rendered-dev      demo1       guestbook-helm-rendered-dev      guestbook-helm-rendered  OutOfSync  Missing  Manual      <none>      https://github.com/adamancini/akp-platform.git  ./                                    env/guestbook-helm-rendered/dev
+argocd/guestbook-helm-rendered-prod     demo1       guestbook-helm-rendered-prod     guestbook-helm-rendered  OutOfSync  Missing  Manual      <none>      https://github.com/adamancini/akp-platform.git  ./                                    env/guestbook-helm-rendered/prod
+argocd/guestbook-helm-rendered-staging  demo1       guestbook-helm-rendered-staging  guestbook-helm-rendered  OutOfSync  Missing  Manual      <none>      https://github.com/adamancini/akp-platform.git  ./                                    env/guestbook-helm-rendered/staging
+argocd/guestbook-helm-staging           demo1       guestbook-helm-staging           guestbook-helm           OutOfSync  Missing  Manual      <none>      https://github.com/adamancini/akp-platform.git  apps/guestbook-helm/chart             HEAD
+argocd/guestbook-kustomize-dev          demo1                                        guestbook-kustomize      OutOfSync  Missing  Manual      <none>      https://github.com/adamancini/akp-platform.git  apps/guestbook-kustomize/env/dev      HEAD
+argocd/guestbook-kustomize-prod         demo1                                        guestbook-kustomize      OutOfSync  Missing  Manual      <none>      https://github.com/adamancini/akp-platform.git  apps/guestbook-kustomize/env/prod     HEAD
+argocd/guestbook-kustomize-staging      demo1                                        guestbook-kustomize      OutOfSync  Missing  Manual      <none>      https://github.com/adamancini/akp-platform.git  apps/guestbook-kustomize/env/staging  HEAD
+argocd/guestbook-rendered-dev           demo1                                        guestbook-rendered       OutOfSync  Missing  Manual      <none>      https://github.com/adamancini/akp-platform.git  ./                                    env/guestbook-rendered/dev
+argocd/guestbook-rendered-prod          demo1                                        guestbook-rendered       OutOfSync  Missing  Manual      <none>      https://github.com/adamancini/akp-platform.git  ./                                    env/guestbook-rendered/prod
+argocd/guestbook-rendered-staging       demo1                                        guestbook-rendered       OutOfSync  Missing  Manual      <none>      https://github.com/adamancini/akp-platform.git  ./                                    env/guestbook-rendered/staging
+argocd/kargo-guestbook-helm             kargo                                        guestbook-helm           Synced     Healthy  Auto-Prune  <none>      https://github.com/adamancini/akp-platform.git  apps/guestbook-helm/kargo             HEAD
+argocd/kargo-guestbook-helm-rendered    kargo                                        guestbook-helm-rendered  Synced     Healthy  Auto-Prune  <none>      https://github.com/adamancini/akp-platform.git  apps/guestbook-helm-rendered/kargo    HEAD
+argocd/kargo-guestbook-kustomize        kargo                                        guestbook-kustomize      Synced     Healthy  Auto-Prune  <none>      https://github.com/adamancini/akp-platform.git  apps/guestbook-kustomize/kargo        HEAD
+argocd/kargo-guestbook-rendered         kargo                                        guestbook-rendered       Synced     Healthy  Auto-Prune  <none>      https://github.com/adamancini/akp-platform.git  apps/guestbook-rendered/kargo         HEAD
+argocd/kargo-rollouts-app               kargo                                        rollouts-app             Synced     Healthy  Auto-Prune  <none>      https://github.com/adamancini/akp-platform.git  apps/rollouts-app/kargo               HEAD
+argocd/kargo-shared                     kargo                                        default                  Synced     Healthy  Auto-Prune  <none>      https://github.com/adamancini/akp-platform.git  kargo-shared                          HEAD
+argocd/platform-aoa                     in-cluster  argocd                           default                  Synced     Healthy  Auto-Prune  <none>      https://github.com/adamancini/akp-platform.git  bootstrap                             HEAD
+argocd/rollouts-app-dev                 demo1                                        rollouts-app             OutOfSync  Missing  Manual      <none>      https://github.com/adamancini/akp-platform.git  apps/rollouts-app/env/dev             HEAD
+argocd/rollouts-app-prod                demo2                                        rollouts-app             OutOfSync  Missing  Manual      <none>      https://github.com/adamancini/akp-platform.git  apps/rollouts-app/env/prod            HEAD
+argocd/rollouts-app-staging             demo1                                        rollouts-app             OutOfSync  Missing  Manual      <none>      https://github.com/adamancini/akp-platform.git  apps/rollouts-app/env/staging         HEAD
+
+$ argocd appset list
+NAME                            PROJECT                  SYNCPOLICY  HEALTH   REPO                                            PATH                       TARGET
+argocd/argocd-apps              default                  nil         Healthy  https://github.com/adamancini/akp-platform.git  {{path}}                   HEAD
+argocd/guestbook-helm           guestbook-helm           nil         Healthy  https://github.com/adamancini/akp-platform.git  apps/guestbook-helm/chart  HEAD
+argocd/guestbook-helm-rendered  guestbook-helm-rendered  nil         Healthy  https://github.com/adamancini/akp-platform.git  ./                         env/guestbook-helm-rendered/{{path.basename}}
+argocd/guestbook-kustomize      guestbook-kustomize      nil         Healthy  https://github.com/adamancini/akp-platform.git  {{path}}                   HEAD
+argocd/guestbook-rendered       guestbook-rendered       nil         Healthy  https://github.com/adamancini/akp-platform.git  ./                         env/guestbook-rendered/{{path.basename}}
+argocd/kargo-apps               {{path[1]}}              nil         Healthy  https://github.com/adamancini/akp-platform.git  {{path}}                   HEAD
+argocd/rollouts-app             rollouts-app             nil         Healthy  https://github.com/adamancini/akp-platform.git  {{.path.path}}             HEAD
+
+BASELINE CONFIRMED:
+- No fleet-* named app or appset exists yet.
+- argocd/platform-aoa: repo akp-platform.git, path bootstrap, Synced/Healthy.
+- argocd/argocd-apps (appset): repo akp-platform.git, Healthy.
+- argocd/kargo-apps (appset): repo akp-platform.git, Healthy.
+- Baseline app count: 27 Applications listed above; 7 ApplicationSets listed above.
+- This baseline is what Step 3's post-apply re-check must match byte-for-byte for platform-aoa/argocd-apps/kargo-apps.
