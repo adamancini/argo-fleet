@@ -9,7 +9,7 @@ parent: AF-q1il
 created_at: 2026-08-05T15:12:18Z
 created_by: ada
 updated_at: 2026-08-05T15:47:27Z
-content_hash: "sha256:411144cfb3cafd7e2a7b111397c815bf6d1e23b58f0aa56c7033897ae804d0ad"
+content_hash: "sha256:d9dcfbe5e2259507af2678ce8fca310cf04a99cd12e500448c99145f1a8a103a"
 assignee: dev-AF-wx9b
 follows: [AF-8ik8, AF-qujb]
 led_to: [AF-9bc8]
@@ -138,6 +138,16 @@ chart changes).
 
 
 ## Notes
+
+
+## nd_contract
+status: accepted
+
+### evidence
+- PM closeout applied via pvg story accept on 2026-08-05.
+
+### proof
+- [x] Story closed after accepted label was applied.
 
 
 ## nd_contract
