@@ -1,15 +1,17 @@
 ---
 id: AF-wx9b
 title: "Bug: Design spec Task 3 quotes hostpathClass.isDefaultClass as string \"false\", making local-path the default StorageClass"
-status: open
+status: in_progress
 priority: 0
 type: bug
 labels: [documentation, discovered-by-dev]
 parent: AF-q1il
 created_at: 2026-08-05T15:12:18Z
 created_by: ada
-updated_at: 2026-08-05T15:12:39Z
-content_hash: "sha256:f697b5af7184c1d98c5e18c9d7783ca157ea9e845f7bde69ce73011208209424"
+updated_at: 2026-08-05T15:30:23Z
+content_hash: "sha256:8ef4b59a493d28b1b21b1dca665b5f6a2b58551ef05612b5693224b7a3c0cf88"
+assignee: dev-AF-wx9b
+follows: [AF-8ik8]
 ---
 
 ## Description
@@ -136,9 +138,12 @@ chart changes).
 
 
 ## History
-
+- 2026-08-05T15:30:23Z status: open -> in_progress
+- 2026-08-05T15:30:23Z auto-follows: linked to predecessor AF-8ik8
+- 2026-08-05T15:30:23Z claimed by dev-AF-wx9b
 
 ## Links
 - Parent: [[AF-q1il]]
+- Follows: [[AF-8ik8]]
 
 ## Comments
