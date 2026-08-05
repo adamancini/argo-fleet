@@ -7,8 +7,8 @@ type: task
 parent: AF-q1il
 created_at: 2026-08-05T18:23:22Z
 created_by: ada
-updated_at: 2026-08-05T18:36:35Z
-content_hash: "sha256:e29fa5866bcd456dd6bad8e94f2bb1874533f31cf99c58f8fda72b6bbd2e0b3b"
+updated_at: 2026-08-05T18:36:56Z
+content_hash: "sha256:443834a38b60390ff96c6e3d9ac329a05a5f2eb6877363e3f7be0f183e995700"
 blocks: [AF-s8l0, AF-cbot]
 assignee: dev-AF-w3do
 follows: [AF-i2t5, AF-cbot]
@@ -532,3 +532,65 @@ $ git diff --exit-code epic/AF-q1il HEAD -- bootstrap/infra-apps.yaml; echo "exi
 exit=0            (zero diff versus the epic branch across BOTH commits)
 Confirmed independently by the parsed-value check in part 1: infra-apps.yaml still parses
 to kind=ApplicationSet name=infra-apps. The file was never opened for editing.
+
+### 2026-08-05T18:36:56Z ada
+DELIVERED: AF-w3do (part 3/4 -- scope containment, pvg verify, wiring)
+
+--- Scope-containment evidence (no scope creep) ---
+Total content diff across both commits is 7 changed lines in 4 files.
+$ git diff -M --find-renames -- bootstrap/     (captured pre-commit)
+--- a/bootstrap/fleet-argocd-apps.yaml
+-  name: argocd-apps
++  name: fleet-argocd-apps
+--- a/bootstrap/fleet-kargo-apps.yaml
+-  name: kargo-apps
++  name: fleet-kargo-apps
+--- a/bootstrap/fleet-platform-aoa.yaml
+ # Root app-of-apps. Apply this ONCE against the Argo CD control plane
+-# (`argocd app create -f bootstrap/platform-aoa.yaml`) and everything else
+-# in this repo is discovered and deployed automatically by the
++# (`argocd app create -f bootstrap/fleet-platform-aoa.yaml`) and everything
++# else in this repo is discovered and deployed automatically by the
+ # ApplicationSets in this directory. Onboarding a new infra dependency or
+-  name: platform-aoa
++  name: fleet-platform-aoa
+
+Child-naming templates UNCHANGED (the story flags touching these as scope creep):
+$ grep -n "path\[1\]" bootstrap/fleet-argocd-apps.yaml bootstrap/fleet-kargo-apps.yaml
+bootstrap/fleet-argocd-apps.yaml:18:      name: (argocd-{{path[1]}}, original single quotes intact)
+bootstrap/fleet-kargo-apps.yaml:23:      name: (kargo-{{path[1]}}, original single quotes intact)
+bootstrap/fleet-kargo-apps.yaml:27:      project: ({{path[1]}}, original single quotes intact)
+
+$ git diff HEAD~1 HEAD -- README.md
+-  (`bootstrap/platform-aoa.yaml`); everything else is discovered
++  (`bootstrap/fleet-platform-aoa.yaml`); everything else is discovered
+-2. `argocd app create -f bootstrap/platform-aoa.yaml` [em-dash] the only manifest
++2. `argocd app create -f bootstrap/fleet-platform-aoa.yaml` [em-dash] the only manifest
+Exactly 2 changed lines: Layout section + Quickstart step 2. No other README line changed.
+
+$ git status -uno --short
+                  (empty output, clean worktree at proof SHA f5ce57a)
+
+--- pvg verify (mandatory pre-delivery self-check) ---
+$ pvg verify bootstrap/fleet-platform-aoa.yaml bootstrap/fleet-argocd-apps.yaml bootstrap/fleet-kargo-apps.yaml README.md --format text
+VERIFY: PASSED (0 files scanned, 0 issues)
+pvg-verify-exit=0
+0 files scanned is expected and is NOT a dodged check: pvg verify scans SOURCE files for
+stubs / thin files / TODO markers, and this story changed only .yaml manifests and .md
+docs, none of which it treats as scannable source. Exit 0, no stub/thin_file/todo issues.
+The load-bearing verification here is the YAML parse plus the repo-wide grep.
+NOTE: the convention doc example uses --format=text; the actual pvg flag is --format text
+(the equals form errors with "unknown flag"). Used the working form.
+
+--- Errors and warnings ---
+ZERO. No test failures, no compiler/build warnings, no deprecation warnings, no runtime
+errors in any command output. Nothing to report as DISCOVERED_BUG.
+
+--- Wiring ---
+The renamed root app-of-apps fleet-platform-aoa is self-wired by design: spec.source.path
+is bootstrap, so it syncs the very directory holding fleet-argocd-apps.yaml,
+fleet-kargo-apps.yaml, and infra-apps.yaml -- all three ApplicationSets are picked up by
+the one Application applied by hand. The named human entry point is README.md Quickstart
+step 2, now reading: argocd app create -f bootstrap/fleet-platform-aoa.yaml (verified in
+the README diff above). Actually applying it against the live shared Akuity instance is
+explicitly OUT OF SCOPE here (separate human-run story; AF-w3do blocks AF-s8l0, AF-cbot).
