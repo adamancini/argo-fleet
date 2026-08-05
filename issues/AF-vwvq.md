@@ -8,7 +8,7 @@ parent: AF-q1il
 created_at: 2026-08-05T14:31:38Z
 created_by: ada
 updated_at: 2026-08-05T14:56:24Z
-content_hash: "sha256:ab7372263cfc0a4659f06c7f618b749e2129bbd6bfb06000f11c4b3221e6cdc1"
+content_hash: "sha256:c842f612905aab170ace50509b529cd99cbfff64037a3b8c6ad1cbc262f7f5e0"
 blocks: [AF-cbot]
 assignee: dev-AF-vwvq
 labels: [delivered]
@@ -521,6 +521,16 @@ manifest review guidance before finalizing.
 
 
 ## Notes
+
+
+## nd_contract
+status: delivered
+
+### evidence
+- Transitioned via pvg story deliver on 2026-08-05.
+
+### proof
+- [ ] Developer evidence block must remain authoritative above this contract.
 
 
 ## History
