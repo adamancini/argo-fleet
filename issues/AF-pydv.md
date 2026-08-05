@@ -13,6 +13,7 @@ blocks: [AF-cbot]
 was_blocked_by: [AF-4wcm]
 assignee: dev-AF-pydv
 follows: [AF-4wcm, AF-cu83, AF-qujb]
+labels: [delivered]
 ---
 
 ## Description
