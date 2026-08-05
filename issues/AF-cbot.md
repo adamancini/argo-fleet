@@ -8,8 +8,8 @@ labels: [capstone]
 parent: AF-q1il
 created_at: 2026-08-05T14:33:25Z
 created_by: ada
-updated_at: 2026-08-05T14:33:36Z
-content_hash: "sha256:8e77444b8bd8ac896563e652c4dd4747a6e5ba502a3ff714effdf32e4ab39a7d"
+updated_at: 2026-08-05T14:37:35Z
+content_hash: "sha256:5a80cd2a28a2deb7fd1107c5acbbbc2bb0e79536e14aaacfc8486a4683d5be5b"
 blocked_by: [AF-4wcm, AF-pydv, AF-8ik8, AF-vwvq, AF-qujb]
 blocks: [AF-tqmb]
 ---
@@ -47,7 +47,9 @@ are real and not typos) BEFORE anyone -- human or agent -- proceeds to the
 one story in this epic that touches real, currently-running infrastructure.
 A capstone that only checks "did the files get created" without actually
 running `terraform validate`/`diff`/`helm search` would not deliver that
-trust.
+trust. Once this story's five steps all pass and their output is recorded,
+a user can trust the epic's release-gate story (AF-tqmb) to run against
+real infrastructure -- until then, AF-tqmb stays blocked.
 
 IMPLEMENTATION:
 Run each of the following from the repo root
