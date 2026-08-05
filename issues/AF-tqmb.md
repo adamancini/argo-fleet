@@ -7,9 +7,10 @@ type: task
 labels: [release-gate, human-execution-required, external-integration]
 created_at: 2026-08-05T14:34:47Z
 created_by: ada
-updated_at: 2026-08-05T14:38:27Z
-content_hash: "sha256:d67c5e133f59318a99b0c7e62cf3039bec71f855b1dd86f5d54a03eb3d584f19"
+updated_at: 2026-08-05T16:33:40Z
+content_hash: "sha256:585ec48caf0669ff5b3bddabc53ac3d8eb48f4e7b7094b0876668171a2c27608"
 was_blocked_by: [AF-cu83, AF-uw18, AF-cbot]
+parent: AF-q1il
 ---
 
 ## Description
@@ -272,6 +273,7 @@ before running these steps.)
 - 2026-08-05T16:28:39Z dep_removed: was_blocked_by AF-cbot
 
 ## Links
+- Parent: [[AF-q1il]]
 - Was blocked by: [[AF-cu83]], [[AF-uw18]], [[AF-cbot]]
 
 ## Comments
