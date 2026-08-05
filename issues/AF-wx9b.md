@@ -8,10 +8,10 @@ labels: [documentation, discovered-by-dev]
 parent: AF-q1il
 created_at: 2026-08-05T15:12:18Z
 created_by: ada
-updated_at: 2026-08-05T15:30:23Z
-content_hash: "sha256:8ef4b59a493d28b1b21b1dca665b5f6a2b58551ef05612b5693224b7a3c0cf88"
+updated_at: 2026-08-05T15:36:16Z
+content_hash: "sha256:0a8c2d03329f587ea673e1a4ffbb704e40373cf4e4343a1bc791e1b1c2b8ef7f"
 assignee: dev-AF-wx9b
-follows: [AF-8ik8]
+follows: [AF-8ik8, AF-qujb]
 ---
 
 ## Description
@@ -141,9 +141,11 @@ chart changes).
 - 2026-08-05T15:30:23Z status: open -> in_progress
 - 2026-08-05T15:30:23Z auto-follows: linked to predecessor AF-8ik8
 - 2026-08-05T15:30:23Z claimed by dev-AF-wx9b
+- 2026-08-05T15:36:16Z status: in_progress -> in_progress
+- 2026-08-05T15:36:16Z auto-follows: linked to predecessor AF-qujb
 
 ## Links
 - Parent: [[AF-q1il]]
-- Follows: [[AF-8ik8]]
+- Follows: [[AF-8ik8]], [[AF-qujb]]
 
 ## Comments
