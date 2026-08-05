@@ -7,8 +7,8 @@ type: task
 labels: [release-gate, human-execution-required, external-integration]
 created_at: 2026-08-05T14:34:47Z
 created_by: ada
-updated_at: 2026-08-05T14:36:39Z
-content_hash: "sha256:586d9cb5998c17d384b87c44482e7ca2381e326c81db2bbf87507a42dbb7f63c"
+updated_at: 2026-08-05T14:38:27Z
+content_hash: "sha256:6eceb9f1e9ccf7642eef2ecff1d58afeee66b38ee3f5ec8d56a09e9746b4e1fc"
 blocked_by: [AF-cbot]
 ---
 
@@ -46,11 +46,13 @@ AF-qujb). This is the epic's release gate: closing it is what actually
 delivers the epic's TARGET STATE. It is `blocked_by` AF-cbot (the epic's
 capstone, "Full static verification...") -- every developer-claimable story
 in this epic must be complete, committed, and pushed before this story is
-even eligible to run. Once Steps 2-7 complete, a human operator (never an
-automated agent) can trust that `demo1`/`demo2` are genuinely re-registered
-Argo CD/Kargo destinations and that the three new infrastructure layers'
-ApplicationSets have each emitted healthy, synced Applications per
-cluster -- that trust is the observable outcome this story delivers.
+even eligible to run. Once Steps 2-7 complete, a user can trust -- because a human operator
+(never an automated agent) personally read the STOP-GATE output, not
+because an agent asserted it -- that `demo1`/`demo2` are genuinely
+re-registered Argo CD/Kargo destinations and that the three new
+infrastructure layers' ApplicationSets have each emitted healthy, synced
+Applications per cluster; that trust is the observable outcome this story
+delivers.
 
 DISCOVERED DURING / WHY THIS IS DIFFERENT IN KIND:
 `demo1` currently runs the ENTIRE `akp-platform` demo environment: all four
