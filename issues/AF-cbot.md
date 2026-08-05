@@ -4,7 +4,7 @@ title: "Full static verification of Terraform migration & new infrastructure lay
 status: in_progress
 priority: 1
 type: task
-labels: [capstone]
+labels: [capstone, delivered]
 parent: AF-q1il
 created_at: 2026-08-05T14:33:25Z
 created_by: ada
