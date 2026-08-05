@@ -7,8 +7,8 @@ type: task
 parent: AF-q1il
 created_at: 2026-08-05T18:23:22Z
 created_by: ada
-updated_at: 2026-08-05T18:30:57Z
-content_hash: "sha256:c8660d4a881a121e7687c42d74ccd91138f9c2c52881c16946708b5583f69a3d"
+updated_at: 2026-08-05T18:35:22Z
+content_hash: "sha256:50f967b940eb72159b73c335e0e010f701c7a473aa648b1ba152326080e12b9e"
 blocks: [AF-s8l0, AF-cbot]
 assignee: dev-AF-w3do
 follows: [AF-i2t5, AF-cbot]
@@ -424,3 +424,8 @@ status: delivered
 - Follows: [[AF-i2t5]], [[AF-cbot]]
 
 ## Comments
+
+### 2026-08-05T18:35:22Z ada
+PROBE A: plain multi-line body
+line two
+line three
