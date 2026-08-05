@@ -1,12 +1,12 @@
 # Root app-of-apps. Apply this ONCE against the Argo CD control plane
-# (`argocd app create -f bootstrap/platform-aoa.yaml`) and everything else
-# in this repo is discovered and deployed automatically by the
+# (`argocd app create -f bootstrap/fleet-platform-aoa.yaml`) and everything
+# else in this repo is discovered and deployed automatically by the
 # ApplicationSets in this directory. Onboarding a new infra dependency or
 # app never requires touching bootstrap/ again.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: platform-aoa
+  name: fleet-platform-aoa
   namespace: argocd
 spec:
   project: default
