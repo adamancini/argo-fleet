@@ -9,7 +9,8 @@ parent: AF-q1il
 created_at: 2026-08-05T15:42:03Z
 created_by: ada
 updated_at: 2026-08-05T15:42:03Z
-content_hash: "sha256:27d96507521d6a87f7cde492def3a62a87ba95e4d0a9cf3f44f4663d37ff2db8"
+content_hash: "sha256:7940ddd37a2981eedaf8ee12f5312e2c3abdd1becc07d3d6438247f86d10fdb2"
+follows: [AF-wx9b]
 ---
 
 ## Description
@@ -164,5 +165,6 @@ code or chart changes).
 
 ## Links
 - Parent: [[AF-q1il]]
+- Follows: [[AF-wx9b]]
 
 ## Comments
