@@ -9,7 +9,7 @@ parent: AF-q1il
 created_at: 2026-08-05T14:33:25Z
 created_by: ada
 updated_at: 2026-08-05T16:28:40Z
-content_hash: "sha256:d0fb2f886b2631cf0536bdbd217a6087ba7f6c588c92e3c8a110195ba9a7ea29"
+content_hash: "sha256:612c1878a0260e22f73ba55164743bd5660ccdc0f67c2b6f46250bc9d0b0717c"
 was_blocked_by: [AF-4wcm, AF-8ik8, AF-qujb, AF-pydv, AF-vwvq, AF-uw18]
 assignee: dev-AF-cbot
 follows: [AF-4wcm, AF-8ik8, AF-qujb, AF-pydv, AF-vwvq, AF-uw18, AF-9bc8]
@@ -204,6 +204,16 @@ interpreting any YAML validation failure.
 
 ## Notes
 COMPLETED: all 5 static-verification steps executed at 9949b51 with literal output recorded. Step1 YAML 6/6 OK (4 AC files + sealed-secrets appset + tf kustomization). Step2 terraform validate 'Success! The configuration is valid.' (-backend=false, no tfvars present). Step3 6/6 diff -rq empty rc=0 + SHA-256 match on all 8 files, zero whitespace drift; .terraform.lock.hcl and terraform.tfvars.example also identical. Step4 helm search exactly 1 row each for localpv-provisioner 4.5.1 and traefik 41.1.1; gateway-api v1.5.1 tag confirmed via ls-remote. Step5 no live-mutation commit; akp-infra/03-clusters clean with state mtimes predating epic. AC6 git status empty throughout (only gitignored .terraform/ cache). NOTE: epic grew past AC5's five named stories -- AF-wx9b, AF-cu83, AF-uw18 also audited, all file-only. NEXT: PM review; AF-tqmb statically cleared.
+
+
+## nd_contract
+status: accepted
+
+### evidence
+- PM closeout applied via pvg story accept on 2026-08-05.
+
+### proof
+- [x] Story closed after accepted label was applied.
 
 
 ## nd_contract
