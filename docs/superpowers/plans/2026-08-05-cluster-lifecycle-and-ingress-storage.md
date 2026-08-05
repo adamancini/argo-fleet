@@ -13,7 +13,7 @@
 ## Global Constraints
 
 - Chart versions, pinned exactly: `localpv-provisioner` `4.5.1` from `https://openebs.github.io/dynamic-localpv-provisioner`; `traefik` `41.1.1` from `https://traefik.github.io/charts`. Gateway API CRDs at `v1.5.1` (experimental channel), matching the version `fleet-infra` already uses.
-- `hostpathClass.name: local-path`, `hostpathClass.isDefaultClass: "false"` for OpenEBS — matches `fleet-infra` exactly. Not the default class.
+- `hostpathClass.name: local-path`, `hostpathClass.isDefaultClass: false` (unquoted boolean) for OpenEBS — matches `fleet-infra` exactly. Not the default class.
 - Traefik: `providers.kubernetesGateway.enabled: true` + `experimentalChannel: true`, `providers.kubernetesIngress.enabled: true`, `providers.kubernetesCRD.enabled: true`, `ingressClass.isDefaultClass: true`, `gateway.enabled: true`, `gateway.name: traefik-gateway` (exact name — `fleet-infra`'s `HTTPRoute` resources already reference this via `parentRefs`). Only the `web` (HTTP) listener enabled; `websecure` (TLS) stays off — no cert-manager yet.
 - `akp-infra`'s `01-argocd`/`02-kargo` stacks are NOT migrated — only `03-clusters`. Nothing in those two stacks changes.
 - No task in this plan except Task 7 runs a command that mutates a real k3d cluster, applies real Terraform against live state, or touches `akp-infra/03-clusters`' existing state files. Tasks 1-6 produce and statically validate files only.
@@ -723,7 +723,7 @@ spec:
                   memory: 64Mi
             hostpathClass:
               name: local-path
-              isDefaultClass: "false"
+              isDefaultClass: false
               reclaimPolicy: Delete
       destination:
         name: '{{cluster}}'
@@ -749,7 +749,7 @@ itself invisibly and isn't tracked by Argo CD at all.
 
 Values mirror [fleet-infra](https://github.com/adamancini/fleet-infra)'s
 real-cluster setup exactly: `hostpathClass.name: local-path`,
-`isDefaultClass: "false"`. Not the default class deliberately -- the choice
+`isDefaultClass: false`. Not the default class deliberately -- the choice
 of which StorageClass new PVCs use unqualified stays explicit rather than
 falling back to whatever happens to be marked default.
 
