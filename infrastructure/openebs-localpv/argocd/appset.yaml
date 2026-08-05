@@ -1,0 +1,53 @@
+# One Application per cluster, installing OpenEBS's Dynamic LocalPV
+# Provisioner. Mirrors fleet-infra's real-cluster setup: the StorageClass is
+# named "local-path" (matching what k3s's bundled provisioner used to
+# provide, before the cluster-recreate task disables it) but is NOT the
+# default class -- that choice stays explicit rather than implicit.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: openebs-localpv
+  namespace: argocd
+spec:
+  generators:
+  - list:
+      elements:
+      - cluster: demo1
+      - cluster: demo2
+  template:
+    metadata:
+      name: 'openebs-localpv-{{cluster}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://openebs.github.io/dynamic-localpv-provisioner
+        chart: localpv-provisioner
+        targetRevision: 4.5.1
+        helm:
+          valuesObject:
+            localpv:
+              basePath: /var/openebs/local
+              resources:
+                requests:
+                  cpu: 5m
+                  memory: 24Mi
+                limits:
+                  memory: 64Mi
+            hostpathClass:
+              name: local-path
+              # MUST stay an unquoted boolean. The chart gates the
+              # storageclass.kubernetes.io/is-default-class annotation on
+              # `{{- if .Values.hostpathClass.isDefaultClass }}`, and Go
+              # templates treat the non-empty string "false" as TRUE --
+              # quoting this silently makes local-path the default class.
+              isDefaultClass: false
+              reclaimPolicy: Delete
+      destination:
+        name: '{{cluster}}'
+        namespace: openebs
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
