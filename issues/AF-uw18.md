@@ -9,7 +9,7 @@ parent: AF-q1il
 created_at: 2026-08-05T15:54:11Z
 created_by: ada
 updated_at: 2026-08-05T16:16:08Z
-content_hash: "sha256:8d101aa363a10fc6716e69088d02971fad96add2072af26124b2785c8e57e698"
+content_hash: "sha256:5bf2838410796afc54499b68f1b5e76badc84f52510a25e9e2a8fea53a625a8f"
 was_blocked_by: [AF-pydv]
 assignee: dev-AF-uw18
 follows: [AF-pydv, AF-vwvq]
@@ -250,6 +250,16 @@ AF-pydv's own MANDATORY SKILLS entry).
 
 
 ## Notes
+
+
+## nd_contract
+status: accepted
+
+### evidence
+- PM closeout applied via pvg story accept on 2026-08-05.
+
+### proof
+- [x] Story closed after accepted label was applied.
 
 
 ## nd_contract
