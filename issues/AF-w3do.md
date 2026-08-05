@@ -7,8 +7,8 @@ type: task
 parent: AF-q1il
 created_at: 2026-08-05T18:23:22Z
 created_by: ada
-updated_at: 2026-08-05T18:36:56Z
-content_hash: "sha256:443834a38b60390ff96c6e3d9ac329a05a5f2eb6877363e3f7be0f183e995700"
+updated_at: 2026-08-05T18:37:20Z
+content_hash: "sha256:32c7134a3b9e95f69403319df9da64bf6f9a09fffcd74745997a83a8852ebdcb"
 blocks: [AF-s8l0, AF-cbot]
 assignee: dev-AF-w3do
 follows: [AF-i2t5, AF-cbot]
@@ -594,3 +594,50 @@ the one Application applied by hand. The named human entry point is README.md Qu
 step 2, now reading: argocd app create -f bootstrap/fleet-platform-aoa.yaml (verified in
 the README diff above). Actually applying it against the live shared Akuity instance is
 explicitly OUT OF SCOPE here (separate human-run story; AF-w3do blocks AF-s8l0, AF-cbot).
+
+### 2026-08-05T18:37:20Z ada
+DELIVERED: AF-w3do (part 4/4 -- AC table + LEARNINGS)
+
+--- Acceptance criteria verification table ---
+| AC | Requirement | Verified by | Result |
+| 1 | platform-aoa.yaml renamed to fleet-platform-aoa.yaml via git mv, metadata.name fleet-platform-aoa, self-referential comment updated, no other field changed | git mv; rename 75% in commit 9530516; git diff -M shows only the comment + name lines | PASS |
+| 2 | argocd-apps.yaml renamed to fleet-argocd-apps.yaml, name fleet-argocd-apps, child template argocd-path[1] and all else byte-identical | rename 97%; git diff -M shows a single name line; grep path[1] line 18 unchanged | PASS |
+| 3 | kargo-apps.yaml renamed to fleet-kargo-apps.yaml, name fleet-kargo-apps, child template kargo-path[1] and all else byte-identical | rename 97%; git diff -M shows a single name line; grep path[1] lines 23 and 27 unchanged | PASS |
+| 4 | infra-apps.yaml NOT renamed, name and content unchanged | git diff --exit-code epic/AF-q1il HEAD -- bootstrap/infra-apps.yaml gives exit=0; parsed name=infra-apps | PASS |
+| 5 | All three renamed files parse as valid YAML, exit 0 each | 3x ruby YAML.load_stream, OK on each | PASS |
+| 6 | README.md two platform-aoa.yaml refs updated, no other line changed | git diff HEAD~1 HEAD -- README.md shows exactly 2 changed lines | PASS |
+| 7 | Repo-wide negative-lookbehind grep: zero hits in README.md, bootstrap/*.yaml, or any file outside the enumerated dated docs | grep -rl gives 5 files, all on the allow-list; filtered grep exit 1; README 0 hits; bootstrap 0 hits | PASS |
+| 8 | git status shows genuine renamed: entries for all three (not delete+add) | git status -uno shows 3x renamed:; the commit shows 3x rename with similarity % | PASS |
+| 9 | Two commits matching Step 8 exactly, both in git log | git log shows 9530516 (rename) then f5ce57a (docs), messages verbatim from Step 8 | PASS |
+| 10 | All four static checks pass with literal command output recorded | Checks 1-4 in parts 1-2, literal output, not paraphrased | PASS |
+
+10/10 acceptance criteria PASS. 4/4 static checks PASS (0 failed, 0 skipped).
+
+LEARNINGS:
+
+- The Step 4 validation loop could not be run verbatim, for two independent reasons, and
+  the first is a real correctness trap: it hard-codes the PROJECT-ROOT absolute path,
+  which for a worktree-isolated developer points at the DISPATCHER checkout (still on
+  epic/AF-q1il, still holding the OLD filenames) rather than the worktree holding the
+  change. Run as written it would have validated the wrong files and silently reported
+  success against pre-rename content. Second, the isolation guard rejected the for-loop
+  as too complex to verify. Stories that embed absolute verification paths should use
+  repo-relative paths and plain per-file commands so they survive worktree isolation
+  unmodified.
+- Same class of tooling friction when posting this proof: pvg issues comment and nd
+  comment add take the body ONLY as an inline argument (nd update --body-file exists but
+  rewrites the Description, which would destroy the story text), and the isolation guard
+  refuses both command substitution and any sufficiently LONG command. Net effect: a
+  thorough proof comment must be split into several parts. Probes A-D above isolated the
+  cause as length, not metacharacters. A --body-file on pvg issues comment would fix it.
+- Step 7 allow-list named six files but only five exist -- the sixth is this story own
+  implementation plan, never committed to the repo. Hand-enumerated grep allow-lists copied
+  out of a plan document drift from the tree. The check is still sound (a subset satisfies
+  it) but such lists are better generated from the tree.
+- pvg verify scans ZERO files for a manifest-and-docs-only story. It is a real pass, not a
+  silent skip, but it carries no signal here. Worth stating explicitly in proof so a
+  reviewer does not read "0 files scanned" as the check having been dodged.
+- Doing the git mv FIRST and the content edit SECOND made rename detection unambiguous
+  (75% and 97% similarity recorded in the commit), which is exactly the evidence AC 8
+  wants. Editing content before moving would have risked git recording delete+add and
+  losing the history the story explicitly asked to preserve.
