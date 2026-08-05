@@ -4,11 +4,11 @@ title: "Bug: cluster:register-agent fails on a fresh clone -- terraform/clusters
 status: closed
 priority: 0
 type: bug
-labels: [discovered-by-dev, delivered]
+labels: [discovered-by-dev, delivered, accepted]
 parent: AF-q1il
 created_at: 2026-08-05T15:54:11Z
 created_by: ada
-updated_at: 2026-08-05T16:16:07Z
+updated_at: 2026-08-05T16:16:08Z
 content_hash: "sha256:8d101aa363a10fc6716e69088d02971fad96add2072af26124b2785c8e57e698"
 was_blocked_by: [AF-pydv]
 assignee: dev-AF-uw18
