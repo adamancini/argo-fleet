@@ -161,7 +161,7 @@ with no Kargo pipeline).
 **`infrastructure/openebs-localpv/`**: chart `localpv-provisioner` `4.5.1`
 from `https://openebs.github.io/dynamic-localpv-provisioner`. Values mirror
 `fleet-infra` exactly: `localpv.basePath: /var/openebs/local`,
-`hostpathClass.name: local-path`, `hostpathClass.isDefaultClass: "false"`.
+`hostpathClass.name: local-path`, `hostpathClass.isDefaultClass: false`.
 Not the default class deliberately — matches fleet-infra's own choice, and
 once k3s's bundled `local-path` is gone (disabled at cluster-create time)
 this becomes the only StorageClass named `local-path`, but staying
