@@ -8,8 +8,8 @@ labels: [discovered-by-pm, delivered]
 parent: AF-q1il
 created_at: 2026-08-05T15:22:58Z
 created_by: ada
-updated_at: 2026-08-05T15:34:02Z
-content_hash: "sha256:41577107a258f7f7579e02eebbfc2c48e60819e99e457cf19b0ad308cc39ed40"
+updated_at: 2026-08-05T15:34:03Z
+content_hash: "sha256:8bccf526c97bf2bbe1e350b85281e9d53df52be0dbb2a95ffd9de8ddce24a2ae"
 blocked_by: [AF-4wcm]
 blocks: [AF-tqmb]
 assignee: dev-AF-cu83
@@ -261,6 +261,16 @@ this repo).
 
 
 ## Notes
+
+
+## nd_contract
+status: delivered
+
+### evidence
+- Transitioned via pvg story deliver on 2026-08-05.
+
+### proof
+- [ ] Developer evidence block must remain authoritative above this contract.
 
 
 ## History
