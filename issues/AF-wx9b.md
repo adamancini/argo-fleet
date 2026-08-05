@@ -9,7 +9,7 @@ parent: AF-q1il
 created_at: 2026-08-05T15:12:18Z
 created_by: ada
 updated_at: 2026-08-05T15:36:16Z
-content_hash: "sha256:0a8c2d03329f587ea673e1a4ffbb704e40373cf4e4343a1bc791e1b1c2b8ef7f"
+content_hash: "sha256:891019ad3593dd8075309ec33d7326bcf2ec6111c4ed8fd6341200eb998f69d4"
 assignee: dev-AF-wx9b
 follows: [AF-8ik8, AF-qujb]
 ---
@@ -135,6 +135,16 @@ chart changes).
 
 
 ## Notes
+
+
+## nd_contract
+status: delivered
+
+### evidence
+- Transitioned via pvg story deliver on 2026-08-05.
+
+### proof
+- [ ] Developer evidence block must remain authoritative above this contract.
 
 
 ## History
