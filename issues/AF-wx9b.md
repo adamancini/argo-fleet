@@ -4,11 +4,11 @@ title: "Bug: Design spec Task 3 quotes hostpathClass.isDefaultClass as string \"
 status: closed
 priority: 0
 type: bug
-labels: [documentation, discovered-by-dev, delivered]
+labels: [documentation, discovered-by-dev, delivered, accepted]
 parent: AF-q1il
 created_at: 2026-08-05T15:12:18Z
 created_by: ada
-updated_at: 2026-08-05T15:47:26Z
+updated_at: 2026-08-05T15:47:27Z
 content_hash: "sha256:411144cfb3cafd7e2a7b111397c815bf6d1e23b58f0aa56c7033897ae804d0ad"
 assignee: dev-AF-wx9b
 follows: [AF-8ik8, AF-qujb]
