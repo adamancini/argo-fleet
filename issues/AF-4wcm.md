@@ -9,7 +9,7 @@ parent: AF-q1il
 created_at: 2026-08-05T14:29:16Z
 created_by: ada
 updated_at: 2026-08-05T15:15:13Z
-content_hash: "sha256:be882e3052debc6e33eaa4bd6f203e65cc7a00b15f3f046da341980fb1f6ab05"
+content_hash: "sha256:5ad8d5941a8b43e2b8fdfe50d261098bce110b96ef958b3a8dca5d66449d1fdc"
 assignee: dev-AF-4wcm
 closed_at: 2026-08-05T15:15:12Z
 close_reason: "Accepted via pvg story accept"
@@ -1216,6 +1216,16 @@ project-specific skill covers Terraform/HCL in this repo).
 
 
 ## Notes
+
+
+## nd_contract
+status: accepted
+
+### evidence
+- PM closeout applied via pvg story accept on 2026-08-05.
+
+### proof
+- [x] Story closed after accepted label was applied.
 
 
 ## nd_contract
