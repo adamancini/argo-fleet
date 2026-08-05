@@ -9,13 +9,14 @@ parent: AF-q1il
 created_at: 2026-08-05T15:22:58Z
 created_by: ada
 updated_at: 2026-08-05T15:39:46Z
-content_hash: "sha256:3de1355d2141d646ff4330b2b0d513e045c1f817094479f199d517ab848fdf5f"
+content_hash: "sha256:aabb02e569cdfd8b9a7c51c72423ed4aaedee5a34f3fde5b609dfb7ebabededc"
 blocked_by: [AF-4wcm]
 assignee: dev-AF-cu83
 follows: [AF-8ik8, AF-qujb]
 closed_at: 2026-08-05T15:39:37Z
 close_reason: "Accepted: akuity/akp provider pinned to 0.13.0 via committed .terraform.lock.hcl, generated and checksum-verified by terraform init against the source stack's applied version; all 8 ACs verified independently (init/validate reproduced, byte-identical diff against akp-infra/03-clusters lock, git hygiene clean, no unrelated file changes). Single-platform (darwin_arm64) hash is acceptable as delivered -- matches source stack's own lock exactly and no Linux CI/operator currently exercises this stack; multi-platform locking deferred as documented future work, not a gap."
 led_to: [AF-pydv, AF-9bc8]
+blocks: [AF-cbot]
 ---
 
 ## Description
@@ -285,9 +286,11 @@ status: delivered
 - 2026-08-05T15:34:02Z auto-follows: linked to predecessor AF-qujb
 - 2026-08-05T15:39:37Z status: in_progress -> closed
 - 2026-08-05T15:39:37Z dep_removed: no_longer_blocks AF-tqmb
+- 2026-08-05T18:24:03Z dep_added: blocks AF-cbot
 
 ## Links
 - Parent: [[AF-q1il]]
+- Blocks: [[AF-cbot]]
 - Blocked by: [[AF-4wcm]]
 - Follows: [[AF-8ik8]], [[AF-qujb]]
 - Led to: [[AF-pydv]], [[AF-9bc8]]
