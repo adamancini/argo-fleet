@@ -1,6 +1,6 @@
 ---
 id: AF-tqmb
-title: "Recreate demo1/demo2 with GitOps-managed storage and ingress; retire akp-infra Terraform state (human-run, gated)"
+title: "Recreate demo1/demo2 with GitOps-managed storage & ingress; retire akp-infra Terraform state (human-run, gated)"
 status: open
 priority: 0
 type: task
@@ -8,7 +8,7 @@ labels: [release-gate, human-execution-required, external-integration]
 parent: AF-q1il
 created_at: 2026-08-05T14:34:47Z
 created_by: ada
-updated_at: 2026-08-05T14:34:47Z
+updated_at: 2026-08-05T14:34:55Z
 content_hash: "sha256:392aaa115dffdb83900c6815bc4a62cfcd604fd31ff4f79cf65e5baa0dc9279d"
 ---
 
