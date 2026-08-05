@@ -1,19 +1,21 @@
 ---
 id: AF-cu83
 title: "Bug: terraform/clusters provider version unpinned after migration (v0.13.0 -> v0.14.0 float)"
-status: in_progress
+status: closed
 priority: 0
 type: bug
 labels: [discovered-by-pm, delivered]
 parent: AF-q1il
 created_at: 2026-08-05T15:22:58Z
 created_by: ada
-updated_at: 2026-08-05T15:35:05Z
-content_hash: "sha256:8042af481f3a3dcdab4517c38496d63f40834c80c156415a24725f575a391cb0"
+updated_at: 2026-08-05T15:39:37Z
+content_hash: "sha256:9ade7cf9c399a066f6887d59927cb3225bc15d6e894db0eb651619b0c9d93ed8"
 blocked_by: [AF-4wcm]
-blocks: [AF-tqmb]
 assignee: dev-AF-cu83
 follows: [AF-8ik8, AF-qujb]
+closed_at: 2026-08-05T15:39:37Z
+close_reason: "Accepted: akuity/akp provider pinned to 0.13.0 via committed .terraform.lock.hcl, generated and checksum-verified by terraform init against the source stack's applied version; all 8 ACs verified independently (init/validate reproduced, byte-identical diff against akp-infra/03-clusters lock, git hygiene clean, no unrelated file changes). Single-platform (darwin_arm64) hash is acceptable as delivered -- matches source stack's own lock exactly and no Linux CI/operator currently exercises this stack; multi-platform locking deferred as documented future work, not a gap."
+led_to: [AF-pydv]
 ---
 
 ## Description
@@ -281,12 +283,14 @@ status: delivered
 - 2026-08-05T15:30:27Z claimed by dev-AF-cu83
 - 2026-08-05T15:34:02Z status: in_progress -> in_progress
 - 2026-08-05T15:34:02Z auto-follows: linked to predecessor AF-qujb
+- 2026-08-05T15:39:37Z status: in_progress -> closed
+- 2026-08-05T15:39:37Z dep_removed: no_longer_blocks AF-tqmb
 
 ## Links
 - Parent: [[AF-q1il]]
-- Blocks: [[AF-tqmb]]
 - Blocked by: [[AF-4wcm]]
 - Follows: [[AF-8ik8]], [[AF-qujb]]
+- Led to: [[AF-pydv]]
 
 ## Comments
 
