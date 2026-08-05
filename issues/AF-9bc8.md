@@ -8,9 +8,9 @@ labels: [documentation, discovered-by-dev]
 parent: AF-q1il
 created_at: 2026-08-05T15:42:03Z
 created_by: ada
-updated_at: 2026-08-05T16:10:23Z
-content_hash: "sha256:221d79a1485fcb16f9116fa9a9e893727cea80a56fb6f45fdd8779ad5068b4c7"
-follows: [AF-wx9b, AF-cu83, AF-vwvq]
+updated_at: 2026-08-05T16:12:49Z
+content_hash: "sha256:cc52c6b1fd12fe0df775404ff1acd7b67f5fd5286e0a602f3f00256a2f063d24"
+follows: [AF-wx9b, AF-cu83, AF-vwvq, AF-pydv]
 assignee: dev-AF-9bc8
 ---
 
@@ -169,10 +169,12 @@ code or chart changes).
 - 2026-08-05T16:10:23Z status: open -> in_progress
 - 2026-08-05T16:10:23Z auto-follows: linked to predecessor AF-vwvq
 - 2026-08-05T16:10:23Z claimed by dev-AF-9bc8
+- 2026-08-05T16:12:49Z status: in_progress -> in_progress
+- 2026-08-05T16:12:49Z auto-follows: linked to predecessor AF-pydv
 
 ## Links
 - Parent: [[AF-q1il]]
-- Follows: [[AF-wx9b]], [[AF-cu83]], [[AF-vwvq]]
+- Follows: [[AF-wx9b]], [[AF-cu83]], [[AF-vwvq]], [[AF-pydv]]
 
 ## Comments
 
