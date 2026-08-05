@@ -1,6 +1,6 @@
 ---
 id: AF-cbot
-title: "Full static verification of Terraform migration and new infrastructure layers"
+title: "Full static verification of Terraform migration & new infrastructure layers"
 status: open
 priority: 1
 type: task
@@ -8,7 +8,7 @@ labels: [capstone]
 parent: AF-q1il
 created_at: 2026-08-05T14:33:25Z
 created_by: ada
-updated_at: 2026-08-05T14:33:25Z
+updated_at: 2026-08-05T14:33:36Z
 content_hash: "sha256:20e81b877e2aecf4c80df0f1aae769051e794877e052fcf7b34c906f32f79526"
 ---
 
