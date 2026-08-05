@@ -13,3 +13,11 @@
 .vault/.dispatcher-state.json
 .vault/.vlt.lock
 .vault/.guard/
+
+# Terraform: never commit state, credentials, or kubeconfigs
+terraform/clusters/.terraform/
+terraform/clusters/*.tfstate
+terraform/clusters/*.tfstate.*
+terraform/clusters/*.tfvars
+!terraform/clusters/*.tfvars.example
+terraform/clusters/.kubeconfigs/
