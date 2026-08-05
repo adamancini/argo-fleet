@@ -1,0 +1,36 @@
+# One Application per cluster, installing the Gateway API CRDs (Gateway,
+# HTTPRoute, GatewayClass, etc.) at the experimental channel -- the same
+# version fleet-infra uses. Traefik's own chart doesn't install these; the
+# traefik-gateway Application (infrastructure/traefik-gateway/) depends on
+# them existing first.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: gateway-api-crds
+  namespace: argocd
+spec:
+  generators:
+  - list:
+      elements:
+      - cluster: demo1
+      - cluster: demo2
+  template:
+    metadata:
+      name: 'gateway-api-crds-{{cluster}}'
+      annotations:
+        argocd.argoproj.io/sync-wave: "-1"
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/kubernetes-sigs/gateway-api.git
+        targetRevision: v1.5.1
+        path: config/crd/experimental
+        directory:
+          recurse: true
+      destination:
+        name: '{{cluster}}'
+        namespace: default
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
