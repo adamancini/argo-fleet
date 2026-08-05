@@ -1,0 +1,52 @@
+# One Application per cluster, installing Traefik configured as a Gateway
+# API controller (not classic Ingress-only) -- mirrors fleet-infra's
+# real-cluster setup, including the exact Gateway name ("traefik-gateway")
+# its HTTPRoute resources already reference via parentRefs.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: traefik-gateway
+  namespace: argocd
+spec:
+  generators:
+  - list:
+      elements:
+      - cluster: demo1
+      - cluster: demo2
+  template:
+    metadata:
+      name: 'traefik-gateway-{{cluster}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://traefik.github.io/charts
+        chart: traefik
+        targetRevision: 41.1.1
+        helm:
+          valuesObject:
+            ingressClass:
+              enabled: true
+              isDefaultClass: true
+            providers:
+              kubernetesCRD:
+                enabled: true
+              kubernetesIngress:
+                enabled: true
+              kubernetesGateway:
+                enabled: true
+                experimentalChannel: true
+            gateway:
+              enabled: true
+              name: traefik-gateway
+            service:
+              enabled: true
+              type: LoadBalancer
+      destination:
+        name: '{{cluster}}'
+        namespace: traefik
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
