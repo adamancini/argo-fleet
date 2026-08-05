@@ -9,7 +9,8 @@ parent: AF-q1il
 created_at: 2026-08-05T15:54:11Z
 created_by: ada
 updated_at: 2026-08-05T15:54:11Z
-content_hash: "sha256:84017ee2a239861beb0fb123c7231d813e639a0ee06a1a5c79ca7721da5be2e2"
+content_hash: "sha256:542c59f0f159f5ec05db58d672066765218a9040d110b49c71c17f309c32522b"
+blocked_by: [AF-pydv]
 ---
 
 ## Description
@@ -248,9 +249,10 @@ AF-pydv's own MANDATORY SKILLS entry).
 
 
 ## History
-
+- 2026-08-05T15:54:18Z dep_added: blocked_by AF-pydv
 
 ## Links
 - Parent: [[AF-q1il]]
+- Blocked by: [[AF-pydv]]
 
 ## Comments
