@@ -1,17 +1,19 @@
 ---
 id: AF-cu83
 title: "Bug: terraform/clusters provider version unpinned after migration (v0.13.0 -> v0.14.0 float)"
-status: open
+status: in_progress
 priority: 0
 type: bug
 labels: [discovered-by-pm]
 parent: AF-q1il
 created_at: 2026-08-05T15:22:58Z
 created_by: ada
-updated_at: 2026-08-05T15:22:58Z
-content_hash: "sha256:8e5b4fb8ff9825de21e7e7977678d0eaaf0872bc4b64a76cc656b40303efa819"
+updated_at: 2026-08-05T15:30:27Z
+content_hash: "sha256:8e5e9aff461a72b1aa89f326481f331cb59af60dc5454b925a8b58f1b8b865ad"
 blocked_by: [AF-4wcm]
 blocks: [AF-tqmb]
+assignee: dev-AF-cu83
+follows: [AF-8ik8]
 ---
 
 ## Description
@@ -264,10 +266,14 @@ this repo).
 ## History
 - 2026-08-05T15:23:06Z dep_added: blocked_by AF-4wcm
 - 2026-08-05T15:23:07Z dep_added: blocks AF-tqmb
+- 2026-08-05T15:30:27Z status: open -> in_progress
+- 2026-08-05T15:30:27Z auto-follows: linked to predecessor AF-8ik8
+- 2026-08-05T15:30:27Z claimed by dev-AF-cu83
 
 ## Links
 - Parent: [[AF-q1il]]
 - Blocks: [[AF-tqmb]]
 - Blocked by: [[AF-4wcm]]
+- Follows: [[AF-8ik8]]
 
 ## Comments

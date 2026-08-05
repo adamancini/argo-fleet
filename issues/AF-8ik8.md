@@ -8,12 +8,12 @@ parent: AF-q1il
 created_at: 2026-08-05T14:30:55Z
 created_by: ada
 updated_at: 2026-08-05T15:27:27Z
-content_hash: "sha256:1237d62d7acddb1c78caef08e93c4d7a163fd4c73a5530fd4870c153a1b88b59"
+content_hash: "sha256:813bd69ef019bc7d9201d6a264c9e5e1f6436bb7f851844e1411cc9f7b3aff4a"
 assignee: dev-AF-8ik8
 labels: [accepted]
 closed_at: 2026-08-05T15:27:26Z
 close_reason: "Accepted via pvg story accept"
-led_to: [AF-wx9b]
+led_to: [AF-wx9b, AF-cu83]
 ---
 
 ## Description
@@ -362,7 +362,7 @@ status: delivered
 
 ## Links
 - Parent: [[AF-q1il]]
-- Led to: [[AF-wx9b]]
+- Led to: [[AF-wx9b]], [[AF-cu83]]
 
 ## Comments
 
