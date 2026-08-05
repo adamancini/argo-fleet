@@ -8,8 +8,8 @@ labels: [discovered-by-dev, delivered]
 parent: AF-q1il
 created_at: 2026-08-05T15:54:11Z
 created_by: ada
-updated_at: 2026-08-05T16:12:59Z
-content_hash: "sha256:6ef1b6c8cf37d929d8c1dcac0c97dff686b0fa75cfedd44a1c9728f5d4daac5f"
+updated_at: 2026-08-05T16:13:47Z
+content_hash: "sha256:3da7012c8ca813983dd7ccfd7a8e9fa996f5c98f4e5ee8e47ca46b3c3ab74739"
 blocks: [AF-tqmb, AF-cbot]
 was_blocked_by: [AF-pydv]
 assignee: dev-AF-uw18
@@ -279,3 +279,88 @@ status: delivered
 - Follows: [[AF-pydv]], [[AF-vwvq]]
 
 ## Comments
+
+### 2026-08-05T16:13:47Z ada
+PROOF:
+
+Commit SHA: 875209b316063bbb63912b8b795561a1ecfae943 (branch story/AF-uw18, pushed to origin)
+Base: 66240b7 (epic/AF-q1il, with AF-pydv merged at 7f0aa98)
+Working tree clean at time of verification (0 modified files).
+
+Pre-check: confirmed the fix had NOT already landed on epic/AF-q1il.
+  `grep -n "mkdir" Taskfile.yml` -> only line 17 (`mkdir -p {{.KEYPAIR_DIR}}`, pre-existing sealed-secrets task).
+  Both target files present in the worktree (AF-pydv's Taskfile.yml merged; plan doc present).
+
+Diff (exactly 2 insertions, 0 deletions, 2 files):
+```
+ Taskfile.yml                                                             | 1 +
+ .../plans/2026-08-05-cluster-lifecycle-and-ingress-storage.md            | 1 +
+ 2 files changed, 2 insertions(+)
+```
+Both added lines are identical: `      - mkdir -p {{.TERRAFORM_CLUSTERS_DIR}}/.kubeconfigs`
+Taskfile.yml at line 113 (inside cluster:register-agent cmds:), plan doc at line 653 (Task 2 Step 6 fenced block).
+
+Commands run (all five from the story's TESTING section), literal output:
+
+[1] `ruby -ryaml -e "YAML.load_stream(File.read('Taskfile.yml'))" && echo OK`
+```
+OK
+```
+
+[2] `task --list` -- seven tasks, all desc: text unchanged:
+```
+* cluster:create:                        Create a k3d cluster for use as an Akuity workload cluster, with the bundled Traefik and local-path-provisioner disabled. Usage: task cluster:create -- <name>
+* cluster:delete:                        Delete a k3d cluster. Usage: task cluster:delete -- <name>
+* cluster:recreate:                      Delete and recreate a k3d cluster cleanly (no bundled Traefik/local-path). Usage: task cluster:recreate -- <name>
+* cluster:register-agent:                Export a cluster kubeconfig and apply its Argo CD/Kargo agent registration via Terraform. Usage: task cluster:register-agent -- <name>
+* sealed-secrets:generate-keypair:       Generate the shared Sealed Secrets RSA keypair and install it as the active key on every cluster in CLUSTERS.
+* sealed-secrets:rotate-keypair:         Rotate to a new shared keypair and re-seal every existing SealedSecret against it.
+* sealed-secrets:seal:                   Seal a plaintext secret. Usage: task sealed-secrets:seal -- <namespace> <name> <output-path> <key>=<value> [<key>=<value>...]
+```
+Additionally diffed this output byte-for-byte against a `task --list` baseline captured BEFORE the edit: result `IDENTICAL`. This is machine-checked evidence for AC3 and AC5, not an eyeball comparison.
+
+[3] `task --dry cluster:register-agent -- demo3` -- three lines, mkdir FIRST:
+```
+task: [cluster:register-agent] mkdir -p <ROOT>/terraform/clusters/.kubeconfigs
+task: [cluster:register-agent] k3d kubeconfig get demo3 > <ROOT>/terraform/clusters/.kubeconfigs/demo3.yaml
+task: [cluster:register-agent] cd <ROOT>/terraform/clusters && terraform apply -target='module.cluster["demo3"]'
+```
+(<ROOT> = /Users/ada/src/github.com/adamancini/argo-fleet/.claude/worktrees/dev-AF-uw18). Re-run at the committed SHA with identical output.
+
+[4] `git diff --stat` on Taskfile.yml -- 1 insertion, 0 deletions, confined to cluster:register-agent. See diff above.
+
+[5] `git diff` on the plan document -- 1 insertion inside the Task 2 Step 6 fenced block, 0 unrelated changes. See diff above.
+
+[6] `pvg verify Taskfile.yml docs/.../2026-08-05-cluster-lifecycle-and-ingress-storage.md --format text`
+```
+VERIFY: PASSED (0 files scanned, 0 issues)
+exit=0
+```
+(0 files scanned: pvg verify's substance scanner does not cover .yml/.md, so it has no findings to report on this change. Recorded for completeness, not as coverage.)
+
+AC verification table:
+
+| AC | Requirement | Status | Evidence |
+|----|-------------|--------|----------|
+| 1 | `mkdir -p {{.TERRAFORM_CLUSTERS_DIR}}/.kubeconfigs` is FIRST cmds: entry, immediately before the `k3d kubeconfig get ... >` redirect | PASS | Diff shows it inserted directly under `cmds:` at Taskfile.yml:113; `task --dry` [3] renders it first |
+| 2 | desc: text and both pre-existing cmds: entries byte-identical to AF-pydv's delivery | PASS | `git diff` shows 0 deletions / 0 modified lines -- only a pure insertion. desc: unchanged in `task --list` [2] |
+| 3 | cluster:create/delete/recreate and all three sealed-secrets:* unmodified | PASS | `git diff --stat` touches only the one task's cmds:; `task --list` byte-identical to pre-edit baseline |
+| 4 | YAML parse exits OK, no parse error | PASS | [1] `OK` |
+| 5 | `task --list` shows all seven tasks with original desc: | PASS | [2], seven tasks, diff vs baseline `IDENTICAL` |
+| 6 | dry-run renders mkdir -> k3d redirect -> terraform apply in that exact order | PASS | [3], three lines in exactly that order |
+| 7 | Plan doc Task 2 Step 6 fenced block gains the identical mkdir line | PASS | Diff hunk at plan doc line 650-655; added line is byte-identical to the Taskfile one |
+| 8 | No real k3d cluster create/delete/recreate, no real `k3d kubeconfig get`, no terraform apply/plan | PASS | Only `--dry` used. Verified no side effect: `ls -d terraform/clusters/.kubeconfigs` -> "No such file or directory" AFTER the dry run, proving nothing executed. demo1/demo2 untouched |
+| 9 | Root cause documented in the fix commit message | PASS | Commit 875209b body: shell `>` cannot create a missing parent dir; `.kubeconfigs/` is gitignored and git never commits an empty dir, so it never exists on a fresh clone |
+
+Coverage: the story specifies "TESTING coverage requirement: default ... The five validation commands above are the coverage requirement in full." All five ran with literal output recorded above. There is no application code in this change (one Taskfile line + one doc line), so there is no unit-test coverage percentage to report -- static validation is the specified and complete coverage for this story.
+
+Wiring: the changed line IS the wiring -- it is a cmds: entry in a task go-task actually executes. `task --dry cluster:register-agent -- demo3` exercises it through go-task's real task resolution and template rendering (not in isolation), which is what proves both that the task still parses/resolves and that the mkdir is ordered ahead of the redirect that depends on it. AF-tqmb will run this same command live.
+
+Errors/warnings encountered: none. No test failures, no build warnings, no deprecation notices in any command output above.
+
+LEARNINGS:
+- The story's GOTCHA about branch placement was already resolved by the time I started: AF-pydv had landed on epic/AF-q1il (merge 7f0aa98) and the plan doc was present too, so both target files existed in a worktree cut from the epic. I still ran the "has this already landed?" grep first rather than trusting either the story text or the branch name -- worth keeping as a habit on this epic, where several stories have raced ahead of their own filed descriptions.
+- Capturing `task --list` to a file BEFORE editing and then `diff`-ing the post-edit output against it turns AC3/AC5 from "I looked and it seemed the same" into machine-checked evidence for a few seconds of work. Recommend this baseline-capture pattern for any story whose ACs assert "X is unmodified".
+- `task --dry` is genuinely side-effect-free: confirmed by checking that `terraform/clusters/.kubeconfigs` still did not exist after the dry run. That check is also the cleanest possible evidence for the AC8 "do not touch live infra" constraint -- the absent directory simultaneously proves the bug is real and that I did not paper over it by creating the dir by hand.
+- The spec/plan-parity pattern (fix the implementation AND the source plan doc it was transcribed from) has now recurred across AF-wx9b, AF-8ik8, AF-9bc8 and this story. That is four occurrences of the same class of defect in one epic. The generative fix is upstream of any individual story: the plan doc under docs/superpowers/plans/ is being treated as a write-once artifact when it is in fact a live regeneration source. Worth a retro item on whether that doc should be regenerated from the implementation, or at least gain a note that it must be kept in sync.
+- Root cause here is a general shell/git interaction worth remembering beyond this repo: a `>` redirect never creates parent directories, and git cannot track an empty directory regardless of .gitignore contents. Any gitignored output directory written to by a bare redirect is a fresh-clone failure waiting to happen -- the same shape could exist elsewhere in this Taskfile's future tasks.
