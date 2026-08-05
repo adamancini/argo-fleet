@@ -9,10 +9,11 @@ parent: AF-q1il
 created_at: 2026-08-05T16:33:32Z
 created_by: ada
 updated_at: 2026-08-05T16:34:23Z
-content_hash: "sha256:11202095fb86ff98936502a72d4e57ee43e71f501867d9e24394e3071dc4367e"
+content_hash: "sha256:ae3990f57c796d60756a9119a62499cd0281b584d0f5e8456778dc53bf236117"
 closed_at: 2026-08-05T16:34:23Z
 close_reason: "Root cause identified (missing parent field on AF-tqmb) and fixed directly via nd update AF-tqmb --parent AF-q1il. Fix verified structurally: nd children/epic tree/close-eligible all now correctly reflect AF-tqmb as an open member of AF-q1il. Epic-wide audit found no other one-directional-link defects. No developer story needed -- this was a Sr PM vault-metadata repair."
 blocks: [AF-cbot]
+led_to: [AF-w3do]
 ---
 
 ## Description
@@ -151,5 +152,6 @@ Closing this bug now -- fix applied and structurally verified, no developer-clai
 ## Links
 - Parent: [[AF-q1il]]
 - Blocks: [[AF-cbot]]
+- Led to: [[AF-w3do]]
 
 ## Comments

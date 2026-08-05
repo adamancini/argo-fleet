@@ -1,15 +1,17 @@
 ---
 id: AF-w3do
 title: "Rename colliding bootstrap resources with fleet- prefix (platform-aoa, argocd-apps, kargo-apps)"
-status: open
+status: in_progress
 priority: 1
 type: task
 parent: AF-q1il
 created_at: 2026-08-05T18:23:22Z
 created_by: ada
-updated_at: 2026-08-05T18:23:22Z
-content_hash: "sha256:9f1dcc3e529f68a7b44c82c5e93fe1c07af730f3ae1459a699cea246b4505cda"
+updated_at: 2026-08-05T18:26:51Z
+content_hash: "sha256:1fedb52146420087fc70e64c2250309c5bb8c1d98a39fc9c9c648fbcf177110e"
 blocks: [AF-s8l0, AF-cbot]
+assignee: dev-AF-w3do
+follows: [AF-i2t5]
 ---
 
 ## Description
@@ -399,9 +401,13 @@ specific pattern applies).
 ## History
 - 2026-08-05T18:23:54Z dep_added: blocks AF-s8l0
 - 2026-08-05T18:24:04Z dep_added: blocks AF-cbot
+- 2026-08-05T18:26:51Z status: open -> in_progress
+- 2026-08-05T18:26:51Z auto-follows: linked to predecessor AF-i2t5
+- 2026-08-05T18:26:51Z claimed by dev-AF-w3do
 
 ## Links
 - Parent: [[AF-q1il]]
 - Blocks: [[AF-s8l0]], [[AF-cbot]]
+- Follows: [[AF-i2t5]]
 
 ## Comments
