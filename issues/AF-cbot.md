@@ -9,13 +9,13 @@ parent: AF-q1il
 created_at: 2026-08-05T14:33:25Z
 created_by: ada
 updated_at: 2026-08-05T16:28:40Z
-content_hash: "sha256:d24f6d2224e9edf249ac34d7b0d52057f79bd3add41419e081c2beddf3cac11a"
+content_hash: "sha256:74bc5d1caca9e88deb6d3f0d8e2dfef6939829f4bfb355a622b68f405e7f1487"
 was_blocked_by: [AF-4wcm, AF-8ik8, AF-qujb, AF-pydv, AF-vwvq, AF-uw18]
 assignee: dev-AF-cbot
 follows: [AF-4wcm, AF-8ik8, AF-qujb, AF-pydv, AF-vwvq, AF-uw18, AF-9bc8]
 closed_at: 2026-08-05T16:28:39Z
 close_reason: "Accepted via pvg story accept"
-blocked_by: [AF-9bc8, AF-cu83, AF-i2t5, AF-tqmb, AF-wx9b, AF-w3do]
+blocked_by: [AF-9bc8, AF-cu83, AF-i2t5, AF-tqmb, AF-wx9b, AF-w3do, AF-s8l0]
 ---
 
 ## Description
@@ -259,10 +259,11 @@ status: delivered
 - 2026-08-05T18:24:03Z dep_added: blocked_by AF-tqmb
 - 2026-08-05T18:24:04Z dep_added: blocked_by AF-wx9b
 - 2026-08-05T18:24:04Z dep_added: blocked_by AF-w3do
+- 2026-08-05T18:24:04Z dep_added: blocked_by AF-s8l0
 
 ## Links
 - Parent: [[AF-q1il]]
-- Blocked by: [[AF-9bc8]], [[AF-cu83]], [[AF-i2t5]], [[AF-tqmb]], [[AF-wx9b]], [[AF-w3do]]
+- Blocked by: [[AF-9bc8]], [[AF-cu83]], [[AF-i2t5]], [[AF-tqmb]], [[AF-wx9b]], [[AF-w3do]], [[AF-s8l0]]
 - Was blocked by: [[AF-4wcm]], [[AF-8ik8]], [[AF-qujb]], [[AF-pydv]], [[AF-vwvq]], [[AF-uw18]]
 - Follows: [[AF-4wcm]], [[AF-8ik8]], [[AF-qujb]], [[AF-pydv]], [[AF-vwvq]], [[AF-uw18]], [[AF-9bc8]]
 
