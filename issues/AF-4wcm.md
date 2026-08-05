@@ -4,7 +4,7 @@ title: "Migrate cluster/agent registration Terraform from akp-infra into argo-fl
 status: closed
 priority: 0
 type: task
-labels: [walking-skeleton, delivered]
+labels: [walking-skeleton, delivered, accepted]
 parent: AF-q1il
 created_at: 2026-08-05T14:29:16Z
 created_by: ada
