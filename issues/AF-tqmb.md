@@ -7,8 +7,8 @@ type: task
 labels: [release-gate, human-execution-required, external-integration]
 created_at: 2026-08-05T14:34:47Z
 created_by: ada
-updated_at: 2026-08-05T17:14:13Z
-content_hash: "sha256:3a923dac3fae5ebf455028fd0b82aa9d1942ee0ffccb088c7b854df6e89a585b"
+updated_at: 2026-08-05T17:19:42Z
+content_hash: "sha256:aa036af305a0f987aead281f80a03d5c1b2ec411a44621821f16b7f755fbb4b7"
 was_blocked_by: [AF-cu83, AF-uw18, AF-cbot]
 parent: AF-q1il
 ---
@@ -312,3 +312,29 @@ kargo-webhook-8568cd68-2ndbc                       1/1     Running   0          
 kargo-webhook-8568cd68-n9z44                       1/1     Running   0          13m
 
 Recorded by human operator per AC3.
+
+### 2026-08-05T17:19:42Z ada
+STOP-GATE 2 (Step 6) -- terraform plan output, zero drift confirmed:
+
+$ terraform plan
+data.akp_kargo_instance.kargo: Reading...
+data.akp_instance.argocd: Reading...
+data.akp_instance.argocd: Read complete after 1s [id=augtpjfe5xvyty6u]
+module.cluster["demo2"].akp_cluster.this: Refreshing state... [id=zq5ryx1mw79vdsqy]
+module.cluster["demo1"].akp_cluster.this: Refreshing state... [id=u55l2lflco4zbkhf]
+data.akp_kargo_instance.kargo: Read complete after 2s [id=4tobvbozj9o8f71m]
+module.cluster["demo2"].akp_kargo_agent.this[0]: Refreshing state... [id=nnx7to03ec0bfjgj]
+module.cluster["demo1"].akp_kargo_agent.this[0]: Refreshing state... [id=9etjbhybbuu48cya]
+akp_kargo_default_shard_agent.default[0]: Refreshing state... [id=4tobvbozj9o8f71m]
+
+No changes. Your infrastructure matches the configuration.
+
+Terraform has compared your real infrastructure against your configuration and found no differences, so no changes are needed.
+
+Note: one intermediate apply was required first to create akp_kargo_default_shard_agent.default[0]
+(the Kargo default-shard designation for demo1), since neither of the two -target applies in
+Steps 3/4 covered that top-level resource -- not drift, just a resource outside either
+module.cluster[...] target scope. That apply was reviewed and confirmed by the human operator
+before running.
+
+Recorded by human operator per AC4.
