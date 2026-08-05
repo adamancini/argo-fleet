@@ -7,8 +7,8 @@ type: task
 parent: AF-q1il
 created_at: 2026-08-05T18:23:22Z
 created_by: ada
-updated_at: 2026-08-05T18:36:19Z
-content_hash: "sha256:651491226938c0d8665d69c8100e7e44c57e8bcb1ec76e5331508152b23c5387"
+updated_at: 2026-08-05T18:36:35Z
+content_hash: "sha256:e29fa5866bcd456dd6bad8e94f2bb1874533f31cf99c58f8fda72b6bbd2e0b3b"
 blocks: [AF-s8l0, AF-cbot]
 assignee: dev-AF-w3do
 follows: [AF-i2t5, AF-cbot]
@@ -494,3 +494,41 @@ Confirmed again by the commit itself (rename similarity indices, history preserv
  rename bootstrap/{argocd-apps.yaml => fleet-argocd-apps.yaml} (97%)
  rename bootstrap/{kargo-apps.yaml => fleet-kargo-apps.yaml} (97%)
  rename bootstrap/{platform-aoa.yaml => fleet-platform-aoa.yaml} (75%)
+
+### 2026-08-05T18:36:35Z ada
+DELIVERED: AF-w3do (part 2/4 -- checks 3 and 4)
+
+--- Check 3/4: repo-wide grep for stale unprefixed names (Step 7) ---
+$ grep -rlP --exclude-dir=.git "(?<!fleet-)(platform-aoa|argocd-apps|kargo-apps)" . | sort
+docs/superpowers/plans/2026-08-04-argo-fleet-bootstrap.md
+docs/superpowers/plans/2026-08-05-cluster-lifecycle-and-ingress-storage.md
+docs/superpowers/specs/2026-08-04-argo-fleet-bootstrap-design.md
+docs/superpowers/specs/2026-08-05-bootstrap-name-collision-design.md
+docs/superpowers/specs/2026-08-05-cluster-lifecycle-and-ingress-storage-design.md
+
+FIVE files, every one a member of the Step 7 allow-list of pre-existing dated
+planning/spec documents. Zero unexpected files.
+
+Zero hits outside the docs allow-list:
+$ grep -rnP --exclude-dir=.git "(?<!fleet-)(platform-aoa|argocd-apps|kargo-apps)" . | grep -vE "^(\./)?docs/superpowers/(specs|plans)/"
+grep-v-exit=1     (exit 1 == no lines survived the filter == zero stale hits outside docs)
+
+$ grep -cnP "(?<!fleet-)(platform-aoa|argocd-apps|kargo-apps)" README.md
+0                 (readme-exit=1, zero hits in README.md)
+$ grep -rnP "(?<!fleet-)(platform-aoa|argocd-apps|kargo-apps)" bootstrap/
+                  (no output, bootstrap-exit=1, zero hits in bootstrap/*.yaml)
+
+DISCREPANCY (benign, no code impact, reported for transparency): Step 7 enumerates SIX
+expected pre-existing files, but only FIVE exist in the repo. The sixth,
+docs/superpowers/plans/2026-08-05-bootstrap-name-collision.md (this fix own
+implementation plan), is not committed here -- ls docs/superpowers/plans/ shows only the
+two 2026-08-04 / 2026-08-05 cluster-lifecycle plans. The actual hit set is a strict
+SUBSET of the allow-list, which satisfies AC 7 (zero hits in README.md, bootstrap/*.yaml,
+or any file other than the six). Nothing to fix; flagged only so the PM does not read
+five-instead-of-six as a missed file.
+
+--- Check 4/4: negative check, bootstrap/infra-apps.yaml byte-identical (AC 4) ---
+$ git diff --exit-code epic/AF-q1il HEAD -- bootstrap/infra-apps.yaml; echo "exit=$?"
+exit=0            (zero diff versus the epic branch across BOTH commits)
+Confirmed independently by the parsed-value check in part 1: infra-apps.yaml still parses
+to kind=ApplicationSet name=infra-apps. The file was never opened for editing.
