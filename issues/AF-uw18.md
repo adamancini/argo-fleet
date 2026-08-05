@@ -8,12 +8,12 @@ labels: [discovered-by-dev]
 parent: AF-q1il
 created_at: 2026-08-05T15:54:11Z
 created_by: ada
-updated_at: 2026-08-05T16:10:24Z
-content_hash: "sha256:2cd6a18631096a0edb1bb786c94336483e85af49b6aa4a6c7c71e046ff2d379a"
+updated_at: 2026-08-05T16:12:59Z
+content_hash: "sha256:7c08f73bdb6fba7f8ddc31a6ce58bde995bd79e4494a88bc11c666675da37782"
 blocks: [AF-tqmb, AF-cbot]
 was_blocked_by: [AF-pydv]
 assignee: dev-AF-uw18
-follows: [AF-pydv]
+follows: [AF-pydv, AF-vwvq]
 ---
 
 ## Description
@@ -259,11 +259,13 @@ AF-pydv's own MANDATORY SKILLS entry).
 - 2026-08-05T16:10:24Z status: open -> in_progress
 - 2026-08-05T16:10:24Z auto-follows: linked to predecessor AF-pydv
 - 2026-08-05T16:10:24Z claimed by dev-AF-uw18
+- 2026-08-05T16:12:59Z status: in_progress -> in_progress
+- 2026-08-05T16:12:59Z auto-follows: linked to predecessor AF-vwvq
 
 ## Links
 - Parent: [[AF-q1il]]
 - Blocks: [[AF-tqmb]], [[AF-cbot]]
 - Was blocked by: [[AF-pydv]]
-- Follows: [[AF-pydv]]
+- Follows: [[AF-pydv]], [[AF-vwvq]]
 
 ## Comments
