@@ -7,8 +7,8 @@ type: task
 parent: AF-q1il
 created_at: 2026-08-05T14:30:55Z
 created_by: ada
-updated_at: 2026-08-05T14:57:38Z
-content_hash: "sha256:646381aa6e2ed202a2c044d51bcad946a88237d0f0fe6990a9dd35e38ec3af5b"
+updated_at: 2026-08-05T15:27:21Z
+content_hash: "sha256:72f18f15f070487a1feafca1b6ee819f13821f2112a9dd0992a71c4f6f09a89c"
 blocks: [AF-cbot]
 assignee: dev-AF-8ik8
 labels: [delivered]
@@ -494,3 +494,6 @@ LEARNINGS:
 - Minor: this pvg build rejects `pvg verify --format=text` (the form in the agent
   instructions); it needs `--format text` with a space. Also, pvg verify scans 0
   files for a yaml/md-only story, so it provides no real signal there.
+
+### 2026-08-05T15:27:21Z ada
+PM REVIEW: ACCEPTED. Verified proof SHA 850b342 matches delivered commit. Tier1: pvg verify PASSED (0 issues), pvg gates PASS (0 warn). Independently re-ran the load-bearing claim myself (not just trusting proof): pulled localpv-provisioner 4.5.1 and rendered both isDefaultClass forms via helm template -- quoted string "false" -> storageclass.kubernetes.io/is-default-class: "true" (WRONG, makes local-path cluster default); unquoted boolean false -> annotation absent (correct, matches USER INTENT/README/PRODUCES). Developer's deviation from AC1's literal quoted-string value to an unquoted boolean is the right call -- shipping the literal would have inverted the story's own stated intent. DISCOVERED_BUG already filed and triaged as AF-wx9b (doc-only fix to source plan, non-blocking, correctly scoped to the plan doc not this story). Wiring verified: bootstrap/infra-apps.yaml's git directory generator on infrastructure/*/argocd will discover infrastructure/openebs-localpv/argocd automatically, no changes needed there (confirmed by reading the file). Pattern matches sealed-secrets precedent (list generator, {{cluster}} naming, CreateNamespace, prune/selfHeal). AC1-AC5 all PASS (AC1 satisfied via the justified deviation). No hard-tdd/external-integration labels on this story.
