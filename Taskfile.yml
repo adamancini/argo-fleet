@@ -126,9 +126,12 @@ tasks:
         argocd login "$HOSTNAME" --username admin --password "$TF_VAR_admin_password" --grpc-web
 
   kargo:login:
-    desc: 'Authenticate the kargo CLI against this stack''s Kargo instance (requires terraform apply to have run in terraform/clusters).'
+    desc: 'Authenticate the kargo CLI against this stack''s Kargo instance (reads TF_VAR_admin_password; requires terraform apply to have run in terraform/clusters).'
+    preconditions:
+      - sh: '[ -n "${TF_VAR_admin_password:-}" ]'
+        msg: "TF_VAR_admin_password is not set -- export it (see akp-infra's .envrc) before logging in."
     cmds:
       - |
         set -euo pipefail
         HOSTNAME=$(cd {{.TERRAFORM_CLUSTERS_DIR}} && terraform output -raw kargo_hostname)
-        kargo login --admin "https://${HOSTNAME}"
+        kargo login --admin "https://${HOSTNAME}" --password "$TF_VAR_admin_password"
