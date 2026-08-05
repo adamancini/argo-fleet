@@ -4,11 +4,11 @@ title: "Bug: terraform/clusters provider version unpinned after migration (v0.13
 status: closed
 priority: 0
 type: bug
-labels: [discovered-by-pm, delivered]
+labels: [discovered-by-pm, delivered, accepted]
 parent: AF-q1il
 created_at: 2026-08-05T15:22:58Z
 created_by: ada
-updated_at: 2026-08-05T15:39:37Z
+updated_at: 2026-08-05T15:39:46Z
 content_hash: "sha256:9ade7cf9c399a066f6887d59927cb3225bc15d6e894db0eb651619b0c9d93ed8"
 blocked_by: [AF-4wcm]
 assignee: dev-AF-cu83
