@@ -1,17 +1,18 @@
 ---
 id: AF-8ik8
 title: "Add openebs-localpv infrastructure layer for demo1/demo2"
-status: in_progress
+status: closed
 priority: 1
 type: task
 parent: AF-q1il
 created_at: 2026-08-05T14:30:55Z
 created_by: ada
-updated_at: 2026-08-05T15:27:21Z
-content_hash: "sha256:72f18f15f070487a1feafca1b6ee819f13821f2112a9dd0992a71c4f6f09a89c"
-blocks: [AF-cbot]
+updated_at: 2026-08-05T15:27:26Z
+content_hash: "sha256:901a9bca350228cc2ce6d32ab579cc81376d7d4424135b4216e7a59074233d86"
 assignee: dev-AF-8ik8
 labels: [delivered]
+closed_at: 2026-08-05T15:27:26Z
+close_reason: "Accepted via pvg story accept"
 ---
 
 ## Description
@@ -345,10 +346,11 @@ status: delivered
 - 2026-08-05T14:49:07Z status: open -> in_progress
 - 2026-08-05T14:49:07Z claimed by dev-AF-8ik8
 - 2026-08-05T14:56:47Z status: in_progress -> in_progress
+- 2026-08-05T15:27:26Z status: in_progress -> closed
+- 2026-08-05T15:27:26Z dep_removed: no_longer_blocks AF-cbot
 
 ## Links
 - Parent: [[AF-q1il]]
-- Blocks: [[AF-cbot]]
 
 ## Comments
 
