@@ -7,8 +7,8 @@ type: task
 parent: AF-q1il
 created_at: 2026-08-05T14:30:55Z
 created_by: ada
-updated_at: 2026-08-05T14:56:47Z
-content_hash: "sha256:b0aeccc51a05289571b7a5ce887e0f8e45dfdbfbc14bfbc210b8ff6af77eecb1"
+updated_at: 2026-08-05T14:57:38Z
+content_hash: "sha256:646381aa6e2ed202a2c044d51bcad946a88237d0f0fe6990a9dd35e38ec3af5b"
 blocks: [AF-cbot]
 assignee: dev-AF-8ik8
 labels: [delivered]
@@ -351,3 +351,146 @@ status: delivered
 - Blocks: [[AF-cbot]]
 
 ## Comments
+
+### 2026-08-05T14:57:38Z ada
+PROOF:
+
+Commit: 850b34200535f86524129d121b017f7c43176b59 (branch story/AF-8ik8, pushed to origin, 0 uncommitted files)
+Toolchain: ruby 2.6.10p210, helm v4.2.3+g43e8b7f
+
+Files created:
+- infrastructure/openebs-localpv/argocd/appset.yaml
+- infrastructure/openebs-localpv/README.md
+
+--- Command 1: the story's specified validation (AC3) ---
+$ ruby -ryaml -e "YAML.load_stream(File.read('infrastructure/openebs-localpv/argocd/appset.yaml'))" && echo OK
+OK
+(exit 0, no YAML parse error)
+
+--- Command 2: structural assertions on the parsed manifest (AC1, AC4) ---
+20 assertions, 0 failed. All PASS:
+apiVersion=argoproj.io/v1alpha1, kind=ApplicationSet, metadata.name=openebs-localpv,
+metadata.namespace=argocd, generator elements=[{cluster=>demo1},{cluster=>demo2}],
+template name=openebs-localpv-{{cluster}}, source.repoURL=https://openebs.github.io/dynamic-localpv-provisioner,
+source.chart=localpv-provisioner, source.targetRevision="4.5.1" (String),
+localpv.basePath=/var/openebs/local, hostpathClass.name=local-path,
+hostpathClass.isDefaultClass=false (FalseClass), reclaimPolicy=Delete,
+destination.name={{cluster}}, destination.namespace=openebs,
+prune=true, selfHeal=true, syncOptions=[CreateNamespace=true]
+
+--- Command 3: chart-version cross-check ---
+$ helm search repo openebs-localpv/localpv-provisioner --versions | head -5
+NAME                                CHART VERSION  APP VERSION  DESCRIPTION
+openebs-localpv/localpv-provisioner 4.5.1          4.5.1        Helm chart for OpenEBS Dynamic Local PV...
+openebs-localpv/localpv-provisioner 4.5.0          4.5.0        ...
+openebs-localpv/localpv-provisioner 4.4.0          4.4.0        ...
+Pinned 4.5.1 exists and is the latest published version.
+
+--- Command 4: values-key validation against chart 4.5.1 defaults ---
+All five value paths exist in the chart's schema (no typo'd/ignored keys):
+PRESENT localpv.basePath, localpv.resources, hostpathClass.name,
+hostpathClass.isDefaultClass, hostpathClass.reclaimPolicy
+
+--- Command 5: end-to-end render with the appset's exact valuesObject ---
+$ helm template openebs-localpv openebs-localpv/localpv-provisioner --version 4.5.1 \
+    --namespace openebs -f <valuesObject extracted from appset.yaml>
+render OK -- 5 objects: ServiceAccount, StorageClass, ClusterRole, ClusterRoleBinding, Deployment
+StorageClass renders as name=local-path, provisioner=openebs.io/local,
+BasePath=/var/openebs/local, volumeBindingMode=WaitForFirstConsumer,
+and NO storageclass.kubernetes.io/is-default-class annotation (grep count 0 -> not default).
+Deployment container gets requests{cpu:5m,memory:24Mi} limits{memory:64Mi}.
+
+--- Command 6: pvg verify ---
+$ pvg verify infrastructure/openebs-localpv/argocd/appset.yaml infrastructure/openebs-localpv/README.md --format text
+VERIFY: PASSED (0 files scanned, 0 issues)   [exit 0; yaml/md are not source files, so 0 scanned]
+Note: the story's documented flag form `--format=text` is rejected by this pvg build;
+it requires a space (`--format text`).
+
+--- Discovery mechanism (no change needed, as the story states) ---
+Read bootstrap/infra-apps.yaml directly: git directory generator on
+`infrastructure/*/argocd` matches infrastructure/openebs-localpv/argocd,
+and `name: infra-{{path[1]}}` yields Application `infra-openebs-localpv`. Unmodified.
+
+=== DELIBERATE DEVIATION FROM THE IMPLEMENTATION BLOCK (one value) ===
+
+hostpathClass.isDefaultClass is committed as an unquoted boolean `false`,
+NOT the string `"false"` that AC1/IMPLEMENTATION specify verbatim.
+
+The spec'd value is behaviorally inverted. chart 4.5.1
+templates/hostpath-class.yaml:34 reads:
+    {{- if .Values.hostpathClass.isDefaultClass }}
+        storageclass.kubernetes.io/is-default-class: "true"
+    {{- end }}
+Go templates treat any non-empty string as truthy, so the string "false"
+takes that branch. Proven by rendering both forms against 4.5.1:
+  A) isDefaultClass: "false"  ->  storageclass.kubernetes.io/is-default-class: "true"
+  B) isDefaultClass: false    ->  (annotation absent -> NOT default class)
+
+Shipping the literal AC1 value would make local-path the cluster default --
+the exact opposite of what the same story's USER INTENT, README text
+("Not the default class deliberately"), and PRODUCES ("isDefaultClass: false")
+all require. AC1 and AC2/PRODUCES cannot both be satisfied literally; I
+satisfied the behavioral intent and flagged the literal. The chart's upstream
+values.yaml:119 also uses the boolean, confirming boolean is the intended type.
+Both files carry a comment explaining the trap so nobody re-quotes it later.
+See DISCOVERED_BUG below -- the source design spec carries the same defect.
+
+--- Acceptance criteria verification ---
+AC1 [Ubiquitous] appset.yaml exists, chart 4.5.1, repoURL
+    https://openebs.github.io/dynamic-localpv-provisioner, hostpathClass.name
+    local-path .......................................... PASS (with the one
+    documented deviation above: isDefaultClass boolean false, not string "false")
+AC2 [Ubiquitous] README.md exists and documents the
+    k3s-bundled-local-path-must-be-gone-first prerequisite ......... PASS
+    ("## Prerequisite" section, verbatim from the story, plus an added
+    paragraph documenting the isDefaultClass quoting trap)
+AC3 [Event] ruby YAML.load_stream exits OK, no parse error ......... PASS (Command 1)
+AC4 [Ubiquitous] list generator elements are exactly demo1, demo2 ... PASS (Command 2)
+AC5 [Unwanted] no live Argo CD / k3d cluster synced, applied, or
+    mutated ......................................................... PASS -- every
+    command run was static: ruby YAML parsing, `helm search repo`,
+    `helm show values`, `helm pull`, `helm template`. No kubectl, no argocd
+    CLI, no --kube-context, no cluster credentials touched. `helm template`
+    renders locally and contacts no API server.
+
+DISCOVERED_BUG:
+  title: Design spec Task 3 specifies isDefaultClass as string "false", which makes local-path the DEFAULT StorageClass
+  context: docs/superpowers/plans/2026-08-05-cluster-lifecycle-and-ingress-storage.md
+    Task 3 (transcribed verbatim into story AF-8ik8's IMPLEMENTATION block and AC1)
+    specifies `hostpathClass.isDefaultClass: "false"` as a quoted string. The
+    localpv-provisioner chart gates the storageclass.kubernetes.io/is-default-class
+    annotation on `{{- if .Values.hostpathClass.isDefaultClass }}`; Go templates treat
+    the non-empty string "false" as TRUE, so the quoted form marks local-path as the
+    cluster default -- contradicting the same spec's own stated intent that the class
+    deliberately NOT be default. Confirmed by rendering both forms against chart 4.5.1.
+    Root cause is likely the chart's own README, which misdocuments the default as the
+    string `"false"` while values.yaml:119 correctly uses boolean false. I corrected
+    the value in this story's committed manifest; the SOURCE SPEC is still wrong and
+    will re-propagate if another story is generated from it. Worth auditing sibling
+    stories in this epic for the same string-vs-boolean truthiness hazard in any
+    Helm valuesObject boolean (e.g. the ingress infra layer).
+  affected_files: docs/superpowers/plans/2026-08-05-cluster-lifecycle-and-ingress-storage.md (Task 3)
+  discovered_during: AF-8ik8
+
+LEARNINGS:
+- Static YAML validation is necessary but nowhere near sufficient for Helm-backed
+  Argo CD manifests. The spec'd appset parsed cleanly and passed every syntax and
+  structural check while doing the precise opposite of its documented intent.
+  `helm template` with the valuesObject extracted straight out of the appset caught
+  it in one command and should be the default validation for any story authoring a
+  Helm source -- it is fully static and touches no cluster, so it costs nothing
+  against an [Unwanted] no-cluster AC.
+- Quoted booleans in Helm values are a live trap: `{{- if }}` makes "false" truthy.
+  Any story that transcribes a values block verbatim should have its booleans
+  type-checked against the chart's values.yaml, not just its key names.
+- Validating that value KEYS exist in the chart schema (`helm show values` + path
+  probe) is cheap and catches the other common failure -- a typo'd key that Helm
+  silently ignores, leaving the story's stated config simply not applied.
+- When a story's ACs contradict each other (AC1's literal value vs AC2/PRODUCES'
+  behavior), the literal is usually the transcription error and the behavioral
+  statements encode the real intent -- but it needs loud flagging plus a
+  DISCOVERED_BUG against the source spec, since fixing only the story leaves the
+  spec to re-propagate the defect.
+- Minor: this pvg build rejects `pvg verify --format=text` (the form in the agent
+  instructions); it needs `--format text` with a space. Also, pvg verify scans 0
+  files for a yaml/md-only story, so it provides no real signal there.
