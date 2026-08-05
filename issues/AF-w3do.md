@@ -7,8 +7,8 @@ type: task
 parent: AF-q1il
 created_at: 2026-08-05T18:23:22Z
 created_by: ada
-updated_at: 2026-08-05T18:35:35Z
-content_hash: "sha256:c6adb6639cf37badb55bc63be4a3e423b48c4b5c8dcabd62d7100af1b40d8031"
+updated_at: 2026-08-05T18:35:43Z
+content_hash: "sha256:0238455e5a7c16f80301e35810fbd62b5aaad506e0ac0135dd4281cab2966f1f"
 blocks: [AF-s8l0, AF-cbot]
 assignee: dev-AF-w3do
 follows: [AF-i2t5, AF-cbot]
@@ -435,3 +435,6 @@ PROBE B: table | with | pipes
 
 ### 2026-08-05T18:35:35Z ada
 PROBE C: arrow -> and redirect-ish and exit=$? and amp && here
+
+### 2026-08-05T18:35:43Z ada
+PROBE D: regex (?<!fleet-)(platform-aoa) and rename {a.yaml => b.yaml} and tick `x`
