@@ -7,8 +7,8 @@ type: task
 parent: AF-q1il
 created_at: 2026-08-05T14:30:55Z
 created_by: ada
-updated_at: 2026-08-05T15:27:26Z
-content_hash: "sha256:901a9bca350228cc2ce6d32ab579cc81376d7d4424135b4216e7a59074233d86"
+updated_at: 2026-08-05T15:27:27Z
+content_hash: "sha256:31a132e9576625a3407793897c4e7ffe3258aaaba34a7a39363359a2a717eefb"
 assignee: dev-AF-8ik8
 labels: [accepted]
 closed_at: 2026-08-05T15:27:26Z
@@ -329,6 +329,16 @@ manifest review guidance before finalizing.
 
 
 ## Notes
+
+
+## nd_contract
+status: accepted
+
+### evidence
+- PM closeout applied via pvg story accept on 2026-08-05.
+
+### proof
+- [x] Story closed after accepted label was applied.
 
 
 ## nd_contract
