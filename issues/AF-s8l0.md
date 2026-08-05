@@ -8,8 +8,8 @@ labels: [human-execution-required, external-integration]
 parent: AF-q1il
 created_at: 2026-08-05T18:23:50Z
 created_by: ada
-updated_at: 2026-08-05T18:51:26Z
-content_hash: "sha256:a52f73d6e3e1235b19171452a389cff34b379a50db6a88b7a4ad21ea5386fc9f"
+updated_at: 2026-08-05T19:43:24Z
+content_hash: "sha256:a34c33d02628a345799955311c09bede2a87f228add87b5b7c445da49a17b3c8"
 blocks: [AF-cbot]
 was_blocked_by: [AF-w3do]
 ---
@@ -282,3 +282,24 @@ BASELINE CONFIRMED:
 - argocd/kargo-apps (appset): repo akp-platform.git, Healthy.
 - Baseline app count: 27 Applications listed above; 7 ApplicationSets listed above.
 - This baseline is what Step 3's post-apply re-check must match byte-for-byte for platform-aoa/argocd-apps/kargo-apps.
+
+### 2026-08-05T19:43:24Z ada
+AC4 / Step 3 STOP-GATE -- recorded by human operator (ada), literal command output after Step 2 (argocd app create -f bootstrap/fleet-platform-aoa.yaml, which succeeded: "application 'fleet-platform-aoa' created").
+
+REGRESSION DETECTED. Per AC8, stopping here. Story not closed.
+
+$ argocd app list (relevant rows only, compared to Step 1 baseline comment)
+argocd/fleet-platform-aoa  in-cluster  argocd  default  Synced     Healthy  Auto-Prune  <none>                    https://github.com/adamancini/argo-fleet.git   bootstrap  HEAD
+argocd/platform-aoa        in-cluster  argocd  default  OutOfSync  Healthy  Auto-Prune  SharedResourceWarning(4)  https://github.com/adamancini/argo-fleet.git   bootstrap  HEAD
+
+Baseline (Step 1) had platform-aoa as: Synced, repo https://github.com/adamancini/akp-platform.git, path bootstrap, no conditions.
+
+$ argocd appset list (relevant rows only)
+argocd/argocd-apps  default       nil  Healthy  ...  https://github.com/adamancini/argo-fleet.git  {{path}}  HEAD
+argocd/kargo-apps   {{path[1]}}   nil  Healthy  ...  https://github.com/adamancini/argo-fleet.git  {{path}}  HEAD
+
+Baseline (Step 1) had both argocd-apps and kargo-apps sourced from https://github.com/adamancini/akp-platform.git.
+
+FINDING: All three of akp-platform's original bootstrap resources (platform-aoa, argocd-apps, kargo-apps) now report repo=https://github.com/adamancini/argo-fleet.git instead of akp-platform.git. platform-aoa additionally shows OutOfSync + SharedResourceWarning(4) (4 = exact count of fleet-platform-aoa's own managed resource set: itself + fleet-argocd-apps + fleet-kargo-apps + infra-apps), consistent with platform-aoa's spec.source now pointing at the same repo+path as fleet-platform-aoa.
+
+STATUS: STOP-GATE FAILED per AC8. Investigating root cause before any further action. Requested from human operator: `argocd app get platform-aoa -o yaml` and `argocd app get platform-aoa` (plain, for the human-readable SharedResourceWarning detail) to confirm whether platform-aoa's persisted spec.source was actually mutated, and if so, by what mechanism. No mutating command (app set/sync/delete) authorized until root cause is understood.
