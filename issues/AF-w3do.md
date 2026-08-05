@@ -1,18 +1,19 @@
 ---
 id: AF-w3do
 title: "Rename colliding bootstrap resources with fleet- prefix (platform-aoa, argocd-apps, kargo-apps)"
-status: in_progress
+status: closed
 priority: 1
 type: task
 parent: AF-q1il
 created_at: 2026-08-05T18:23:22Z
 created_by: ada
-updated_at: 2026-08-05T18:37:20Z
-content_hash: "sha256:32c7134a3b9e95f69403319df9da64bf6f9a09fffcd74745997a83a8852ebdcb"
-blocks: [AF-s8l0, AF-cbot]
+updated_at: 2026-08-05T18:41:07Z
+content_hash: "sha256:4cea00cb400a62cbedd9a7d08bb57c1ed4d392c8d4a4b1eb691a82471e85d2ee"
 assignee: dev-AF-w3do
 follows: [AF-i2t5, AF-cbot]
 labels: [delivered]
+closed_at: 2026-08-05T18:41:07Z
+close_reason: "Accepted via pvg story accept"
 ---
 
 ## Description
@@ -417,10 +418,12 @@ status: delivered
 - 2026-08-05T18:26:51Z claimed by dev-AF-w3do
 - 2026-08-05T18:30:56Z status: in_progress -> in_progress
 - 2026-08-05T18:30:56Z auto-follows: linked to predecessor AF-cbot
+- 2026-08-05T18:41:07Z status: in_progress -> closed
+- 2026-08-05T18:41:07Z dep_removed: no_longer_blocks AF-s8l0
+- 2026-08-05T18:41:07Z dep_removed: no_longer_blocks AF-cbot
 
 ## Links
 - Parent: [[AF-q1il]]
-- Blocks: [[AF-s8l0]], [[AF-cbot]]
 - Follows: [[AF-i2t5]], [[AF-cbot]]
 
 ## Comments
