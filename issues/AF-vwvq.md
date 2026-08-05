@@ -1,15 +1,16 @@
 ---
 id: AF-vwvq
 title: "Add traefik-gateway infrastructure layer for demo1/demo2"
-status: open
+status: in_progress
 priority: 1
 type: task
 parent: AF-q1il
 created_at: 2026-08-05T14:31:38Z
 created_by: ada
-updated_at: 2026-08-05T14:37:34Z
-content_hash: "sha256:c81c47e78df729b60ea558c2340220c55137afd75393f81c906d33cb871b90c6"
+updated_at: 2026-08-05T14:49:15Z
+content_hash: "sha256:92eca625582b23cac4a9d58bfc8340cfa5ef480d3d60fbeff7f0b635a8bd2f39"
 blocks: [AF-cbot]
+assignee: dev-AF-vwvq
 ---
 
 ## Description
@@ -523,6 +524,8 @@ manifest review guidance before finalizing.
 
 ## History
 - 2026-08-05T14:33:40Z dep_added: blocks AF-cbot
+- 2026-08-05T14:49:15Z status: open -> in_progress
+- 2026-08-05T14:49:15Z claimed by dev-AF-vwvq
 
 ## Links
 - Parent: [[AF-q1il]]
