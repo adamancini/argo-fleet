@@ -8,7 +8,8 @@ parent: AF-q1il
 created_at: 2026-08-05T14:30:55Z
 created_by: ada
 updated_at: 2026-08-05T14:30:55Z
-content_hash: "sha256:ad0657378e717139a07a4b95633f3b53ea8811206a242353b2ca25732b104a78"
+content_hash: "sha256:418dc7354fc2fd40df47b9ab6c5122543aedd9db25fcda083f6b1808411dee4d"
+blocks: [AF-cbot]
 ---
 
 ## Description
@@ -196,9 +197,10 @@ manifest review guidance before finalizing.
 
 
 ## History
-
+- 2026-08-05T14:33:40Z dep_added: blocks AF-cbot
 
 ## Links
 - Parent: [[AF-q1il]]
+- Blocks: [[AF-cbot]]
 
 ## Comments
