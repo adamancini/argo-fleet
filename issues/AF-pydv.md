@@ -8,8 +8,9 @@ parent: AF-q1il
 created_at: 2026-08-05T14:30:04Z
 created_by: ada
 updated_at: 2026-08-05T14:30:04Z
-content_hash: "sha256:b15bac2c5427ead61cf31855b103cf7bec588d88b6735fb919a6f19b4a685e37"
+content_hash: "sha256:11444136e3acdc08676635c9a1e8c379645365b7e00b87dc4582d4b9823b479e"
 blocked_by: [AF-4wcm]
+blocks: [AF-cbot]
 ---
 
 ## Description
@@ -198,9 +199,11 @@ go-task in this repo).
 
 ## History
 - 2026-08-05T14:30:16Z dep_added: blocked_by AF-4wcm
+- 2026-08-05T14:33:40Z dep_added: blocks AF-cbot
 
 ## Links
 - Parent: [[AF-q1il]]
+- Blocks: [[AF-cbot]]
 - Blocked by: [[AF-4wcm]]
 
 ## Comments

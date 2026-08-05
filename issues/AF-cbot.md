@@ -9,8 +9,8 @@ parent: AF-q1il
 created_at: 2026-08-05T14:33:25Z
 created_by: ada
 updated_at: 2026-08-05T14:33:36Z
-content_hash: "sha256:24c50d7c86ba046b1899025def6182996f9f81e453f44ca8c0992f1f5543dbfd"
-blocked_by: [AF-4wcm]
+content_hash: "sha256:d2b99f4b0b8b215d8da19278893613f9678bedec6a43d2a35b047aa3897afcee"
+blocked_by: [AF-4wcm, AF-pydv]
 ---
 
 ## Description
@@ -201,9 +201,10 @@ interpreting any YAML validation failure.
 
 ## History
 - 2026-08-05T14:33:39Z dep_added: blocked_by AF-4wcm
+- 2026-08-05T14:33:40Z dep_added: blocked_by AF-pydv
 
 ## Links
 - Parent: [[AF-q1il]]
-- Blocked by: [[AF-4wcm]]
+- Blocked by: [[AF-4wcm]], [[AF-pydv]]
 
 ## Comments
