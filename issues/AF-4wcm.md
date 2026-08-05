@@ -8,8 +8,8 @@ labels: [walking-skeleton, delivered]
 parent: AF-q1il
 created_at: 2026-08-05T14:29:16Z
 created_by: ada
-updated_at: 2026-08-05T14:57:17Z
-content_hash: "sha256:7c59f5dbe2b834348e52aa41d84dac7c378e88d11588db474f6999d15a525fdc"
+updated_at: 2026-08-05T14:58:02Z
+content_hash: "sha256:500a1e93ecb2b93652eb2d38efc65b8190abbd425c05c9da76891758782ed579"
 blocks: [AF-pydv, AF-cbot]
 assignee: dev-AF-4wcm
 ---
@@ -1239,3 +1239,124 @@ status: delivered
 - Blocks: [[AF-pydv]], [[AF-cbot]]
 
 ## Comments
+
+### 2026-08-05T14:58:02Z ada
+DELIVERED: AF-4wcm -- Migrate cluster/agent registration Terraform from akp-infra
+
+Commit SHA: 5ae238cc223f0356f3b371b3c5fc2fa98f6d72b4 (branch story/AF-4wcm, pushed)
+Files: 10 changed, 447 insertions(+), 0 deletions(-) -- 9 new + .gitignore
+
+PROOF:
+
+All validation re-run in a CLEAN ROOM extracted from the committed SHA via
+`git archive 5ae238c terraform/clusters | tar -x`, so every result below is
+bound to the delivered commit, not to a dirty working tree.
+
+Commands run (all real, outputs verbatim):
+
+1. `terraform fmt -check -recursive` (from terraform/clusters/, Terraform v1.15.8)
+   -> no output, exit 0. Zero files needed reformatting; no reformat was required,
+      so no whitespace drift was introduced.
+
+2. `diff -rq` vs /Users/ada/src/github.com/adamancini/akp-infra/03-clusters/
+   main.tf                       IDENTICAL
+   outputs.tf                    IDENTICAL
+   providers.tf                  IDENTICAL
+   variables.tf                  IDENTICAL
+   terraform.tfvars.example      IDENTICAL
+   templates/kustomization.yaml  IDENTICAL
+   modules/cluster/ (recursive)  IDENTICAL
+   -> no diff output for any path. Byte-identical, not merely whitespace-equal.
+
+3. `terraform init -backend=false && terraform validate` (no terraform.tfvars present)
+   -> init: "Terraform has been successfully initialized!" (akuity/akp v0.14.0)
+   -> validate: "Success! The configuration is valid."
+   Init artifacts (.terraform/, .terraform.lock.hcl) were removed before commit --
+   neither is in the story's nine-file list.
+
+4. Gitignore hygiene -- verified two ways, not just by grep:
+   a. `grep -Fqx` -- all six lines PRESENT verbatim.
+   b. FUNCTIONAL test with decoy files + `git check-ignore -q`:
+      terraform.tfstate            IGNORED
+      terraform.tfstate.backup     IGNORED
+      terraform.tfvars             IGNORED
+      .kubeconfigs/demo1.yaml      IGNORED
+      .terraform/junk              IGNORED
+      terraform.tfvars.example     TRACKED (correct -- negation works)
+      All decoys deleted afterward; `git status -uno` clean post-commit.
+
+5. Secrets scan of the staged diff (regex for PRIVATE KEY blocks,
+   client-key-data:, client-certificate-data:, apiKey, password)
+   -> "no secret material in staged diff".
+
+6. YAML syntax, templates/kustomization.yaml (ruby -ryaml; pyyaml absent on this host)
+   -> valid YAML; apiVersion=kustomize.config.k8s.io/v1beta1 kind=Kustomization
+      patches=2; both embedded patch strings independently parse as valid YAML.
+
+7. `pvg verify <10 paths> --format text`
+   -> VERIFY: PASSED (0 files scanned, 0 issues), exit 0.
+   Reported honestly: 0 files scanned -- pvg verify does not scan .tf/.yaml/
+   .gitignore, so it is vacuous for this story. It is NOT evidence of quality
+   here; items 1-6 are.
+
+AC verification table:
+
+| AC | Requirement | Result | Evidence |
+|----|-------------|--------|----------|
+| 1 | All 9 files exist at exact paths, byte-identical to source | PASS | Existence+line-count check (17/67/51/14/66/136/9/51/28 lines); `find terraform -type f \| wc -l` = 9 exactly (no strays); diff -rq identical |
+| 2 | `terraform fmt -check -recursive` no output | PASS | No output, exit 0 (cmd 1) |
+| 3 | `diff -rq` vs every source file, no output | PASS | 7 paths, all IDENTICAL (cmd 2) |
+| 4 | .gitignore gains the six lines, verified via grep -F | PASS | grep -Fqx all PRESENT, plus functional check-ignore test (cmd 4) |
+| 5 | Never read/copy/modify/commit tfstate, tfstate.backup, or real tfvars | PASS | Files copied by explicit per-file `cp` enumeration -- never `cp -r` of the directory. Contents of tfstate/tfstate.backup/tfvars never opened. Only a directory `ls -la` listed their names. None staged (cmd 3 table below) |
+| 6 | git status after staging shows no *.tfstate*, bare *.tfvars, or .kubeconfigs/ | PASS | Staged set is exactly .gitignore + the 9 story files; git diff --stat --cached shows 10 files / 447 insertions; zero forbidden paths |
+| 7 | `terraform init -backend=false && terraform validate` succeeds | PASS | "Success! The configuration is valid." (cmd 3) |
+
+DISCREPANCY FOUND -- PM please adjudicate (1 line, comment-only, no functional impact):
+
+The story's embedded text for `terraform.tfvars.example` does NOT match the real
+akp-infra source it claims to be a verbatim copy of. I extracted all nine embedded
+code blocks from the story body and diffed them against the source; 8 of 9 matched
+exactly. The ninth:
+
+  story body says:  # Must match the instances created by akp-infra's 01-argocd and 02-kargo
+                    # stacks (looked up by name).
+  actual source:    # Must match the instances created by 01-argocd and 02-kargo (looked up by name).
+
+I shipped the SOURCE version, because AC1 ("byte-identical ... to their
+akp-infra/03-clusters source") and AC3 ("diff -rq ... produces no output") are the
+binding, machine-checkable fidelity requirements, and the story's own stated intent
+is a copy "provably identical to the already-reviewed source -- not a transcription
+with subtle differences". Shipping the story-body wording would have failed AC3 with
+a non-whitespace diff. Note the story-body wording is arguably the better comment now
+that the file lives in a different repo (01-argocd/02-kargo are not local here). If
+the PM prefers that wording, it is a one-line follow-up -- but it should then be made
+in akp-infra first, or ACs 1/3 relaxed, so the two repos do not silently drift.
+
+OBSERVATION (not a blocker, no action taken -- out of scope):
+akp-infra/03-clusters ships a `.terraform.lock.hcl` pinning akuity/akp v0.13.0. It is
+not in this story's nine-file list, so I did not copy it. Consequently a fresh
+`terraform init` here resolved v0.14.0 (the `~> 0.10` constraint floats). Validation
+passes on 0.14.0, so nothing is broken today, but this stack is currently unpinned
+while its source repo is pinned. Worth a follow-up story to copy or regenerate the
+lock file before anyone runs `terraform apply` against real infrastructure.
+
+LEARNINGS:
+- Story-embedded "verbatim copy" text should not be trusted as the source of truth.
+  Mechanically extracting every embedded block and diffing it against the real source
+  caught a real drift in 1 of 9 files that eyeballing would likely have missed. Worth
+  doing on every copy-migration story in this epic.
+- Copy by explicit per-file `cp` enumeration, never `cp -r` of a directory, when the
+  source dir contains state/secrets. The source 03-clusters holds terraform.tfstate,
+  .tfstate.backup, real terraform.tfvars, and .kubeconfigs/ -- one `cp -r` would have
+  leaked all four. Enumeration makes AC5 compliance structural rather than careful.
+- Asserting gitignore lines are present (grep) is weaker than asserting they WORK.
+  Creating decoy tfstate/tfvars/kubeconfig files and running `git check-ignore`
+  actually tests the outcome, including that the `!*.tfvars.example` negation is
+  correctly ordered after the `*.tfvars` rule. Recommend later epic stories reuse this.
+- `terraform init` leaves .terraform/ and .terraform.lock.hcl behind. .terraform/ is
+  gitignored, but the lock file is not -- clean it up before staging or it silently
+  joins the commit as an untracked-then-added stray.
+- Two tooling gotchas on this host: `pvg verify` takes `--format text` (space), not
+  `--format=text`; and python3 has no pyyaml, so use `ruby -ryaml` for YAML checks.
+  Also note pvg verify scans no .tf/.yaml files at all, so it is vacuous on
+  Terraform-only stories -- do not present it as meaningful evidence.
