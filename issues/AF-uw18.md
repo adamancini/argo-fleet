@@ -9,7 +9,7 @@ parent: AF-q1il
 created_at: 2026-08-05T15:54:11Z
 created_by: ada
 updated_at: 2026-08-05T16:12:59Z
-content_hash: "sha256:7c08f73bdb6fba7f8ddc31a6ce58bde995bd79e4494a88bc11c666675da37782"
+content_hash: "sha256:6ef1b6c8cf37d929d8c1dcac0c97dff686b0fa75cfedd44a1c9728f5d4daac5f"
 blocks: [AF-tqmb, AF-cbot]
 was_blocked_by: [AF-pydv]
 assignee: dev-AF-uw18
@@ -249,6 +249,16 @@ AF-pydv's own MANDATORY SKILLS entry).
 
 
 ## Notes
+
+
+## nd_contract
+status: delivered
+
+### evidence
+- Transitioned via pvg story deliver on 2026-08-05.
+
+### proof
+- [ ] Developer evidence block must remain authoritative above this contract.
 
 
 ## History
