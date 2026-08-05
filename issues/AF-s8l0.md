@@ -8,8 +8,8 @@ labels: [human-execution-required, external-integration]
 parent: AF-q1il
 created_at: 2026-08-05T18:23:50Z
 created_by: ada
-updated_at: 2026-08-05T18:23:54Z
-content_hash: "sha256:4adc61d64c557e1b5f94ce0ead9215dabad2789cd94f5d307db282fab1d4ebaa"
+updated_at: 2026-08-05T18:24:47Z
+content_hash: "sha256:411f22eae8738178bf2be354c89b31feb021791ba2d78c92cb216cc9cdaad92c"
 blocked_by: [AF-w3do]
 blocks: [AF-cbot]
 ---
@@ -74,7 +74,13 @@ already-live resources are byte-for-byte unchanged after this story's
 apply step, and (b) the new `fleet-*` tree comes up healthy on its own.
 No amount of automated testing substitutes for a human physically
 confirming both of these, because the cost of being wrong is
-`akp-platform`'s live demo environment being silently pruned.
+`akp-platform`'s live demo environment being silently pruned. Once this
+story's steps complete, the repo owner (user) can trust that
+`argocd app list`/`argocd appset list` displays `fleet-platform-aoa`,
+`fleet-argocd-apps`, and `fleet-kargo-apps` as `Synced`/`Healthy` while
+`akp-platform`'s original resources remain untouched -- that observable,
+literal command output is the outcome this story delivers, not an
+agent's assertion that it "should be fine."
 
 STEPS (run by a human operator, one at a time, from
 `/Users/ada/src/github.com/adamancini/argo-fleet` unless noted; every
