@@ -9,9 +9,10 @@ parent: AF-q1il
 created_at: 2026-08-05T14:33:25Z
 created_by: ada
 updated_at: 2026-08-05T14:37:35Z
-content_hash: "sha256:5a80cd2a28a2deb7fd1107c5acbbbc2bb0e79536e14aaacfc8486a4683d5be5b"
-blocked_by: [AF-4wcm, AF-pydv, AF-8ik8, AF-vwvq, AF-qujb]
+content_hash: "sha256:b370f19e4c7b8396f34b1918ba3f1798bce7d46524b267300f5326cd727d889c"
+blocked_by: [AF-pydv, AF-8ik8, AF-vwvq, AF-qujb]
 blocks: [AF-tqmb]
+was_blocked_by: [AF-4wcm]
 ---
 
 ## Description
@@ -209,10 +210,12 @@ interpreting any YAML validation failure.
 - 2026-08-05T14:33:40Z dep_added: blocked_by AF-vwvq
 - 2026-08-05T14:33:41Z dep_added: blocked_by AF-qujb
 - 2026-08-05T14:34:59Z dep_added: blocks AF-tqmb
+- 2026-08-05T15:15:12Z dep_removed: was_blocked_by AF-4wcm
 
 ## Links
 - Parent: [[AF-q1il]]
 - Blocks: [[AF-tqmb]]
-- Blocked by: [[AF-4wcm]], [[AF-pydv]], [[AF-8ik8]], [[AF-vwvq]], [[AF-qujb]]
+- Blocked by: [[AF-pydv]], [[AF-8ik8]], [[AF-vwvq]], [[AF-qujb]]
+- Was blocked by: [[AF-4wcm]]
 
 ## Comments

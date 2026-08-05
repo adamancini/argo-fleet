@@ -1,17 +1,18 @@
 ---
 id: AF-4wcm
 title: "Migrate cluster/agent registration Terraform from akp-infra into argo-fleet"
-status: in_progress
+status: closed
 priority: 0
 type: task
 labels: [walking-skeleton, delivered]
 parent: AF-q1il
 created_at: 2026-08-05T14:29:16Z
 created_by: ada
-updated_at: 2026-08-05T15:15:05Z
-content_hash: "sha256:a874f5ba068c25e16a82f570cc8c654f3c9b28304e0ab798973c0e1110d3f3d8"
-blocks: [AF-pydv, AF-cbot]
+updated_at: 2026-08-05T15:15:12Z
+content_hash: "sha256:be882e3052debc6e33eaa4bd6f203e65cc7a00b15f3f046da341980fb1f6ab05"
 assignee: dev-AF-4wcm
+closed_at: 2026-08-05T15:15:12Z
+close_reason: "Accepted via pvg story accept"
 ---
 
 ## Description
@@ -1233,10 +1234,12 @@ status: delivered
 - 2026-08-05T14:49:02Z status: open -> in_progress
 - 2026-08-05T14:49:02Z claimed by dev-AF-4wcm
 - 2026-08-05T14:57:17Z status: in_progress -> in_progress
+- 2026-08-05T15:15:12Z status: in_progress -> closed
+- 2026-08-05T15:15:12Z dep_removed: no_longer_blocks AF-pydv
+- 2026-08-05T15:15:12Z dep_removed: no_longer_blocks AF-cbot
 
 ## Links
 - Parent: [[AF-q1il]]
-- Blocks: [[AF-pydv]], [[AF-cbot]]
 
 ## Comments
 
