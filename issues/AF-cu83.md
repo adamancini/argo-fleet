@@ -4,7 +4,7 @@ title: "Bug: terraform/clusters provider version unpinned after migration (v0.13
 status: in_progress
 priority: 0
 type: bug
-labels: [discovered-by-pm]
+labels: [discovered-by-pm, delivered]
 parent: AF-q1il
 created_at: 2026-08-05T15:22:58Z
 created_by: ada
