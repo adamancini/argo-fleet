@@ -5,6 +5,7 @@ vars:
   KEYPAIR_CERT: '{{.KEYPAIR_DIR}}/tls.crt'
   KEYPAIR_KEY: '{{.KEYPAIR_DIR}}/tls.key'
   CLUSTERS: k3d-demo1 k3d-demo2
+  TERRAFORM_CLUSTERS_DIR: '{{.ROOT_DIR}}/terraform/clusters'
 
 tasks:
   sealed-secrets:generate-keypair:
@@ -78,3 +79,36 @@ tasks:
         | kubeseal --cert {{.KEYPAIR_CERT}} --format yaml \
         > "${OUTPUT}"
         echo "Wrote ${OUTPUT}"
+
+  cluster:create:
+    desc: 'Create a k3d cluster for use as an Akuity workload cluster, with the bundled Traefik and local-path-provisioner disabled. Usage: task cluster:create -- <name>'
+    cmds:
+      - |
+        k3d cluster create {{index .CLI_ARGS_LIST 0}} \
+          --k3s-arg "--disable=traefik@server:0" \
+          --k3s-arg "--disable=local-storage@server:0"
+
+  cluster:delete:
+    desc: 'Delete a k3d cluster. Usage: task cluster:delete -- <name>'
+    cmds:
+      - k3d cluster delete {{index .CLI_ARGS_LIST 0}}
+
+  # Both k3d commands are inlined here rather than delegating to
+  # cluster:delete / cluster:create via nested `task:` calls. CLI_ARGS_LIST
+  # forwarding through a nested task invocation is not exercised anywhere in
+  # this repo, and getting CLI_ARGS forwarding wrong has already cost one
+  # real fix cycle (see c422094).
+  cluster:recreate:
+    desc: 'Delete and recreate a k3d cluster cleanly (no bundled Traefik/local-path). Usage: task cluster:recreate -- <name>'
+    cmds:
+      - k3d cluster delete {{index .CLI_ARGS_LIST 0}} 2>/dev/null || true
+      - |
+        k3d cluster create {{index .CLI_ARGS_LIST 0}} \
+          --k3s-arg "--disable=traefik@server:0" \
+          --k3s-arg "--disable=local-storage@server:0"
+
+  cluster:register-agent:
+    desc: 'Export a cluster kubeconfig and apply its Argo CD/Kargo agent registration via Terraform. Usage: task cluster:register-agent -- <name>'
+    cmds:
+      - k3d kubeconfig get {{index .CLI_ARGS_LIST 0}} > {{.TERRAFORM_CLUSTERS_DIR}}/.kubeconfigs/{{index .CLI_ARGS_LIST 0}}.yaml
+      - cd {{.TERRAFORM_CLUSTERS_DIR}} && terraform apply -target='module.cluster["{{index .CLI_ARGS_LIST 0}}"]'
