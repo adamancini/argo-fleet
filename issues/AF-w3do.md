@@ -7,11 +7,11 @@ type: task
 parent: AF-q1il
 created_at: 2026-08-05T18:23:22Z
 created_by: ada
-updated_at: 2026-08-05T18:41:07Z
+updated_at: 2026-08-05T18:41:08Z
 content_hash: "sha256:4cea00cb400a62cbedd9a7d08bb57c1ed4d392c8d4a4b1eb691a82471e85d2ee"
 assignee: dev-AF-w3do
 follows: [AF-i2t5, AF-cbot]
-labels: [delivered, accepted]
+labels: [accepted]
 closed_at: 2026-08-05T18:41:07Z
 close_reason: "Accepted via pvg story accept"
 ---
