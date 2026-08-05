@@ -113,3 +113,22 @@ tasks:
       - mkdir -p {{.TERRAFORM_CLUSTERS_DIR}}/.kubeconfigs
       - k3d kubeconfig get {{index .CLI_ARGS_LIST 0}} > {{.TERRAFORM_CLUSTERS_DIR}}/.kubeconfigs/{{index .CLI_ARGS_LIST 0}}.yaml
       - cd {{.TERRAFORM_CLUSTERS_DIR}} && terraform apply -target='module.cluster["{{index .CLI_ARGS_LIST 0}}"]'
+
+  argocd:login:
+    desc: 'Authenticate the argocd CLI against this stack''s Argo CD instance (reads TF_VAR_admin_password; requires terraform apply to have run in terraform/clusters).'
+    preconditions:
+      - sh: '[ -n "${TF_VAR_admin_password:-}" ]'
+        msg: "TF_VAR_admin_password is not set -- export it (see akp-infra's .envrc) before logging in."
+    cmds:
+      - |
+        set -euo pipefail
+        HOSTNAME=$(cd {{.TERRAFORM_CLUSTERS_DIR}} && terraform output -raw argocd_hostname)
+        argocd login "$HOSTNAME" --username admin --password "$TF_VAR_admin_password" --grpc-web
+
+  kargo:login:
+    desc: 'Authenticate the kargo CLI against this stack''s Kargo instance (requires terraform apply to have run in terraform/clusters).'
+    cmds:
+      - |
+        set -euo pipefail
+        HOSTNAME=$(cd {{.TERRAFORM_CLUSTERS_DIR}} && terraform output -raw kargo_hostname)
+        kargo login --admin "https://${HOSTNAME}"
