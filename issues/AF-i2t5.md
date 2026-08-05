@@ -8,8 +8,8 @@ labels: [discovered-by-pm]
 parent: AF-q1il
 created_at: 2026-08-05T16:33:32Z
 created_by: ada
-updated_at: 2026-08-05T16:33:32Z
-content_hash: "sha256:11bb59e391174b872151e7e861860cede79814524a4ef050aadd2538ac614395"
+updated_at: 2026-08-05T16:34:14Z
+content_hash: "sha256:4a306332b732ebb12f3c15471b54e2ba9bd8a4744284622b5cc3a4f4ff0b1499"
 ---
 
 ## Description
@@ -128,7 +128,18 @@ None identified (nd vault frontmatter repair; no application code).
 
 
 ## Notes
+ROOT CAUSE CONFIRMED: AF-tqmb's frontmatter had no parent: key at all (unlike every sibling story in AF-q1il, which all carry parent: AF-q1il). This is a Sr PM tooling-layer repair, not a code bug -- applied directly via nd vault write access per bug triage instructions (no developer story created).
 
+FIX APPLIED: `nd update AF-tqmb --parent AF-q1il` (2026-08-05T16:33:40Z). AF-tqmb's frontmatter now carries parent: AF-q1il, matching all 9 other stories in the epic.
+
+VERIFICATION (all 3 commands re-run post-fix):
+- `pvg nd children AF-q1il` -- now lists 12 issues (was 10), including AF-tqmb (deferred, open) and this bug AF-i2t5 (open). PASS.
+- `pvg nd epic tree AF-q1il` -- now shows AF-tqmb's row as [ ] (open/deferred), correctly distinguished from its 9 closed siblings. PASS.
+- `pvg nd epic close-eligible AF-q1il` -- now reports 'No close-eligible epics found' (previously falsely reported '10/10 closed' / eligible). PASS -- the epic can no longer be auto-closed while AF-tqmb (release gate) and this bug remain open.
+
+EPIC-WIDE ONE-DIRECTIONAL-LINK AUDIT: Dumped parent/blocked_by/blocks/was_blocked_by/follows/led_to frontmatter fields for all 10 pre-existing stories in AF-q1il. Found no other missing-parent or unmirrored blocked_by/blocks pair. AF-cbot's historical 'blocks AF-tqmb' edge (recorded in AF-cbot's History) DID mirror correctly onto AF-tqmb's side at creation time (AF-tqmb's own History independently shows dep_added: blocked_by AF-cbot at the same timestamp) and both sides were symmetrically cleared when AF-cbot closed -- the blocked_by/blocks dependency mechanism itself was never the defect. The only defect found and fixed in this epic is the single missing parent field on AF-tqmb, now corrected. AF-4wcm's blocks:[AF-cu83] correctly mirrors AF-cu83's blocked_by:[AF-4wcm] -- no cleanup needed there, and it is out of scope of this bug (both sides agree; not a mirroring defect).
+
+Closing this bug now -- fix applied and structurally verified, no developer-claimable follow-up required.
 
 ## History
 
