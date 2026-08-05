@@ -8,8 +8,8 @@ labels: [discovered-by-pm, delivered]
 parent: AF-q1il
 created_at: 2026-08-05T15:22:58Z
 created_by: ada
-updated_at: 2026-08-05T15:34:03Z
-content_hash: "sha256:8bccf526c97bf2bbe1e350b85281e9d53df52be0dbb2a95ffd9de8ddce24a2ae"
+updated_at: 2026-08-05T15:35:05Z
+content_hash: "sha256:8042af481f3a3dcdab4517c38496d63f40834c80c156415a24725f575a391cb0"
 blocked_by: [AF-4wcm]
 blocks: [AF-tqmb]
 assignee: dev-AF-cu83
@@ -289,3 +289,161 @@ status: delivered
 - Follows: [[AF-8ik8]], [[AF-qujb]]
 
 ## Comments
+
+### 2026-08-05T15:35:05Z ada
+DELIVERED: AF-cu83 -- akuity/akp provider pinned to 0.13.0 via committed lock file
+
+Commit: 64f96629648a9938a056e1acc8a3bbf9859eafea (branch story/AF-cu83, pushed to origin)
+Files changed: 1 file, +24 lines -- terraform/clusters/.terraform.lock.hcl (new, generated)
+Environment: Terraform v1.15.8 on darwin_arm64
+
+PROOF:
+
+--- Step 1: literal AC1 command, no lock file present (confirms the float) ---
+$ cd terraform/clusters && terraform init -backend=false
+Initializing modules...
+- cluster in modules/cluster
+
+Initializing provider plugins...
+- Finding akuity/akp versions matching "~> 0.10"...
+- Installing akuity/akp v0.14.0...
+- Installed akuity/akp v0.14.0 (self-signed, key ID 14B9D2131E732E01)
+...
+Terraform has created a lock file .terraform.lock.hcl to record the provider
+selections it made above. Include this file in your version control repository
+so that Terraform can guarantee to make the same selections by default when
+you run "terraform init" in the future.
+
+Terraform has been successfully initialized!
+
+  => Reproduces the reported bug exactly: unpinned, resolves v0.14.0, one minor
+     ahead of the source stack's real applied pin.
+
+--- Step 2: pin to the source stack's applied version, re-init ---
+$ rm -rf .terraform .terraform.lock.hcl
+$ cp /Users/ada/src/github.com/adamancini/akp-infra/03-clusters/.terraform.lock.hcl ./.terraform.lock.hcl
+$ terraform init -backend=false
+Initializing modules...
+- cluster in modules/cluster
+
+Initializing provider plugins...
+- Reusing previous version of akuity/akp from the dependency lock file
+- Installing akuity/akp v0.13.0...
+- Installed akuity/akp v0.13.0 (self-signed, key ID 14B9D2131E732E01)
+...
+Terraform has been successfully initialized!
+
+  => v0.13.0 IS still resolvable from the registry under the existing `~> 0.10`
+     constraint, so AC3's primary target was met -- no fallback version needed.
+     Terraform installed and checksum-verified the 0.13.0 package against the
+     lock's hashes (init would have failed on a hash mismatch), so the committed
+     lock is a terraform-validated artifact, not a hand-edited file.
+
+--- Step 3: lock file content verification (AC2, AC3) ---
+$ diff /Users/ada/src/github.com/adamancini/akp-infra/03-clusters/.terraform.lock.hcl ./.terraform.lock.hcl
+(no output -- byte-identical to the source stack's lock)
+
+$ grep -c '^provider "' .terraform.lock.hcl
+1
+
+$ grep -n 'version\|constraints' .terraform.lock.hcl
+5:  version     = "0.13.0"
+6:  constraints = "~> 0.10"
+
+  LOCKED VERSION: registry.terraform.io/akuity/akp = 0.13.0
+  Exactly one provider block. Constraint recorded as `~> 0.10` (unchanged).
+
+--- Step 4: terraform validate with lock present, no terraform.tfvars (AC4) ---
+$ ls terraform.tfvars
+ls: terraform.tfvars: No such file or directory
+
+$ terraform validate
+Success! The configuration is valid.
+
+--- Step 5: git hygiene (AC7, AC8) ---
+$ rm -rf .terraform
+$ ls -a terraform/clusters
+.  ..  .terraform.lock.hcl  main.tf  modules  outputs.tf  providers.tf
+templates  terraform.tfvars.example  variables.tf
+
+$ git add terraform/clusters/.terraform.lock.hcl && git status --porcelain
+A  terraform/clusters/.terraform.lock.hcl
+
+$ git diff --cached --stat
+ terraform/clusters/.terraform.lock.hcl | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+  Exactly one staged path. No *.tfstate*, no bare *.tfvars, no .terraform/,
+  nothing under .kubeconfigs/. Lock file is not in .gitignore and was not
+  added there (verified against the AF-4wcm .gitignore block, unmodified).
+
+--- Step 6: reproducibility re-run at the committed SHA (64f9662) ---
+$ terraform init -backend=false
+- Reusing previous version of akuity/akp from the dependency lock file
+- Installing akuity/akp v0.13.0...
+- Installed akuity/akp v0.13.0 (self-signed, key ID 14B9D2131E732E01)
+Terraform has been successfully initialized!
+$ terraform validate
+Success! The configuration is valid.
+$ rm -rf .terraform && git status --porcelain
+(empty -- working tree clean)
+
+  => The committed state now pins deterministically: the same command that
+     resolved v0.14.0 in Step 1 resolves v0.13.0 in Step 6. This is the
+     behavior AF-tqmb's operator needs.
+
+--- pvg verify ---
+$ pvg verify terraform/clusters/.terraform.lock.hcl --format text
+VERIFY: PASSED (0 files scanned, 0 issues)
+exit=0
+  (0 files scanned: pvg verify's substance/stub heuristics do not apply to
+   generated .hcl lock artifacts; no issues reported.)
+
+--- Pre-flight: already-landed check ---
+$ git log epic/AF-q1il --oneline -n 20   # AF-4wcm merged at 50c8ab1, AF-8ik8 at fca5308
+$ git ls-tree -r epic/AF-q1il --name-only | grep -i lock
+(no match -- no lock file on the epic branch; work was genuinely not landed)
+
+ACCEPTANCE CRITERIA VERIFICATION:
+
+| AC | Requirement | Status | Evidence |
+|----|-------------|--------|----------|
+| 1 | `terraform init -backend=false` from terraform/clusters/, no tfvars/backend/creds, creates .terraform.lock.hcl | PASS | Step 1 -- "Terraform has created a lock file .terraform.lock.hcl". No terraform.tfvars present (Step 4), no backend (-backend=false), no AKUITY_* credentials read. |
+| 2 | Lock contains exactly one `provider "registry.terraform.io/akuity/akp"` block with a single pinned version satisfying `~> 0.10` | PASS | Step 3 -- block count 1; `version = "0.13.0"`; `constraints = "~> 0.10"`; 0.13.0 satisfies `~> 0.10`. |
+| 3 | Pinned version matches source stack's 0.13.0 (else record substitute + why) | PASS | Step 2/3 -- 0.13.0 resolved and installed successfully; byte-identical `diff` against akp-infra/03-clusters/.terraform.lock.hcl. No fallback needed. |
+| 4 | `terraform validate` (no tfvars) succeeds with literal "Success! The configuration is valid." after lock added | PASS | Step 4 and Step 6 -- exact string reproduced twice, pre- and post-commit. |
+| 5 | No modification to providers.tf constraint, main.tf, variables.tf, outputs.tf, or modules/ | PASS | Step 5 -- `git status --porcelain` shows a single `A` (add) line, zero `M` lines. Commit diffstat: 1 file changed, 24 insertions, 0 deletions. |
+| 6 | No read/copy/modify/commit of akp-infra tfstate/tfstate.backup/tfvars; no apply, no real-backend plan, no AKUITY_API_KEY_* read | PASS | Only file read from akp-infra was `03-clusters/.terraform.lock.hcl` (explicitly cited in the story's own EVIDENCE and IMPLEMENTATION sections). Commands run were limited to `terraform init -backend=false`, `terraform validate`, `terraform version`, and git/ls/grep/diff. No `terraform apply`, no `terraform plan`, no credential env vars referenced. |
+| 7 | `git status` after staging shows no *.tfstate*, bare *.tfvars, .terraform/, or .kubeconfigs/ content | PASS | Step 5 -- single staged path `terraform/clusters/.terraform.lock.hcl`; `.terraform/` removed before staging; post-commit tree clean (Step 6). |
+| 8 | Lock file staged and committed to git; not added to .gitignore | PASS | Commit 64f9662, pushed to origin/story/AF-cu83. .gitignore untouched (zero modified files in the commit) and does not match `.terraform.lock.hcl` -- only `terraform/clusters/.terraform/`, `*.tfstate*`, `*.tfvars` (minus `.example`), `.kubeconfigs/`. |
+
+Zero errors, zero warnings across all commands. No DISCOVERED_BUG findings.
+
+LEARNINGS:
+- The float was real and already one minor ahead: a bare `terraform init` here
+  resolved v0.14.0 while the source stack's applied state sits on v0.13.0.
+  Catching this before AF-tqmb runs `terraform apply` against live demo1/demo2
+  is exactly the window the story was created for -- an unpinned provider is
+  invisible until the moment it silently is not.
+- Pinning to a specific older version without touching the version constraint is
+  best done by seeding the source stack's lock file and letting `terraform init`
+  install and checksum-verify it, rather than hand-writing hashes. Terraform
+  reports "Reusing previous version ... from the dependency lock file" and fails
+  loudly on any hash mismatch, so the committed artifact is terraform-validated.
+  Using `-upgrade`, or temporarily tightening the constraint in providers.tf,
+  would both have been wrong (the former re-floats, the latter violates AC5).
+- The resulting lock is byte-identical to akp-infra/03-clusters', which is the
+  strongest possible evidence for AC3 -- worth doing the `diff` explicitly rather
+  than just grepping the version line.
+- Platform caveat for future operators: the lock carries one `h1:` hash
+  (darwin_arm64) plus the full set of registry `zh:` hashes. A Linux operator's
+  `terraform init` will verify against the `zh:` entries and succeed, but will
+  append its own `h1:` line, producing a small lock-file diff. This matches the
+  source stack's behavior exactly, so it was left as-is; if the epic later grows
+  Terraform CI on linux_amd64, running
+  `terraform providers lock -platform=linux_amd64 -platform=darwin_arm64` would
+  pre-populate both and eliminate the churn.
+- `pvg verify` reports "0 files scanned" for generated `.hcl` artifacts -- it has
+  no substance heuristics for them. Clean exit here means "nothing to check", not
+  "content reviewed"; the real gate for this story is `terraform validate` plus
+  the lock-content assertions.
