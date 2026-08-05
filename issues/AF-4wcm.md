@@ -9,7 +9,7 @@ parent: AF-q1il
 created_at: 2026-08-05T14:29:16Z
 created_by: ada
 updated_at: 2026-08-05T14:57:17Z
-content_hash: "sha256:9e9bf0e6d66143502cef2ae4819dacd0fa8882e98c8d59c1979db98cada9adb8"
+content_hash: "sha256:7c59f5dbe2b834348e52aa41d84dac7c378e88d11588db474f6999d15a525fdc"
 blocks: [AF-pydv, AF-cbot]
 assignee: dev-AF-4wcm
 ---
@@ -1215,6 +1215,16 @@ project-specific skill covers Terraform/HCL in this repo).
 
 
 ## Notes
+
+
+## nd_contract
+status: delivered
+
+### evidence
+- Transitioned via pvg story deliver on 2026-08-05.
+
+### proof
+- [ ] Developer evidence block must remain authoritative above this contract.
 
 
 ## History
