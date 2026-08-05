@@ -10,7 +10,7 @@ created_by: ada
 updated_at: 2026-08-05T15:27:26Z
 content_hash: "sha256:901a9bca350228cc2ce6d32ab579cc81376d7d4424135b4216e7a59074233d86"
 assignee: dev-AF-8ik8
-labels: [delivered, accepted]
+labels: [accepted]
 closed_at: 2026-08-05T15:27:26Z
 close_reason: "Accepted via pvg story accept"
 ---
