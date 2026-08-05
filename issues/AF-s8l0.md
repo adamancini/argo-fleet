@@ -8,8 +8,8 @@ labels: [human-execution-required, external-integration]
 parent: AF-q1il
 created_at: 2026-08-05T18:23:50Z
 created_by: ada
-updated_at: 2026-08-05T19:43:24Z
-content_hash: "sha256:a34c33d02628a345799955311c09bede2a87f228add87b5b7c445da49a17b3c8"
+updated_at: 2026-08-05T20:31:39Z
+content_hash: "sha256:6d9f11eb88cb7cb13ce99afd3f70308c4ec3097ad227492f946dc1ce8232ce50"
 blocks: [AF-cbot]
 was_blocked_by: [AF-w3do]
 ---
@@ -303,3 +303,17 @@ Baseline (Step 1) had both argocd-apps and kargo-apps sourced from https://githu
 FINDING: All three of akp-platform's original bootstrap resources (platform-aoa, argocd-apps, kargo-apps) now report repo=https://github.com/adamancini/argo-fleet.git instead of akp-platform.git. platform-aoa additionally shows OutOfSync + SharedResourceWarning(4) (4 = exact count of fleet-platform-aoa's own managed resource set: itself + fleet-argocd-apps + fleet-kargo-apps + infra-apps), consistent with platform-aoa's spec.source now pointing at the same repo+path as fleet-platform-aoa.
 
 STATUS: STOP-GATE FAILED per AC8. Investigating root cause before any further action. Requested from human operator: `argocd app get platform-aoa -o yaml` and `argocd app get platform-aoa` (plain, for the human-readable SharedResourceWarning detail) to confirm whether platform-aoa's persisted spec.source was actually mutated, and if so, by what mechanism. No mutating command (app set/sync/delete) authorized until root cause is understood.
+
+### 2026-08-05T20:31:39Z ada
+AC4 / Step 3 STOP-GATE: RESOLVED. AC5 / Step 4: satisfied.
+
+Incident summary: applying fleet-platform-aoa initially corrupted akp-platform's platform-aoa/argocd-apps/kargo-apps (repoURL overwritten to argo-fleet.git) because the AF-w3do rename fix existed only on an unpushed local branch -- targetRevision: HEAD resolved against origin/main, which still had the old, colliding unprefixed filenames. Root-caused, pushed the fix to main (with user's explicit go-ahead to merge all of epic/AF-q1il, accepting the infra-apps side effect), then hit a second-order issue: `argocd app delete fleet-platform-aoa` cascades by default (my error -- assumed the opposite), which cascade-deleted through fleet-argocd-apps -> argocd-akkoma/argocd-soju and cascaded further via Kubernetes ownerReferences GC, plus tripped a validation deadlock on akp-platform's guestbook-*/rollouts-app family (AppProject deleted -> children can't validate -> can't finish deleting -> AppProject can't be recreated). No real workload data was lost -- confirmed via direct kubectl against demo1/demo2 before taking any destructive action; all pods were pre-incident age throughout. Recovered by restoring platform-aoa from akp-platform's own ground-truth manifest (selfHeal cascaded the fix to argocd-apps/kargo-apps automatically), recreating fleet-platform-aoa fresh now that main had the fix, and force-clearing stuck finalizers (`argocd app patch NAME --patch '{"metadata":{"finalizers":null}}' --type merge`) on objects deadlocked by the missing-AppProject validation loop, letting their owning ApplicationSets regenerate them cleanly.
+
+Final state (human-verified via `argocd app list` / `argocd appset list`):
+- platform-aoa: Synced/Healthy, repo akp-platform.git, path bootstrap, no conditions -- byte-for-byte match to Step 1 baseline.
+- argocd-apps/kargo-apps (ApplicationSets): both Healthy, repo akp-platform.git -- matches baseline.
+- All guestbook-*/rollouts-app-* individual apps and kargo-guestbook-*/kargo-rollouts-app: back to their original states (OutOfSync/Missing/Manual for the never-synced leaves; Synced/Healthy for the kargo siblings) -- matches baseline.
+- fleet-platform-aoa, fleet-argocd-apps, fleet-kargo-apps: Synced/Healthy -- the actual deliverable, live with no collision.
+- akkoma-*/soju-*: Synced/Progressing, re-adopting already-running pods (not redeployed) -- expected to settle to Healthy.
+
+No regression in akp-platform's three original resources persists. AC8's stop condition is cleared.
