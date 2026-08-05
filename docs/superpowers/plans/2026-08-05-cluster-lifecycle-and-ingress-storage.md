@@ -650,6 +650,7 @@ Delete then create, with both k3d commands inlined directly rather than calling 
   cluster:register-agent:
     desc: 'Export a cluster kubeconfig and apply its Argo CD/Kargo agent registration via Terraform. Usage: task cluster:register-agent -- <name>'
     cmds:
+      - mkdir -p {{.TERRAFORM_CLUSTERS_DIR}}/.kubeconfigs
       - k3d kubeconfig get {{index .CLI_ARGS_LIST 0}} > {{.TERRAFORM_CLUSTERS_DIR}}/.kubeconfigs/{{index .CLI_ARGS_LIST 0}}.yaml
       - cd {{.TERRAFORM_CLUSTERS_DIR}} && terraform apply -target='module.cluster["{{index .CLI_ARGS_LIST 0}}"]'
 ```
