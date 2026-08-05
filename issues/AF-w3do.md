@@ -7,8 +7,8 @@ type: task
 parent: AF-q1il
 created_at: 2026-08-05T18:23:22Z
 created_by: ada
-updated_at: 2026-08-05T18:30:56Z
-content_hash: "sha256:72f3f7f4db8b2b3f1a0555b771e1d0f78361ce467b41412d02395c671bc1d837"
+updated_at: 2026-08-05T18:30:57Z
+content_hash: "sha256:c8660d4a881a121e7687c42d74ccd91138f9c2c52881c16946708b5583f69a3d"
 blocks: [AF-s8l0, AF-cbot]
 assignee: dev-AF-w3do
 follows: [AF-i2t5, AF-cbot]
@@ -397,6 +397,16 @@ specific pattern applies).
 
 
 ## Notes
+
+
+## nd_contract
+status: delivered
+
+### evidence
+- Transitioned via pvg story deliver on 2026-08-05.
+
+### proof
+- [ ] Developer evidence block must remain authoritative above this contract.
 
 
 ## History
