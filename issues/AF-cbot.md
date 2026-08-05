@@ -4,11 +4,11 @@ title: "Full static verification of Terraform migration & new infrastructure lay
 status: closed
 priority: 1
 type: task
-labels: [capstone, delivered]
+labels: [capstone, delivered, accepted]
 parent: AF-q1il
 created_at: 2026-08-05T14:33:25Z
 created_by: ada
-updated_at: 2026-08-05T16:28:39Z
+updated_at: 2026-08-05T16:28:40Z
 content_hash: "sha256:d0fb2f886b2631cf0536bdbd217a6087ba7f6c588c92e3c8a110195ba9a7ea29"
 was_blocked_by: [AF-4wcm, AF-8ik8, AF-qujb, AF-pydv, AF-vwvq, AF-uw18]
 assignee: dev-AF-cbot
