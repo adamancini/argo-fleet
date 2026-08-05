@@ -7,8 +7,8 @@ type: task
 parent: AF-q1il
 created_at: 2026-08-05T14:32:18Z
 created_by: ada
-updated_at: 2026-08-05T14:54:57Z
-content_hash: "sha256:e55bac75c2e28ff07fa969b378c3f274cf20ebfb71eb243cbcbb90d1348e1075"
+updated_at: 2026-08-05T14:55:34Z
+content_hash: "sha256:df14589f09f1280bc75e0701451cb7f403a9f3662dfbf5c5f970266abcc2b944"
 blocks: [AF-cbot]
 assignee: dev-AF-qujb
 labels: [delivered]
@@ -331,3 +331,93 @@ status: delivered
 - Blocks: [[AF-cbot]]
 
 ## Comments
+
+### 2026-08-05T14:55:34Z ada
+DELIVERED: AF-qujb -- Add gateway-api-crds infrastructure layer for demo1/demo2
+
+Commit: dc41db5ef075e0fd02e17e19135655ea67840b86 (branch story/AF-qujb, pushed to origin)
+Files: infrastructure/gateway-api-crds/argocd/appset.yaml (new, 36 lines)
+       infrastructure/gateway-api-crds/README.md (new, 22 lines)
+Working tree clean at this SHA (0 modified files).
+
+PROOF:
+
+1) Story validation command, verbatim, at dc41db5:
+   $ ruby -ryaml -e "YAML.load_stream(File.read('infrastructure/gateway-api-crds/argocd/appset.yaml'))" && echo OK
+   OK
+   (exit 0, no YAML parse error)
+
+2) Byte-exact conformance to the story's IMPLEMENTATION blocks. Rather than
+   eyeball the transcription, I extracted the fenced ```yaml and ```markdown
+   blocks straight out of `pvg issues show AF-qujb --json` and diffed:
+   $ diff expected-appset.yaml infrastructure/gateway-api-crds/argocd/appset.yaml
+   IDENTICAL (byte-exact)   [1036 bytes extracted]
+   $ diff expected-README.md infrastructure/gateway-api-crds/README.md
+   IDENTICAL (byte-exact)   [1187 bytes extracted]
+
+3) Parsed-field assertions (16/16 PASS, 0 FAIL):
+   apiVersion=argoproj.io/v1alpha1        kind=ApplicationSet
+   metadata.name=gateway-api-crds         metadata.namespace=argocd
+   generators[0].list.elements=[{cluster: demo1},{cluster: demo2}]
+   template.metadata.name=gateway-api-crds-{{cluster}}
+   sync-wave annotation="-1"              sync-wave value type=String (not Integer)
+   source.repoURL=https://github.com/kubernetes-sigs/gateway-api.git
+   source.targetRevision=v1.5.1           source.path=config/crd/experimental
+   directory.recurse=true
+   destination.name={{cluster}}           destination.namespace=default
+   syncPolicy.automated.prune=true        syncPolicy.automated.selfHeal=true
+
+4) Repo-wide YAML parse (blast-radius diligence): 25/25 files parse, 0 failures.
+   Change is purely additive (two new files), so no existing file could regress,
+   but the full sweep confirms it. Nothing skipped.
+
+5) Discovery wiring verified against the real generator glob in
+   bootstrap/infra-apps.yaml (path: infrastructure/*/argocd):
+     infrastructure/gateway-api-crds/argocd -> Application infra-gateway-api-crds
+     infrastructure/sealed-secrets/argocd   -> Application infra-sealed-secrets
+   PASS -- the new directory is picked up with no change to infra-apps.yaml,
+   as the story predicted.
+
+6) $ pvg verify <both files> --format text
+   VERIFY: PASSED (0 files scanned, 0 issues)   exit=0
+   Honest caveat: pvg verify scans source files and does not scan .yaml/.md,
+   so "0 files scanned" means it asserted nothing here. The real quality
+   evidence is items 1-5, not this line.
+
+AC verification table:
+| AC | Requirement | Status | Evidence |
+|----|-------------|--------|----------|
+| 1 | appset.yaml exists, matches IMPLEMENTATION exactly incl. targetRevision v1.5.1, path config/crd/experimental, sync-wave "-1" annotation | PASS | byte-exact diff (proof 2); 16/16 field assertions (proof 3) |
+| 2 | README.md exists, documents sync-wave ordering and one-time selfHeal retry | PASS | byte-exact diff (proof 2); README "## Ordering" section covers sync-order-vs-creation-order and the automatic selfHeal retry |
+| 3 | ruby YAML.load_stream exits OK, no parse error | PASS | proof 1 (verbatim story command, exit 0) |
+| 4 | spec.source.targetRevision is exactly v1.5.1 | PASS | proof 3, parsed value "v1.5.1" -- not a range, not newer/older |
+| 5 | Must NOT sync/apply/mutate any live Argo CD or k3d cluster | PASS | no kubectl/argocd/k3d/helm/task invocation in this session; every command run was ruby YAML parsing, git, diff, ls/find, pvg. Verification was static only |
+
+WIRING: This ApplicationSet is not hand-mounted -- it is discovered by the
+pre-existing bootstrap/infra-apps.yaml git-directory generator, which globs
+infrastructure/*/argocd. Proof 5 exercises that exact glob against the real
+committed bootstrap file and shows the new path resolving to Application
+infra-gateway-api-crds. That is the wiring site, verified through the real
+generator config rather than asserted.
+
+LEARNINGS:
+- Extracting the story's fenced code blocks programmatically from
+  `pvg issues show --json` and diffing byte-for-byte is strictly better than
+  transcribing them by hand when an AC says "matching IMPLEMENTATION exactly."
+  It converts a subjective claim into a mechanical one and costs one command.
+- Gotcha worth guarding: the sync-wave annotation MUST stay a quoted string.
+  Unquoted, YAML parses "-1" as an Integer and Kubernetes rejects the manifest
+  because annotation values must be strings. I added an explicit type assertion
+  (sync-wave is String) so a future reformat that drops the quotes fails loudly
+  rather than at apply time on a live cluster.
+- This story's body is duplicated verbatim (the IMPLEMENTATION/AC/PRODUCES
+  section appears twice, and there is a stray unmatched ``` fence between the
+  copies). Harmless here because both copies are identical and I anchored on
+  the first fenced block, but anyone diffing story text should know. Flagging
+  as a possible Sr-PM story-generation artifact, not a content problem.
+- pvg verify is a no-op on YAML/Markdown-only stories (0 files scanned). For
+  manifest stories the meaningful gate is parse + field assertions + the
+  generator-glob discovery check, not pvg verify's exit code.
+- The infrastructure/*/argocd convention means a new infra layer needs zero
+  bootstrap edits -- worth checking the glob rather than assuming, since a
+  path typo would silently produce an Application that never appears.
