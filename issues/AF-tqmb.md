@@ -8,8 +8,8 @@ labels: [release-gate, human-execution-required, external-integration]
 created_at: 2026-08-05T14:34:47Z
 created_by: ada
 updated_at: 2026-08-05T14:38:27Z
-content_hash: "sha256:6eceb9f1e9ccf7642eef2ecff1d58afeee66b38ee3f5ec8d56a09e9746b4e1fc"
-blocked_by: [AF-cbot]
+content_hash: "sha256:6a563652413f66f4f2c8eb911113e78bd84d0bea8086b56c5de0f93ac99016d6"
+blocked_by: [AF-cbot, AF-cu83]
 ---
 
 ## Description
@@ -265,8 +265,9 @@ before running these steps.)
 ## History
 - 2026-08-05T14:34:59Z dep_added: blocked_by AF-cbot
 - 2026-08-05T14:34:59Z status: open -> deferred
+- 2026-08-05T15:23:07Z dep_added: blocked_by AF-cu83
 
 ## Links
-- Blocked by: [[AF-cbot]]
+- Blocked by: [[AF-cbot]], [[AF-cu83]]
 
 ## Comments
