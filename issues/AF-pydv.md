@@ -7,12 +7,12 @@ type: task
 parent: AF-q1il
 created_at: 2026-08-05T14:30:04Z
 created_by: ada
-updated_at: 2026-08-05T15:39:37Z
-content_hash: "sha256:f2f7e328f69d08c69c9eae7ec27592b8da7a26b29bb96912693bf3e97dba316e"
+updated_at: 2026-08-05T15:45:40Z
+content_hash: "sha256:c83a4bcd93ca3a8cfa2d8618ca5441f8585520ba9269aa9d45e7422ed4ff77d2"
 blocks: [AF-cbot]
 was_blocked_by: [AF-4wcm]
 assignee: dev-AF-pydv
-follows: [AF-4wcm, AF-cu83]
+follows: [AF-4wcm, AF-cu83, AF-qujb]
 ---
 
 ## Description
@@ -212,12 +212,14 @@ go-task in this repo).
 - 2026-08-05T15:29:45Z status: in_progress -> open
 - 2026-08-05T15:39:37Z status: open -> in_progress
 - 2026-08-05T15:39:37Z auto-follows: linked to predecessor AF-cu83
+- 2026-08-05T15:45:40Z status: in_progress -> in_progress
+- 2026-08-05T15:45:40Z auto-follows: linked to predecessor AF-qujb
 
 ## Links
 - Parent: [[AF-q1il]]
 - Blocks: [[AF-cbot]]
 - Was blocked by: [[AF-4wcm]]
-- Follows: [[AF-4wcm]], [[AF-cu83]]
+- Follows: [[AF-4wcm]], [[AF-cu83]], [[AF-qujb]]
 
 ## Comments
 
