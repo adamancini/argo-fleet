@@ -1,19 +1,20 @@
 ---
 id: AF-pydv
 title: "Add Taskfile cluster lifecycle tasks: create, delete, recreate, register-agent"
-status: in_progress
+status: closed
 priority: 1
 type: task
 parent: AF-q1il
 created_at: 2026-08-05T14:30:04Z
 created_by: ada
-updated_at: 2026-08-05T15:46:37Z
-content_hash: "sha256:0692a97c58d1cc237b611fdd4d3f1f35fe6238868b95f148e113c076a915d7c5"
-blocks: [AF-cbot, AF-uw18]
+updated_at: 2026-08-05T16:02:31Z
+content_hash: "sha256:8f0ab5e87a1d2994936efdaf4aec5cc6c5a8da35e2adc35e438a2023db36d3f4"
 was_blocked_by: [AF-4wcm]
 assignee: dev-AF-pydv
 follows: [AF-4wcm, AF-cu83, AF-qujb]
 labels: [delivered]
+closed_at: 2026-08-05T16:02:31Z
+close_reason: "Accepted via pvg story accept"
 ---
 
 ## Description
@@ -226,10 +227,12 @@ status: delivered
 - 2026-08-05T15:45:40Z status: in_progress -> in_progress
 - 2026-08-05T15:45:40Z auto-follows: linked to predecessor AF-qujb
 - 2026-08-05T15:54:18Z dep_added: blocks AF-uw18
+- 2026-08-05T16:02:31Z status: in_progress -> closed
+- 2026-08-05T16:02:31Z dep_removed: no_longer_blocks AF-cbot
+- 2026-08-05T16:02:31Z dep_removed: no_longer_blocks AF-uw18
 
 ## Links
 - Parent: [[AF-q1il]]
-- Blocks: [[AF-cbot]], [[AF-uw18]]
 - Was blocked by: [[AF-4wcm]]
 - Follows: [[AF-4wcm]], [[AF-cu83]], [[AF-qujb]]
 
