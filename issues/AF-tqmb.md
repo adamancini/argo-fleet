@@ -5,11 +5,10 @@ status: deferred
 priority: 0
 type: task
 labels: [release-gate, human-execution-required, external-integration]
-parent: AF-q1il
 created_at: 2026-08-05T14:34:47Z
 created_by: ada
-updated_at: 2026-08-05T14:34:59Z
-content_hash: "sha256:ca49c030d63b01f8dee95c096f359a4ffc8c5d9988c0490e4883d0e123106a33"
+updated_at: 2026-08-05T14:36:07Z
+content_hash: "sha256:451b5490ee80ab667f436443353e99bd38f46c39b66c3d632380a3c892771195"
 blocked_by: [AF-cbot]
 ---
 
@@ -262,7 +261,6 @@ before running these steps.)
 - 2026-08-05T14:34:59Z status: open -> deferred
 
 ## Links
-- Parent: [[AF-q1il]]
 - Blocked by: [[AF-cbot]]
 
 ## Comments
