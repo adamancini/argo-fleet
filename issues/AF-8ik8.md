@@ -11,6 +11,7 @@ updated_at: 2026-08-05T14:56:47Z
 content_hash: "sha256:3e7bd69109d9f7865a0f83f503c1c775d8030412d3b8e54f4453453155dedbf4"
 blocks: [AF-cbot]
 assignee: dev-AF-8ik8
+labels: [delivered]
 ---
 
 ## Description
