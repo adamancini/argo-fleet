@@ -7,10 +7,10 @@ type: task
 parent: AF-q1il
 created_at: 2026-08-05T14:31:38Z
 created_by: ada
-updated_at: 2026-08-05T16:08:13Z
+updated_at: 2026-08-05T16:08:14Z
 content_hash: "sha256:2092abcbc754f31e4d2a42b4ffc03b63ac6b3cd6f4881aacbbb00a7b17b3a209"
 assignee: dev-AF-vwvq
-labels: [delivered, accepted]
+labels: [accepted]
 closed_at: 2026-08-05T16:08:13Z
 close_reason: "Accepted via pvg story accept"
 ---
