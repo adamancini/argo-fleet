@@ -7,8 +7,8 @@ type: task
 parent: AF-q1il
 created_at: 2026-08-05T18:23:22Z
 created_by: ada
-updated_at: 2026-08-05T18:41:08Z
-content_hash: "sha256:7ccb436bd8f8cbc840c26fe52725db4a9bfff796bb43dce816ae63558ab71984"
+updated_at: 2026-08-05T18:41:33Z
+content_hash: "sha256:b4a7ce75a365d1021ffb4901a766b760f1cea355c1c3bd982745b88e4b04b1c3"
 assignee: dev-AF-w3do
 follows: [AF-i2t5, AF-cbot]
 labels: [accepted]
@@ -654,3 +654,6 @@ LEARNINGS:
   (75% and 97% similarity recorded in the commit), which is exactly the evidence AC 8
   wants. Editing content before moving would have risked git recording delete+add and
   losing the history the story explicitly asked to preserve.
+
+### 2026-08-05T18:41:33Z ada
+PM-ACCEPTOR REVIEW: ACCEPTED. Independently verified all evidence against branch story/AF-w3do (commits 9530516, f5ce57a, merge-base ccdeaa8, pushed to origin, matches local): git diff -M confirms 3 renames (75%/97%/97% similarity) with only the specified name/comment lines changed; infra-apps.yaml byte-identical (diff epic/AF-q1il..story/AF-w3do exit=0); YAML.load_stream OK on all 3 renamed files; README.md diff shows exactly the 2 specified lines changed; git grep -lP negative-lookbehind on the story tree returns exactly 5 files, all within the Step 7 allow-list (zero hits in README.md or bootstrap/*.yaml); child templates argocd-{{path[1]}} / kargo-{{path[1]}} / {{path[1]}} unchanged; pvg verify and pvg gates both pass clean on the delivered files. Confirmed developer's two flagged secondary observations are correct and non-blocking: (1) Step 4's embedded absolute path would validate stale pre-rename files if run from the dispatcher checkout rather than the worktree -- a story-authoring hazard, not a delivery defect, and the developer's actual YAML validation is independently reproduced above; (2) Step 7's allow-list names six files but only five exist in the repo (the sixth -- this story's own implementation plan doc -- was never committed) -- confirmed via git ls-tree, and the actual hit set is a strict subset of the allow-list so AC7 holds. No scope creep, no stray hits, no bugs discovered.
