@@ -9,7 +9,8 @@ parent: AF-q1il
 created_at: 2026-08-05T14:34:47Z
 created_by: ada
 updated_at: 2026-08-05T14:34:55Z
-content_hash: "sha256:392aaa115dffdb83900c6815bc4a62cfcd604fd31ff4f79cf65e5baa0dc9279d"
+content_hash: "sha256:6e45da69a21c09c91fddc1722dd3aae29e7945471424d8d96a0ee12de23398fc"
+blocked_by: [AF-cbot]
 ---
 
 ## Description
@@ -257,9 +258,10 @@ before running these steps.)
 
 
 ## History
-
+- 2026-08-05T14:34:59Z dep_added: blocked_by AF-cbot
 
 ## Links
 - Parent: [[AF-q1il]]
+- Blocked by: [[AF-cbot]]
 
 ## Comments
