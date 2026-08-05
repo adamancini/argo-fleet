@@ -8,7 +8,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: kargo-apps
+  name: fleet-kargo-apps
   namespace: argocd
 spec:
   generators:
