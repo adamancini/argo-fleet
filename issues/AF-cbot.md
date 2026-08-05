@@ -8,8 +8,8 @@ labels: [capstone]
 parent: AF-q1il
 created_at: 2026-08-05T14:33:25Z
 created_by: ada
-updated_at: 2026-08-05T16:17:34Z
-content_hash: "sha256:b8588c8b4d105b79263097413f829f94975a058038cad1ac80009954240cd60b"
+updated_at: 2026-08-05T16:24:28Z
+content_hash: "sha256:b1a6b66ebde891d1cde266ead88b1cf97b746dec926a2fe09b0cad531fcda5d3"
 blocks: [AF-tqmb]
 was_blocked_by: [AF-4wcm, AF-8ik8, AF-qujb, AF-pydv, AF-vwvq, AF-uw18]
 assignee: dev-AF-cbot
@@ -202,7 +202,7 @@ interpreting any YAML validation failure.
 
 
 ## Notes
-
+COMPLETED: all 5 static-verification steps executed at 9949b51 with literal output recorded. Step1 YAML 6/6 OK (4 AC files + sealed-secrets appset + tf kustomization). Step2 terraform validate 'Success! The configuration is valid.' (-backend=false, no tfvars present). Step3 6/6 diff -rq empty rc=0 + SHA-256 match on all 8 files, zero whitespace drift; .terraform.lock.hcl and terraform.tfvars.example also identical. Step4 helm search exactly 1 row each for localpv-provisioner 4.5.1 and traefik 41.1.1; gateway-api v1.5.1 tag confirmed via ls-remote. Step5 no live-mutation commit; akp-infra/03-clusters clean with state mtimes predating epic. AC6 git status empty throughout (only gitignored .terraform/ cache). NOTE: epic grew past AC5's five named stories -- AF-wx9b, AF-cu83, AF-uw18 also audited, all file-only. NEXT: PM review; AF-tqmb statically cleared.
 
 ## History
 - 2026-08-05T14:33:39Z dep_added: blocked_by AF-4wcm
