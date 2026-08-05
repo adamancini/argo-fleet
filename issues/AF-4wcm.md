@@ -1,16 +1,17 @@
 ---
 id: AF-4wcm
 title: "Migrate cluster/agent registration Terraform from akp-infra into argo-fleet"
-status: open
+status: in_progress
 priority: 0
 type: task
 labels: [walking-skeleton]
 parent: AF-q1il
 created_at: 2026-08-05T14:29:16Z
 created_by: ada
-updated_at: 2026-08-05T14:38:26Z
-content_hash: "sha256:b6b92c51492f1a79b9bbba0896b27c6e8ff47b861fcfa17730024e131c0cd52d"
+updated_at: 2026-08-05T14:49:02Z
+content_hash: "sha256:d2c1c13ad44a7d4daf0a0ae8811abb01f2e33154e93e71ddf60d9194137f60b9"
 blocks: [AF-pydv, AF-cbot]
+assignee: dev-AF-4wcm
 ---
 
 ## Description
@@ -1219,6 +1220,8 @@ project-specific skill covers Terraform/HCL in this repo).
 ## History
 - 2026-08-05T14:30:16Z dep_added: blocks AF-pydv
 - 2026-08-05T14:33:39Z dep_added: blocks AF-cbot
+- 2026-08-05T14:49:02Z status: open -> in_progress
+- 2026-08-05T14:49:02Z claimed by dev-AF-4wcm
 
 ## Links
 - Parent: [[AF-q1il]]
