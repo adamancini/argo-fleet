@@ -7,8 +7,8 @@ type: task
 parent: AF-q1il
 created_at: 2026-08-05T14:30:04Z
 created_by: ada
-updated_at: 2026-08-05T15:29:45Z
-content_hash: "sha256:8a4e181e24703717d3435faa7799583a383f80634d64af6602b4e60aaf2a0c78"
+updated_at: 2026-08-05T15:29:46Z
+content_hash: "sha256:f66b0806793e720c2f5346604c6d92564754e2629a76dbf08806f5d591a96a99"
 blocks: [AF-cbot]
 was_blocked_by: [AF-4wcm]
 assignee: dev-AF-pydv
@@ -218,3 +218,6 @@ go-task in this repo).
 - Follows: [[AF-4wcm]]
 
 ## Comments
+
+### 2026-08-05T15:29:46Z ada
+loop: reset orphaned in_progress to open (no developer worktree found; prior session presumed dead)
