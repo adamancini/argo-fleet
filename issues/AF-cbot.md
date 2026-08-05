@@ -9,10 +9,10 @@ parent: AF-q1il
 created_at: 2026-08-05T14:33:25Z
 created_by: ada
 updated_at: 2026-08-05T14:37:35Z
-content_hash: "sha256:2a590c6de230429334f5a4d5322f79d7a2612fa53a2d1252df8c876be9bbf1b8"
-blocked_by: [AF-vwvq, AF-uw18]
+content_hash: "sha256:fc965b12ed3471cfb2b3002501965821758e821da11f516b242e83895621c25d"
+blocked_by: [AF-uw18]
 blocks: [AF-tqmb]
-was_blocked_by: [AF-4wcm, AF-8ik8, AF-qujb, AF-pydv]
+was_blocked_by: [AF-4wcm, AF-8ik8, AF-qujb, AF-pydv, AF-vwvq]
 ---
 
 ## Description
@@ -215,11 +215,12 @@ interpreting any YAML validation failure.
 - 2026-08-05T15:33:50Z dep_removed: was_blocked_by AF-qujb
 - 2026-08-05T15:55:23Z dep_added: blocked_by AF-uw18
 - 2026-08-05T16:02:31Z dep_removed: was_blocked_by AF-pydv
+- 2026-08-05T16:08:13Z dep_removed: was_blocked_by AF-vwvq
 
 ## Links
 - Parent: [[AF-q1il]]
 - Blocks: [[AF-tqmb]]
-- Blocked by: [[AF-vwvq]], [[AF-uw18]]
-- Was blocked by: [[AF-4wcm]], [[AF-8ik8]], [[AF-qujb]], [[AF-pydv]]
+- Blocked by: [[AF-uw18]]
+- Was blocked by: [[AF-4wcm]], [[AF-8ik8]], [[AF-qujb]], [[AF-pydv]], [[AF-vwvq]]
 
 ## Comments
