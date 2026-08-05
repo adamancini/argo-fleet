@@ -8,9 +8,8 @@ labels: [release-gate, human-execution-required, external-integration]
 created_at: 2026-08-05T14:34:47Z
 created_by: ada
 updated_at: 2026-08-05T14:38:27Z
-content_hash: "sha256:ac35cdb8d6b8d79dae2983ad59bacd201118956d7153e486c673797bd38c2c7c"
-blocked_by: [AF-cbot]
-was_blocked_by: [AF-cu83, AF-uw18]
+content_hash: "sha256:d67c5e133f59318a99b0c7e62cf3039bec71f855b1dd86f5d54a03eb3d584f19"
+was_blocked_by: [AF-cu83, AF-uw18, AF-cbot]
 ---
 
 ## Description
@@ -270,9 +269,9 @@ before running these steps.)
 - 2026-08-05T15:39:37Z dep_removed: was_blocked_by AF-cu83
 - 2026-08-05T15:54:18Z dep_added: blocked_by AF-uw18
 - 2026-08-05T16:16:07Z dep_removed: was_blocked_by AF-uw18
+- 2026-08-05T16:28:39Z dep_removed: was_blocked_by AF-cbot
 
 ## Links
-- Blocked by: [[AF-cbot]]
-- Was blocked by: [[AF-cu83]], [[AF-uw18]]
+- Was blocked by: [[AF-cu83]], [[AF-uw18]], [[AF-cbot]]
 
 ## Comments

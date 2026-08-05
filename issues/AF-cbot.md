@@ -1,19 +1,20 @@
 ---
 id: AF-cbot
 title: "Full static verification of Terraform migration & new infrastructure layers"
-status: in_progress
+status: closed
 priority: 1
 type: task
 labels: [capstone, delivered]
 parent: AF-q1il
 created_at: 2026-08-05T14:33:25Z
 created_by: ada
-updated_at: 2026-08-05T16:24:52Z
-content_hash: "sha256:c58392aabb6c4e67578e835efabf26d6b43f5b0c74516d0e2f5c0b57c513fce7"
-blocks: [AF-tqmb]
+updated_at: 2026-08-05T16:28:39Z
+content_hash: "sha256:d0fb2f886b2631cf0536bdbd217a6087ba7f6c588c92e3c8a110195ba9a7ea29"
 was_blocked_by: [AF-4wcm, AF-8ik8, AF-qujb, AF-pydv, AF-vwvq, AF-uw18]
 assignee: dev-AF-cbot
 follows: [AF-4wcm, AF-8ik8, AF-qujb, AF-pydv, AF-vwvq, AF-uw18, AF-9bc8]
+closed_at: 2026-08-05T16:28:39Z
+close_reason: "Accepted via pvg story accept"
 ---
 
 ## Description
@@ -239,10 +240,11 @@ status: delivered
 - 2026-08-05T16:17:35Z claimed by dev-AF-cbot
 - 2026-08-05T16:24:51Z status: in_progress -> in_progress
 - 2026-08-05T16:24:51Z auto-follows: linked to predecessor AF-9bc8
+- 2026-08-05T16:28:39Z status: in_progress -> closed
+- 2026-08-05T16:28:39Z dep_removed: no_longer_blocks AF-tqmb
 
 ## Links
 - Parent: [[AF-q1il]]
-- Blocks: [[AF-tqmb]]
 - Was blocked by: [[AF-4wcm]], [[AF-8ik8]], [[AF-qujb]], [[AF-pydv]], [[AF-vwvq]], [[AF-uw18]]
 - Follows: [[AF-4wcm]], [[AF-8ik8]], [[AF-qujb]], [[AF-pydv]], [[AF-vwvq]], [[AF-uw18]], [[AF-9bc8]]
 
