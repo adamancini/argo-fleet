@@ -7,8 +7,8 @@ type: task
 parent: AF-q1il
 created_at: 2026-08-05T14:30:04Z
 created_by: ada
-updated_at: 2026-08-05T14:30:04Z
-content_hash: "sha256:11444136e3acdc08676635c9a1e8c379645365b7e00b87dc4582d4b9823b479e"
+updated_at: 2026-08-05T14:37:34Z
+content_hash: "sha256:b9ed055e8eef92179c980fc95f7c3b5ba70f65b5d9710812e70689065eb0387d"
 blocked_by: [AF-4wcm]
 blocks: [AF-cbot]
 ---
@@ -46,7 +46,10 @@ The person operating this repo needs `task cluster:<verb> -- <name>` to be
 exactly as reliable and self-documenting as the existing
 `sealed-secrets:*` tasks -- clear `desc:` text describing usage, arguments
 passed correctly every time (bare name, not `k3d-` prefixed), and no repeat
-of the CLI_ARGS_LIST bug class that already bit this repo once.
+of the CLI_ARGS_LIST bug class that already bit this repo once. Once this
+story lands, a user can run `task cluster:create -- demo3` (or any new
+cluster name) and get a correctly-configured k3d cluster without ever
+typing a raw `k3d` or `terraform` command by hand.
 
 IMPLEMENTATION:
 Read the current `Taskfile.yml` first (reproduced in full below as of this
