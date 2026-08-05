@@ -9,7 +9,7 @@ parent: AF-q1il
 created_at: 2026-08-05T15:42:03Z
 created_by: ada
 updated_at: 2026-08-05T15:56:11Z
-content_hash: "sha256:997251fde4d208bd7560710fea19771f3ac460dec0cdfaecddfb4a6de4b7419c"
+content_hash: "sha256:f3b30bc432acc222ade84ac6ce33137063beef3dcf049f155544410b846e52d9"
 follows: [AF-wx9b, AF-cu83]
 assignee: dev-AF-9bc8
 ---
@@ -172,3 +172,6 @@ code or chart changes).
 - Follows: [[AF-wx9b]], [[AF-cu83]]
 
 ## Comments
+
+### 2026-08-05T15:56:11Z ada
+loop: reset orphaned in_progress to open (no developer worktree found; prior session presumed dead)
