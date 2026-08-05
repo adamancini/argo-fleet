@@ -8,8 +8,8 @@ labels: [walking-skeleton, delivered]
 parent: AF-q1il
 created_at: 2026-08-05T14:29:16Z
 created_by: ada
-updated_at: 2026-08-05T14:58:02Z
-content_hash: "sha256:500a1e93ecb2b93652eb2d38efc65b8190abbd425c05c9da76891758782ed579"
+updated_at: 2026-08-05T15:15:05Z
+content_hash: "sha256:a874f5ba068c25e16a82f570cc8c654f3c9b28304e0ab798973c0e1110d3f3d8"
 blocks: [AF-pydv, AF-cbot]
 assignee: dev-AF-4wcm
 ---
@@ -1360,3 +1360,6 @@ LEARNINGS:
   `--format=text`; and python3 has no pyyaml, so use `ruby -ryaml` for YAML checks.
   Also note pvg verify scans no .tf/.yaml files at all, so it is vacuous on
   Terraform-only stories -- do not present it as meaningful evidence.
+
+### 2026-08-05T15:15:05Z ada
+REVIEW: Independently re-verified in a pinned worktree at commit 5ae238c. terraform fmt -check -recursive clean; diff -rq identical against akp-infra/03-clusters for all 9 files including terraform.tfvars.example; terraform init -backend=false && terraform validate -> Success; .gitignore has the 6 Terraform lines and git ls-tree confirms no tfstate/tfvars/.kubeconfigs/lock-file committed; pvg verify PASSED (0 files, correctly noted as vacuous for .tf/.yaml); pvg gates PASS (0 warn, 0 skip). ADJUDICATION on flagged discrepancy: shipping the akp-infra source wording (dropping 'akp-infra's' from the 01-argocd/02-kargo comment) over the story's prose was the right call -- AC1 and AC3 are explicit, binding, machine-checkable byte-identity requirements, and the deviation is a comment-only, zero-functional-impact line. Developer disclosed it transparently for adjudication instead of silently picking a side, which is the correct behavior. Unpinned provider (.terraform.lock.hcl correctly excluded per file list) is legitimately out of scope for this story and forwarded as a follow-up. ACCEPTED.
