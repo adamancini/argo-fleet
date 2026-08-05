@@ -9,8 +9,8 @@ parent: AF-q1il
 created_at: 2026-08-05T14:29:16Z
 created_by: ada
 updated_at: 2026-08-05T14:29:16Z
-content_hash: "sha256:ca3a7b49647b09e17fdb61cd0dc1e7955d5ae7c93bec549e8246b025aa2af9ef"
-blocks: [AF-pydv]
+content_hash: "sha256:9f60cf26be93e47c44e102b2bc1ee564f46f5234e20b1d87f8ca778df3f6ffd1"
+blocks: [AF-pydv, AF-cbot]
 ---
 
 ## Description
@@ -646,9 +646,10 @@ project-specific skill covers Terraform/HCL in this repo).
 
 ## History
 - 2026-08-05T14:30:16Z dep_added: blocks AF-pydv
+- 2026-08-05T14:33:39Z dep_added: blocks AF-cbot
 
 ## Links
 - Parent: [[AF-q1il]]
-- Blocks: [[AF-pydv]]
+- Blocks: [[AF-pydv]], [[AF-cbot]]
 
 ## Comments
