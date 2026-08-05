@@ -7,8 +7,8 @@ type: task
 labels: [release-gate, human-execution-required, external-integration]
 created_at: 2026-08-05T14:34:47Z
 created_by: ada
-updated_at: 2026-08-05T16:33:40Z
-content_hash: "sha256:585ec48caf0669ff5b3bddabc53ac3d8eb48f4e7b7094b0876668171a2c27608"
+updated_at: 2026-08-05T17:14:13Z
+content_hash: "sha256:3a923dac3fae5ebf455028fd0b82aa9d1942ee0ffccb088c7b854df6e89a585b"
 was_blocked_by: [AF-cu83, AF-uw18, AF-cbot]
 parent: AF-q1il
 ---
@@ -277,3 +277,38 @@ before running these steps.)
 - Was blocked by: [[AF-cu83]], [[AF-uw18]], [[AF-cbot]]
 
 ## Comments
+
+### 2026-08-05T17:14:13Z ada
+STOP-GATE 1 (Step 5) -- kubectl output, both clusters healthy:
+
+$ kubectl --context k3d-demo1 -n akuity get pods
+NAME                                              READY   STATUS    RESTARTS   AGE
+akuity-agent-74469bdf6-fn5s7                      1/1     Running   0          16m
+akuity-agent-74469bdf6-j29vr                      1/1     Running   0          16m
+argocd-application-controller-79cb6b4576-vwz7t    2/2     Running   0          16m
+argocd-notifications-controller-b4fb8c8cd-hkn6b   1/1     Running   0          16m
+argocd-redis-67c686b95f-vrwc7                     1/1     Running   0          16m
+argocd-repo-server-6998576957-dlpvf               1/1     Running   0          16m
+argocd-repo-server-6998576957-vzg9x               1/1     Running   0          16m
+kargo-controller-demo1-56c4798f8b-mnp2p           2/2     Running   0          15m
+kargo-promotion-controller-demo1-bf57bb49-4t6tf   1/1     Running   0          15m
+kargo-rollouts-demo1-779fb857d-w8gc5              1/1     Running   0          15m
+kargo-webhook-6d864f9884-ffc9s                    1/1     Running   0          15m
+kargo-webhook-6d864f9884-t4nws                    1/1     Running   0          15m
+
+$ kubectl --context k3d-demo2 -n akuity get pods
+NAME                                               READY   STATUS    RESTARTS   AGE
+akuity-agent-69c6cc46cb-6v8db                      1/1     Running   0          13m
+akuity-agent-69c6cc46cb-d26cv                      1/1     Running   0          13m
+argocd-application-controller-59bd6f5585-hfhw7     2/2     Running   0          13m
+argocd-notifications-controller-57f687447f-6zvg2   1/1     Running   0          13m
+argocd-redis-89dffb8c-vcrlx                        1/1     Running   0          13m
+argocd-repo-server-55644b9f77-hk5qn                1/1     Running   0          13m
+argocd-repo-server-55644b9f77-nj8hc                1/1     Running   0          13m
+kargo-controller-demo2-d8f867454-wb8vp             2/2     Running   0          13m
+kargo-promotion-controller-demo2-f4f8cd56f-kvbbl   1/1     Running   0          13m
+kargo-rollouts-demo2-5d79865f86-72f5d              1/1     Running   0          13m
+kargo-webhook-8568cd68-2ndbc                       1/1     Running   0          13m
+kargo-webhook-8568cd68-n9z44                       1/1     Running   0          13m
+
+Recorded by human operator per AC3.
