@@ -1,17 +1,18 @@
 ---
 id: AF-qujb
 title: "Add gateway-api-crds infrastructure layer for demo1/demo2"
-status: in_progress
+status: closed
 priority: 1
 type: task
 parent: AF-q1il
 created_at: 2026-08-05T14:32:18Z
 created_by: ada
-updated_at: 2026-08-05T14:55:34Z
-content_hash: "sha256:df14589f09f1280bc75e0701451cb7f403a9f3662dfbf5c5f970266abcc2b944"
-blocks: [AF-cbot]
+updated_at: 2026-08-05T15:33:50Z
+content_hash: "sha256:74fa2a6c7745f59a79861c4179756f63f6e031ed7316ecfbf68292b200b3e764"
 assignee: dev-AF-qujb
 labels: [delivered]
+closed_at: 2026-08-05T15:33:50Z
+close_reason: "Byte-exact match to IMPLEMENTATION spec; sync-wave quoted as string (guards -1 int/string footgun); YAML validates OK; discovery wiring confirmed via bootstrap/infra-apps.yaml; README documents ordering/selfHeal. AC1-5 verified."
 ---
 
 ## Description
@@ -325,10 +326,11 @@ status: delivered
 - 2026-08-05T14:49:10Z status: open -> in_progress
 - 2026-08-05T14:49:10Z claimed by dev-AF-qujb
 - 2026-08-05T14:54:56Z status: in_progress -> in_progress
+- 2026-08-05T15:33:50Z status: in_progress -> closed
+- 2026-08-05T15:33:50Z dep_removed: no_longer_blocks AF-cbot
 
 ## Links
 - Parent: [[AF-q1il]]
-- Blocks: [[AF-cbot]]
 
 ## Comments
 
