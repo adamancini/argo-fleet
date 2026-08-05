@@ -8,8 +8,8 @@ labels: [documentation, discovered-by-dev, accepted]
 parent: AF-q1il
 created_at: 2026-08-05T15:12:18Z
 created_by: ada
-updated_at: 2026-08-05T15:47:27Z
-content_hash: "sha256:d9dcfbe5e2259507af2678ce8fca310cf04a99cd12e500448c99145f1a8a103a"
+updated_at: 2026-08-05T15:47:42Z
+content_hash: "sha256:ce4e38249143eaebbdaa4dab29980a6b6ab557e874c7e1fa36dc8ffadc5b6a66"
 assignee: dev-AF-wx9b
 follows: [AF-8ik8, AF-qujb]
 led_to: [AF-9bc8]
@@ -323,3 +323,6 @@ LEARNINGS:
   use `--format text`. Also note pvg verify reports "0 files scanned" for
   markdown -- it does not actually inspect prose, so it is a scope/stub
   check here, not real verification of this story's content.
+
+### 2026-08-05T15:47:42Z ada
+PM-ACCEPT: Verified the 3-line documentation fix (plan doc lines 16/726/752, isDefaultClass quoted-string -> unquoted boolean) independently: re-rendered the extracted Task 3 valuesObject through helm template against localpv-provisioner 4.5.1 myself (not just trusting developer's proof) -- unquoted false produces no is-default-class annotation, quoted "false" produces is-default-class: "true", confirming the root-cause claim and AC5/AC6 exactly as reported. Verified git diff --stat is 1 file / 3+/3- and the merge commit d9eb114 brought in exactly 4 files (plan.md, design-spec.md, .vault/.gitignore, .vault/.nd-shared.yaml), all pre-existing on origin/main untouched by this developer -- no unexpected content, no manifest/terraform changes leaked in. Confirmed AF-9bc8 (sibling design-spec bug, line 164) is already filed and correctly scoped out per this story's own AC4 -- scoping call was correct, no widening needed. Note for record: pvg gates --changed flags [BLOCK] duplication findings against docs/superpowers/plans/2026-08-05-cluster-lifecycle-and-ingress-storage.md, but this is 100% pre-existing structural duplication across the plan's repeated per-Task Application-manifest YAML blocks (verified identical whether measured pre- or post-fix-commit) -- it predates this story (authored on main in 9cd3f16), and AC4 explicitly forbids restructuring anything beyond the 3 cited lines, so it is not attributable to this delivery and not a rejection basis here. ACCEPTED.
