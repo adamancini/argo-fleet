@@ -8,8 +8,8 @@ labels: [documentation, discovered-by-dev, delivered]
 parent: AF-q1il
 created_at: 2026-08-05T15:42:03Z
 created_by: ada
-updated_at: 2026-08-05T16:12:50Z
-content_hash: "sha256:052cdfc60be4d808319ad8df9c20a582c866b5aed6a43359726d05695a6f108e"
+updated_at: 2026-08-05T16:13:19Z
+content_hash: "sha256:4b4812e35cb7ef51535bbdd5c92a24f1ceb4c933b2b280fbb9497accfd296465"
 follows: [AF-wx9b, AF-cu83, AF-vwvq, AF-pydv]
 assignee: dev-AF-9bc8
 ---
@@ -190,3 +190,40 @@ status: delivered
 
 ### 2026-08-05T15:56:11Z ada
 loop: reset orphaned in_progress to open (no developer worktree found; prior session presumed dead)
+
+### 2026-08-05T16:13:19Z ada
+PROOF:
+
+Commit: 311520f (branch story/AF-9bc8, pushed to origin; parent 66240b7 = epic/AF-q1il tip, so the branch contains all merged epic work including AF-wx9b's plan-document fix)
+
+Change (git diff, full):
+```
+-`hostpathClass.name: local-path`, `hostpathClass.isDefaultClass: "false"`.
++`hostpathClass.name: local-path`, `hostpathClass.isDefaultClass: false`.
+```
+
+Pre-check (mandatory already-landed sweep): `git log epic/AF-q1il --oneline -n 20` shows ca7482e (AF-wx9b, plan doc) and fca5308 (AF-8ik8, manifest) landed, but NO spec fix. Work was not already merged; implementation proceeded.
+
+AC verification table:
+
+| AC | Requirement | Command | Result |
+|----|-------------|---------|--------|
+| 1 | Root cause documented in fix commit | `git show 311520f` | PASS -- commit body documents Go/Helm `if` treating non-empty string "false" as truthy, so a quoted boolean in a Helm-values code span is never equivalent to unquoted `false` |
+| 2 | Line 164 `"false"` -> unquoted `false` | `sed -n 164p <spec>` | PASS -- now reads ``​`hostpathClass.name: local-path`, `hostpathClass.isDefaultClass: false`.`` matching plan doc :726 and appset.yaml:43 |
+| 3 | Line 176 and all other lines/files untouched | `sed -n 176p <spec>`; `git diff` | PASS -- line 176 still ``​`isDefaultClass: true`, `gateway.enabled: true` + `gateway.name:``; diff is exactly 1 insertion / 1 deletion on one line |
+| 4 | Zero quoted true/false in spec Helm-values code spans | `grep -nE '`[^`]*:[[:space:]]*"(true\|false)"' <spec>` | PASS -- ZERO MATCHES. Broader `grep -nE '"(true\|false)"' <spec>` also ZERO MATCHES |
+| 5 | Zero quoted isDefaultClass anywhere in docs/ | `grep -rnE 'isDefaultClass:[[:space:]]*"(true\|false)"' docs/` | PASS -- ZERO MATCHES. Defect class closed; no new story opened, per AC5 |
+| 6 | Exactly 1 file, minimal single-line edit | `git diff --stat` | PASS -- `1 file changed, 1 insertion(+), 1 deletion(-)` |
+
+AC5 repo-wide extension (beyond docs/): `grep -rnE 'isDefaultClass:[[:space:]]*"(true|false)"' . --exclude-dir=.git --exclude-dir=.vault --exclude-dir=.claude` returns exactly ONE textual match, infrastructure/openebs-localpv/README.md:18. Inspected and confirmed NOT a defect: it is prose deliberately quoting the anti-pattern to warn against it ("Go templates treat the non-empty string `"false"` as true -- so writing `isDefaultClass: "false"` does the exact opposite of what it reads like"). That same README line 11 carries the correct unquoted `isDefaultClass: false`. Left untouched, as AC3 forbids touching any other file. No remaining real defect anywhere in the repo.
+
+pvg verify: `pvg verify <spec> --format text` -> `VERIFY: PASSED (0 files scanned, 0 issues)`, exit 0. Note: 0 files scanned because pvg verify does not scan markdown; recorded for completeness, not as substantive coverage.
+
+Test suite / pass-fail counts: N/A -- this is a documentation-only, single-line markdown edit with zero code, chart, or manifest changes and therefore no executable test surface. The AC-specified verification is grep-based and is fully reported above (6/6 AC pass, 0 fail). No wiring site applies (no component introduced). Zero errors and zero warnings encountered during the work.
+
+LEARNINGS:
+- The `--format=text` form is rejected by `pvg verify`; it requires space-separated `--format text`. Worth knowing since the developer instructions show the `=` form.
+- `pvg verify` reports "0 files scanned" for markdown-only changes. It is a genuine pass but proves nothing about content -- doc-only stories should lean on the AC grep evidence, and say plainly that the verify result is vacuous rather than presenting it as coverage.
+- Grepping for a defect pattern repo-wide will hit documentation that quotes the anti-pattern on purpose. infrastructure/openebs-localpv/README.md:18 looks exactly like the bug but is the warning about it. Always read the surrounding lines before "fixing" a grep hit -- editing it would have destroyed the warning AF-8ik8 deliberately wrote and violated AC3.
+- This closes a three-bug chain of one root cause (AF-8ik8 manifest -> AF-wx9b plan -> AF-9bc8 spec). The fixes ran downstream-to-upstream, which left the generating document defective longest. When a defect appears in a generated artifact, checking the source document in the same pass would have collapsed three stories into one.
+- Tightly scoped [Unwanted] ACs did real work here: AC3 forbade touching anything else, which made the README hit an easy call instead of a judgment call.
