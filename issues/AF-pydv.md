@@ -8,7 +8,7 @@ parent: AF-q1il
 created_at: 2026-08-05T14:30:04Z
 created_by: ada
 updated_at: 2026-08-05T16:02:32Z
-content_hash: "sha256:8f0ab5e87a1d2994936efdaf4aec5cc6c5a8da35e2adc35e438a2023db36d3f4"
+content_hash: "sha256:3c43970b77b2f77c0f36dfa3453ab9730fe2cd086503bc3a848d07ae30fc60bc"
 was_blocked_by: [AF-4wcm]
 assignee: dev-AF-pydv
 follows: [AF-4wcm, AF-cu83, AF-qujb]
@@ -202,6 +202,16 @@ go-task in this repo).
 
 
 ## Notes
+
+
+## nd_contract
+status: accepted
+
+### evidence
+- PM closeout applied via pvg story accept on 2026-08-05.
+
+### proof
+- [x] Story closed after accepted label was applied.
 
 
 ## nd_contract
