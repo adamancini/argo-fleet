@@ -1,16 +1,17 @@
 ---
 id: AF-9bc8
 title: "Bug: Design spec line 164 quotes hostpathClass.isDefaultClass as string \"false\", making local-path the default StorageClass"
-status: open
+status: in_progress
 priority: 0
 type: bug
 labels: [documentation, discovered-by-dev]
 parent: AF-q1il
 created_at: 2026-08-05T15:42:03Z
 created_by: ada
-updated_at: 2026-08-05T15:42:03Z
-content_hash: "sha256:7940ddd37a2981eedaf8ee12f5312e2c3abdd1becc07d3d6438247f86d10fdb2"
-follows: [AF-wx9b]
+updated_at: 2026-08-05T15:47:28Z
+content_hash: "sha256:efc10bb4b5353a8e9be6b8a66e1a156114b4e952571541210314b6033a292c72"
+follows: [AF-wx9b, AF-cu83]
+assignee: dev-AF-9bc8
 ---
 
 ## Description
@@ -161,10 +162,12 @@ code or chart changes).
 
 
 ## History
-
+- 2026-08-05T15:47:28Z status: open -> in_progress
+- 2026-08-05T15:47:28Z auto-follows: linked to predecessor AF-cu83
+- 2026-08-05T15:47:28Z claimed by dev-AF-9bc8
 
 ## Links
 - Parent: [[AF-q1il]]
-- Follows: [[AF-wx9b]]
+- Follows: [[AF-wx9b]], [[AF-cu83]]
 
 ## Comments
