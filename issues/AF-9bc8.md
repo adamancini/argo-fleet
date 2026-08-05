@@ -4,7 +4,7 @@ title: "Bug: Design spec line 164 quotes hostpathClass.isDefaultClass as string 
 status: in_progress
 priority: 0
 type: bug
-labels: [documentation, discovered-by-dev]
+labels: [documentation, discovered-by-dev, delivered]
 parent: AF-q1il
 created_at: 2026-08-05T15:42:03Z
 created_by: ada
