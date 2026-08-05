@@ -1,16 +1,18 @@
 ---
 id: AF-pydv
 title: "Add Taskfile cluster lifecycle tasks: create, delete, recreate, register-agent"
-status: open
+status: in_progress
 priority: 1
 type: task
 parent: AF-q1il
 created_at: 2026-08-05T14:30:04Z
 created_by: ada
-updated_at: 2026-08-05T14:37:34Z
-content_hash: "sha256:30dba01a47db213f26e3a67e8f71f76ab5a6335ad88699aa20aff2bf0b3bf545"
+updated_at: 2026-08-05T15:27:27Z
+content_hash: "sha256:db8c4915e7cfc5cb86b6c02ac47b3ac0de0a13e48dd89b19ab51bbde9ff2149d"
 blocks: [AF-cbot]
 was_blocked_by: [AF-4wcm]
+assignee: dev-AF-pydv
+follows: [AF-4wcm]
 ---
 
 ## Description
@@ -204,10 +206,14 @@ go-task in this repo).
 - 2026-08-05T14:30:16Z dep_added: blocked_by AF-4wcm
 - 2026-08-05T14:33:40Z dep_added: blocks AF-cbot
 - 2026-08-05T15:15:12Z dep_removed: was_blocked_by AF-4wcm
+- 2026-08-05T15:27:27Z status: open -> in_progress
+- 2026-08-05T15:27:27Z auto-follows: linked to predecessor AF-4wcm
+- 2026-08-05T15:27:27Z claimed by dev-AF-pydv
 
 ## Links
 - Parent: [[AF-q1il]]
 - Blocks: [[AF-cbot]]
 - Was blocked by: [[AF-4wcm]]
+- Follows: [[AF-4wcm]]
 
 ## Comments
