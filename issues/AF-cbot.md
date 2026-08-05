@@ -8,12 +8,12 @@ labels: [capstone]
 parent: AF-q1il
 created_at: 2026-08-05T14:33:25Z
 created_by: ada
-updated_at: 2026-08-05T16:24:34Z
-content_hash: "sha256:bdc765f1481a4e0ebd8e3400a74e3460bcb498f37fd11144078540963cb85e60"
+updated_at: 2026-08-05T16:24:51Z
+content_hash: "sha256:8da5d662362f0cefa67ab7174756954f7c47a2ccb028e284e6e72be2f06074a7"
 blocks: [AF-tqmb]
 was_blocked_by: [AF-4wcm, AF-8ik8, AF-qujb, AF-pydv, AF-vwvq, AF-uw18]
 assignee: dev-AF-cbot
-follows: [AF-4wcm, AF-8ik8, AF-qujb, AF-pydv, AF-vwvq, AF-uw18]
+follows: [AF-4wcm, AF-8ik8, AF-qujb, AF-pydv, AF-vwvq, AF-uw18, AF-9bc8]
 ---
 
 ## Description
@@ -226,12 +226,14 @@ COMPLETED: all 5 static-verification steps executed at 9949b51 with literal outp
 - 2026-08-05T16:17:35Z auto-follows: linked to predecessor AF-vwvq
 - 2026-08-05T16:17:35Z auto-follows: linked to predecessor AF-uw18
 - 2026-08-05T16:17:35Z claimed by dev-AF-cbot
+- 2026-08-05T16:24:51Z status: in_progress -> in_progress
+- 2026-08-05T16:24:51Z auto-follows: linked to predecessor AF-9bc8
 
 ## Links
 - Parent: [[AF-q1il]]
 - Blocks: [[AF-tqmb]]
 - Was blocked by: [[AF-4wcm]], [[AF-8ik8]], [[AF-qujb]], [[AF-pydv]], [[AF-vwvq]], [[AF-uw18]]
-- Follows: [[AF-4wcm]], [[AF-8ik8]], [[AF-qujb]], [[AF-pydv]], [[AF-vwvq]], [[AF-uw18]]
+- Follows: [[AF-4wcm]], [[AF-8ik8]], [[AF-qujb]], [[AF-pydv]], [[AF-vwvq]], [[AF-uw18]], [[AF-9bc8]]
 
 ## Comments
 

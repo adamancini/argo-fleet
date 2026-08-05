@@ -9,11 +9,12 @@ parent: AF-q1il
 created_at: 2026-08-05T15:42:03Z
 created_by: ada
 updated_at: 2026-08-05T16:15:32Z
-content_hash: "sha256:431a3f382d2fe2cbe944bd538a0c4bb8dce910423dac4abf6d148eaf51e8ca33"
+content_hash: "sha256:53df469427015b47df63dace3e22411699181c546125d2b834626b9d30fa02c8"
 follows: [AF-wx9b, AF-cu83, AF-vwvq, AF-pydv]
 assignee: dev-AF-9bc8
 closed_at: 2026-08-05T16:15:31Z
 close_reason: "Accepted via pvg story accept"
+led_to: [AF-cbot]
 ---
 
 ## Description
@@ -198,6 +199,7 @@ status: delivered
 ## Links
 - Parent: [[AF-q1il]]
 - Follows: [[AF-wx9b]], [[AF-cu83]], [[AF-vwvq]], [[AF-pydv]]
+- Led to: [[AF-cbot]]
 
 ## Comments
 
