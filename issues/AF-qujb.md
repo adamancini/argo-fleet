@@ -10,7 +10,7 @@ created_by: ada
 updated_at: 2026-08-05T15:33:50Z
 content_hash: "sha256:74fa2a6c7745f59a79861c4179756f63f6e031ed7316ecfbf68292b200b3e764"
 assignee: dev-AF-qujb
-labels: [delivered, accepted]
+labels: [accepted]
 closed_at: 2026-08-05T15:33:50Z
 close_reason: "Byte-exact match to IMPLEMENTATION spec; sync-wave quoted as string (guards -1 int/string footgun); YAML validates OK; discovery wiring confirmed via bootstrap/infra-apps.yaml; README documents ordering/selfHeal. AC1-5 verified."
 ---
