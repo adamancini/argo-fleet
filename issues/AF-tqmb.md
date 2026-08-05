@@ -7,8 +7,8 @@ type: task
 labels: [release-gate, human-execution-required, external-integration]
 created_at: 2026-08-05T14:34:47Z
 created_by: ada
-updated_at: 2026-08-05T14:36:07Z
-content_hash: "sha256:451b5490ee80ab667f436443353e99bd38f46c39b66c3d632380a3c892771195"
+updated_at: 2026-08-05T14:36:39Z
+content_hash: "sha256:586d9cb5998c17d384b87c44482e7ca2381e326c81db2bbf87507a42dbb7f63c"
 blocked_by: [AF-cbot]
 ---
 
@@ -46,7 +46,11 @@ AF-qujb). This is the epic's release gate: closing it is what actually
 delivers the epic's TARGET STATE. It is `blocked_by` AF-cbot (the epic's
 capstone, "Full static verification...") -- every developer-claimable story
 in this epic must be complete, committed, and pushed before this story is
-even eligible to run.
+even eligible to run. Once Steps 2-7 complete, a human operator (never an
+automated agent) can trust that `demo1`/`demo2` are genuinely re-registered
+Argo CD/Kargo destinations and that the three new infrastructure layers'
+ApplicationSets have each emitted healthy, synced Applications per
+cluster -- that trust is the observable outcome this story delivers.
 
 DISCOVERED DURING / WHY THIS IS DIFFERENT IN KIND:
 `demo1` currently runs the ENTIRE `akp-platform` demo environment: all four
@@ -166,13 +170,13 @@ files on disk) and posts one Terraform-managed drift check -- it does not
 touch any file tracked in this repo.
 
 CONSUMES:
-- AF-cbot: (capstone) -- confirmation that every file this story's Steps
-    2-7 depend on (terraform/clusters/, Taskfile.yml's cluster:* tasks,
-    the three infrastructure/*/argocd/appset.yaml files) is syntactically
-    valid, byte-faithful to source, and pinned to real chart versions.
-    spec: this story's Step 2 onward assumes AF-cbot's five verification
-      steps all passed with the literal output recorded as proof.
-    source: AF-cbot AC.
+Note: this story is `blocked_by` AF-cbot (the epic's capstone) as a pure
+dependency edge, not a CONSUMES entry -- AF-cbot produces no artifact (it
+is verification-only; see its own PRODUCES: None), so there is nothing for
+a CONSUMES signature to cite. The dependency edge alone enforces "every
+file this story's Steps 2-7 depend on has already been proven
+syntactically valid, byte-faithful to source, and pinned to real chart
+versions" before this story is even eligible to run.
 - AF-4wcm: terraform/clusters/ -> `module.cluster["<name>"]`,
     `ensure_healthy = true` gate.
     spec: Step 3/4's `task cluster:register-agent` calls
