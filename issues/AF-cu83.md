@@ -9,7 +9,8 @@ parent: AF-q1il
 created_at: 2026-08-05T15:22:58Z
 created_by: ada
 updated_at: 2026-08-05T15:22:58Z
-content_hash: "sha256:3e852e7531997c9a58010f737f04ad633b6e7a059c7117cab7b7431818d2c486"
+content_hash: "sha256:c5587baebc8528720d18b2f22c2490318d7ce2b48358edb168dad6abdac73fc4"
+blocked_by: [AF-4wcm]
 ---
 
 ## Description
@@ -260,9 +261,10 @@ this repo).
 
 
 ## History
-
+- 2026-08-05T15:23:06Z dep_added: blocked_by AF-4wcm
 
 ## Links
 - Parent: [[AF-q1il]]
+- Blocked by: [[AF-4wcm]]
 
 ## Comments
