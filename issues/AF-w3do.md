@@ -7,11 +7,11 @@ type: task
 parent: AF-q1il
 created_at: 2026-08-05T18:23:22Z
 created_by: ada
-updated_at: 2026-08-05T18:26:51Z
-content_hash: "sha256:1fedb52146420087fc70e64c2250309c5bb8c1d98a39fc9c9c648fbcf177110e"
+updated_at: 2026-08-05T18:30:56Z
+content_hash: "sha256:72f3f7f4db8b2b3f1a0555b771e1d0f78361ce467b41412d02395c671bc1d837"
 blocks: [AF-s8l0, AF-cbot]
 assignee: dev-AF-w3do
-follows: [AF-i2t5]
+follows: [AF-i2t5, AF-cbot]
 ---
 
 ## Description
@@ -404,10 +404,12 @@ specific pattern applies).
 - 2026-08-05T18:26:51Z status: open -> in_progress
 - 2026-08-05T18:26:51Z auto-follows: linked to predecessor AF-i2t5
 - 2026-08-05T18:26:51Z claimed by dev-AF-w3do
+- 2026-08-05T18:30:56Z status: in_progress -> in_progress
+- 2026-08-05T18:30:56Z auto-follows: linked to predecessor AF-cbot
 
 ## Links
 - Parent: [[AF-q1il]]
 - Blocks: [[AF-s8l0]], [[AF-cbot]]
-- Follows: [[AF-i2t5]]
+- Follows: [[AF-i2t5]], [[AF-cbot]]
 
 ## Comments
