@@ -12,6 +12,7 @@ content_hash: "sha256:72f3f7f4db8b2b3f1a0555b771e1d0f78361ce467b41412d02395c671b
 blocks: [AF-s8l0, AF-cbot]
 assignee: dev-AF-w3do
 follows: [AF-i2t5, AF-cbot]
+labels: [delivered]
 ---
 
 ## Description
