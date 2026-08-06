@@ -4,7 +4,7 @@ title: "Bootstrap fleet-platform-aoa on the shared Argo CD instance (human-run, 
 status: closed
 priority: 0
 type: task
-labels: [human-execution-required, external-integration]
+labels: [human-execution-required, external-integration, accepted]
 parent: AF-q1il
 created_at: 2026-08-05T18:23:50Z
 created_by: ada
