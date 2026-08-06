@@ -3,6 +3,11 @@
 # version fleet-infra uses. Traefik's own chart doesn't install these; the
 # traefik-gateway Application (infrastructure/traefik-gateway/) depends on
 # them existing first.
+#
+# ServerSideApply is required: these CRDs' rendered manifests exceed
+# kubectl client-side apply's 262144-byte last-applied-configuration
+# annotation limit, which fails with a metadata.annotations "Too long"
+# error. Server-side apply doesn't need that annotation at all.
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
@@ -34,3 +39,5 @@ spec:
         automated:
           prune: true
           selfHeal: true
+        syncOptions:
+        - ServerSideApply=true

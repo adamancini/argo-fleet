@@ -1,8 +1,9 @@
 # One Application per cluster, installing OpenEBS's Dynamic LocalPV
 # Provisioner. Mirrors fleet-infra's real-cluster setup: the StorageClass is
 # named "local-path" (matching what k3s's bundled provisioner used to
-# provide, before the cluster-recreate task disables it) but is NOT the
-# default class -- that choice stays explicit rather than implicit.
+# provide, before the cluster-recreate task disables it) and IS the
+# default class -- charts (akkoma, soju) don't set storageClassName
+# explicitly, so without a default their PVCs bind to nothing, forever.
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
@@ -39,8 +40,10 @@ spec:
               # storageclass.kubernetes.io/is-default-class annotation on
               # `{{- if .Values.hostpathClass.isDefaultClass }}`, and Go
               # templates treat the non-empty string "false" as TRUE --
-              # quoting this silently makes local-path the default class.
-              isDefaultClass: false
+              # quoting a `false` value here would silently make it default
+              # regardless. Currently `true` on purpose; see the header
+              # comment.
+              isDefaultClass: true
               reclaimPolicy: Delete
       destination:
         name: '{{cluster}}'
