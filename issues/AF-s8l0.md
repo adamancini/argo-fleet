@@ -1,17 +1,18 @@
 ---
 id: AF-s8l0
 title: "Bootstrap fleet-platform-aoa on the shared Argo CD instance (human-run, gated)"
-status: deferred
+status: closed
 priority: 0
 type: task
 labels: [human-execution-required, external-integration]
 parent: AF-q1il
 created_at: 2026-08-05T18:23:50Z
 created_by: ada
-updated_at: 2026-08-05T20:31:39Z
-content_hash: "sha256:6d9f11eb88cb7cb13ce99afd3f70308c4ec3097ad227492f946dc1ce8232ce50"
-blocks: [AF-cbot]
+updated_at: 2026-08-06T13:30:01Z
+content_hash: "sha256:d4b4c2e48df794e632a4f1fa0980dd3f3a99cfb36270a120a65317554a183211"
 was_blocked_by: [AF-w3do]
+closed_at: 2026-08-06T13:30:01Z
+close_reason: "Accepted via pvg story accept"
 ---
 
 ## Description
@@ -224,10 +225,11 @@ discretion, not a gate.
 - 2026-08-05T18:41:07Z dep_removed: was_blocked_by AF-w3do
 - 2026-08-05T18:47:18Z status: deferred -> open
 - 2026-08-05T18:48:50Z status: open -> deferred
+- 2026-08-06T13:30:01Z status: deferred -> closed
+- 2026-08-06T13:30:01Z dep_removed: no_longer_blocks AF-cbot
 
 ## Links
 - Parent: [[AF-q1il]]
-- Blocks: [[AF-cbot]]
 - Was blocked by: [[AF-w3do]]
 
 ## Comments
