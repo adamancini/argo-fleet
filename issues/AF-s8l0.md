@@ -8,8 +8,8 @@ labels: [human-execution-required, external-integration, accepted]
 parent: AF-q1il
 created_at: 2026-08-05T18:23:50Z
 created_by: ada
-updated_at: 2026-08-06T13:30:01Z
-content_hash: "sha256:d4b4c2e48df794e632a4f1fa0980dd3f3a99cfb36270a120a65317554a183211"
+updated_at: 2026-08-06T13:30:02Z
+content_hash: "sha256:954f56bbb15ab5a8e7daf688d92dc470b6909cd7be8f37f75d6474dcf54f23b3"
 was_blocked_by: [AF-w3do]
 closed_at: 2026-08-06T13:30:01Z
 close_reason: "Accepted via pvg story accept"
@@ -216,6 +216,16 @@ discretion, not a gate.
 
 
 ## Notes
+
+
+## nd_contract
+status: accepted
+
+### evidence
+- PM closeout applied via pvg story accept on 2026-08-06.
+
+### proof
+- [x] Story closed after accepted label was applied.
 
 
 ## History
