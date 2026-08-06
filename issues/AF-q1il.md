@@ -7,7 +7,7 @@ type: epic
 created_at: 2026-08-05T14:27:26Z
 created_by: ada
 updated_at: 2026-08-06T19:40:11Z
-content_hash: "sha256:540f4647cbfb73b01353213f93ba86400f4d4d5ea590cf50bb075fe6835310f2"
+content_hash: "sha256:b3815009aed092e784bc39621143bfc9fbab7dd10da51cf82ad66a1b78deeca1"
 labels: [milestone, accepted]
 closed_at: 2026-08-06T19:40:10Z
 close_reason: "Accepted via pvg story accept"
@@ -184,6 +184,16 @@ annotations).
 
 
 ## Notes
+
+
+## nd_contract
+status: accepted
+
+### evidence
+- PM closeout applied via pvg story accept on 2026-08-06.
+
+### proof
+- [x] Story closed after accepted label was applied.
 
 
 ## History
