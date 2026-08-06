@@ -4,7 +4,7 @@ title: "Recreate demo1/demo2 with GitOps-managed storage & ingress; retire akp-i
 status: closed
 priority: 0
 type: task
-labels: [release-gate, human-execution-required, external-integration]
+labels: [release-gate, human-execution-required, external-integration, accepted]
 created_at: 2026-08-05T14:34:47Z
 created_by: ada
 updated_at: 2026-08-06T19:39:42Z
