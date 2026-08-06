@@ -1,0 +1,44 @@
+# One Application per cluster, installing the Argo Rollouts CRDs
+# (AnalysisTemplate, AnalysisRun, ClusterAnalysisTemplate, Rollout,
+# Experiment) at v1.9.0 -- matching the `kargo-rollouts-<cluster>` analysis
+# controller Akuity's self-hosted Kargo agent already deploys per shard
+# (see terraform/clusters/modules/cluster/main.tf's akp_kargo_agent
+# resource, akuity_managed = false). That controller runs with
+# `--controllers=analysis`, but per Kargo's own chart docs
+# (api.rollouts.integrationEnabled), the Kargo API server does a startup
+# sanity check for these CRDs and silently disables the Rollouts/
+# verification integration if they're not found -- so `Stage.spec.
+# verification` is a no-op without this.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: argo-rollouts-crds
+  namespace: argocd
+spec:
+  generators:
+  - list:
+      elements:
+      - cluster: demo1
+      - cluster: demo2
+  template:
+    metadata:
+      name: 'argo-rollouts-crds-{{cluster}}'
+      annotations:
+        argocd.argoproj.io/sync-wave: "-1"
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/argoproj/argo-rollouts.git
+        targetRevision: v1.9.0
+        path: manifests/crds
+        directory:
+          recurse: true
+      destination:
+        name: '{{cluster}}'
+        namespace: default
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - ServerSideApply=true
