@@ -1,4 +1,4 @@
-chartVersion: 0.4.6
+chartVersion: 0.4.7
 values:
   akkoma:
     domain: akkoma-dev.example.com
