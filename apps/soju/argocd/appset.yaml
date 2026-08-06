@@ -26,12 +26,17 @@ spec:
       # call out for syncPolicy). The structure has to be spelled out here,
       # templating only the individual leaf values that genuinely vary by
       # stage (all quoted strings -- the one documented-safe pattern).
-      # admin.enabled and ingress.enabled are identical at every stage in
-      # this design, so they're plain YAML booleans, not templated -- avoids
-      # relying on how an unquoted `{{...}}` in this position would even
-      # parse (raw, un-rendered `{{` is ambiguous with YAML flow-mapping
+      # admin.enabled, ingress.enabled, and listeners are identical at every
+      # stage in this design, so they're plain YAML values, not templated --
+      # avoids relying on how an unquoted `{{...}}` in this position would
+      # even parse (raw, un-rendered `{{` is ambiguous with YAML flow-mapping
       # syntax), and avoids Helm/Sprig `if` treating a quoted "false" string
       # as truthy.
+      #
+      # listeners.ircs (TLS) is off and listeners.irc (plain) is on: no
+      # certificate is configured yet (same "TLS/ingress deferred" stance
+      # as apps/akkoma/), and without a cert the ircs listener fails to
+      # bind at all, crash-looping the pod. Revisit once TLS is designed.
       - repoURL: ghcr.io/adamancini/charts
         chart: soju
         targetRevision: '{{.chartVersion}}'
@@ -44,6 +49,9 @@ spec:
               existingSecret: '{{.values.admin.existingSecret}}'
             ingress:
               enabled: false
+            listeners:
+              ircs: false
+              irc: true
       - repoURL: https://github.com/adamancini/argo-fleet.git
         targetRevision: HEAD
         path: '{{.path.path}}'
