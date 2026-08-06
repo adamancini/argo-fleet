@@ -3,6 +3,10 @@
 # tasks) is pre-created as a labeled Secret in the sealed-secrets namespace
 # before this syncs -- the chart detects the existing secret and uses it
 # instead of generating a new one.
+#
+# targetRevision must be "helm-vX.Y.Z", not "vX.Y.Z" -- this repo tags its
+# Helm chart releases separately from the controller binary's own release
+# tags, and only the "helm-" prefixed ones exist for the chart.
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
@@ -21,7 +25,7 @@ spec:
       project: default
       source:
         repoURL: https://github.com/bitnami-labs/sealed-secrets.git
-        targetRevision: v2.16.1
+        targetRevision: helm-v2.16.1
         path: helm/sealed-secrets
         helm:
           valuesObject:
