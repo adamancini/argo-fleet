@@ -1,17 +1,18 @@
 ---
 id: AF-tqmb
 title: "Recreate demo1/demo2 with GitOps-managed storage & ingress; retire akp-infra Terraform state (human-run, gated)"
-status: deferred
+status: closed
 priority: 0
 type: task
 labels: [release-gate, human-execution-required, external-integration]
 created_at: 2026-08-05T14:34:47Z
 created_by: ada
-updated_at: 2026-08-06T19:39:32Z
-content_hash: "sha256:e924efcce6a9945cc2033266c6c3be62dc534a7a4d628c1544afdae9b79180fc"
+updated_at: 2026-08-06T19:39:42Z
+content_hash: "sha256:ed36fe5a79837d4f516e5913de99237e90bbfe3b9b331f7d88158cbd115db3c1"
 was_blocked_by: [AF-cu83, AF-uw18, AF-cbot]
 parent: AF-q1il
-blocks: [AF-cbot]
+closed_at: 2026-08-06T19:39:42Z
+close_reason: "Accepted via pvg story accept"
 ---
 
 ## Description
@@ -273,10 +274,11 @@ before running these steps.)
 - 2026-08-05T16:16:07Z dep_removed: was_blocked_by AF-uw18
 - 2026-08-05T16:28:39Z dep_removed: was_blocked_by AF-cbot
 - 2026-08-05T18:24:03Z dep_added: blocks AF-cbot
+- 2026-08-06T19:39:42Z status: deferred -> closed
+- 2026-08-06T19:39:42Z dep_removed: no_longer_blocks AF-cbot
 
 ## Links
 - Parent: [[AF-q1il]]
-- Blocks: [[AF-cbot]]
 - Was blocked by: [[AF-cu83]], [[AF-uw18]], [[AF-cbot]]
 
 ## Comments
