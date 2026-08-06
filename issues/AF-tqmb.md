@@ -7,8 +7,8 @@ type: task
 labels: [release-gate, human-execution-required, external-integration]
 created_at: 2026-08-05T14:34:47Z
 created_by: ada
-updated_at: 2026-08-05T17:19:42Z
-content_hash: "sha256:daaa34e675d0262894afbb16246bf7e37dbf0522f54d9888a2ae7b9eb26cc272"
+updated_at: 2026-08-06T19:39:32Z
+content_hash: "sha256:e924efcce6a9945cc2033266c6c3be62dc534a7a4d628c1544afdae9b79180fc"
 was_blocked_by: [AF-cu83, AF-uw18, AF-cbot]
 parent: AF-q1il
 blocks: [AF-cbot]
@@ -341,3 +341,21 @@ module.cluster[...] target scope. That apply was reviewed and confirmed by the h
 before running.
 
 Recorded by human operator per AC4.
+
+### 2026-08-06T19:39:32Z ada
+AC6 / Step 7 -- recorded by human operator (ada), literal command output confirming all three new infra layers Synced/Healthy on both clusters:
+
+$ argocd app list | grep -E 'gateway-api-crds|openebs-localpv|traefik-gateway'
+argocd/gateway-api-crds-demo1  demo1       default         default  Synced  Healthy   Auto-Prune  <none>      https://github.com/kubernetes-sigs/gateway-api.git     config/crd/experimental                 v1.5.1
+argocd/gateway-api-crds-demo2  demo2       default         default  Synced  Healthy   Auto-Prune  <none>      https://github.com/kubernetes-sigs/gateway-api.git     config/crd/experimental                 v1.5.1
+argocd/infra-gateway-api-crds  in-cluster  argocd          default  Synced  Healthy   Auto-Prune  <none>      https://github.com/adamancini/argo-fleet.git           infrastructure/gateway-api-crds/argocd  HEAD
+argocd/infra-openebs-localpv   in-cluster  argocd          default  Synced  Healthy   Auto-Prune  <none>      https://github.com/adamancini/argo-fleet.git           infrastructure/openebs-localpv/argocd   HEAD
+argocd/infra-traefik-gateway   in-cluster  argocd          default  Synced  Healthy   Auto-Prune  <none>      https://github.com/adamancini/argo-fleet.git           infrastructure/traefik-gateway/argocd   HEAD
+argocd/openebs-localpv-demo1   demo1       openebs         default  Synced  Healthy   Auto-Prune  <none>      https://openebs.github.io/dynamic-localpv-provisioner                                          4.5.1
+argocd/openebs-localpv-demo2   demo2       openebs         default  Synced  Healthy   Auto-Prune  <none>      https://openebs.github.io/dynamic-localpv-provisioner                                          4.5.1
+argocd/traefik-gateway-demo1   demo1       traefik         default  Synced  Healthy   Auto-Prune  <none>      https://traefik.github.io/charts                                                               41.1.1
+argocd/traefik-gateway-demo2   demo2       traefik         default  Synced  Healthy   Auto-Prune  <none>      https://traefik.github.io/charts                                                               41.1.1
+
+All six target Applications (gateway-api-crds-demo1/2, openebs-localpv-demo1/2, traefik-gateway-demo1/2) Synced/Healthy, plus their infra-* ApplicationSet wrappers. AC6 satisfied.
+
+Full AC status: AC1/AC2 (deferred, human-only) held throughout. AC3 (STOP-GATE 1) and AC4 (STOP-GATE 2) already recorded 2026-08-05. AC5 confirmed on disk -- akp-infra/03-clusters' tfstate files already renamed to *.superseded-by-argo-fleet. AC6 satisfied above. AC7 satisfied -- all evidence comments (AC3, AC4, AC6) are human-authored per nd's own attribution, not agent assertions. AC8 satisfied -- AF-cbot closed/accepted 2026-08-05T16:28:39Z.
