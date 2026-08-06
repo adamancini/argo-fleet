@@ -1,4 +1,4 @@
-chartVersion: 0.1.7
+chartVersion: 0.1.9
 values:
   soju:
     domain: soju.example.com
