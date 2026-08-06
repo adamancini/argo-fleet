@@ -6,9 +6,9 @@ priority: 1
 type: epic
 created_at: 2026-08-05T14:27:26Z
 created_by: ada
-updated_at: 2026-08-06T19:40:10Z
+updated_at: 2026-08-06T19:40:11Z
 content_hash: "sha256:540f4647cbfb73b01353213f93ba86400f4d4d5ea590cf50bb075fe6835310f2"
-labels: [milestone]
+labels: [milestone, accepted]
 closed_at: 2026-08-06T19:40:10Z
 close_reason: "Accepted via pvg story accept"
 ---
