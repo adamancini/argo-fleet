@@ -1,5 +1,7 @@
 chartVersion: 0.4.6
 values:
+  image:
+    tag: v3.17.0
   akkoma:
     domain: akkoma-staging.example.com
     adminEmail: admin@example.com

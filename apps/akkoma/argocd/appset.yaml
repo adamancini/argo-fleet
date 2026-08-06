@@ -51,6 +51,8 @@ spec:
               existingSecret: '{{.values.postgresql.existingSecret}}'
             ingress:
               enabled: false
+            image:
+              tag: '{{.values.image.tag}}'
       - repoURL: https://github.com/adamancini/argo-fleet.git
         targetRevision: HEAD
         path: '{{.path.path}}'

@@ -1,7 +1,10 @@
-# Every promotion is a real commit to main that bumps chartVersion in the
-# stage's env/<stage>/release.yaml. Argo CD's multi-source Application
-# (see argocd/appset.yaml) reads that value as the OCI chart's
-# targetRevision, so git history on main doubles as the deployment history.
+# Every promotion is a real commit to main that bumps chartVersion AND
+# values.image.tag independently in the stage's env/<stage>/release.yaml
+# -- the chart is adamancini's own, versioned separately from the akkoma
+# app it packages, so a promotion's Freight can carry a new chart version,
+# a new app image, both, or (most often) just one of the two. Argo CD's
+# multi-source Application (see argocd/appset.yaml) reads both values, so
+# git history on main doubles as the deployment history for each.
 apiVersion: kargo.akuity.io/v1alpha1
 kind: PromotionTask
 metadata:
@@ -13,6 +16,8 @@ spec:
     value: https://github.com/adamancini/argo-fleet.git
   - name: chart
     value: oci://ghcr.io/adamancini/charts/akkoma
+  - name: image
+    value: ghcr.io/adamancini/akkoma
   steps:
   - uses: git-clone
     config:
@@ -27,11 +32,13 @@ spec:
       updates:
       - key: chartVersion
         value: ${{ chartFrom(vars.chart).Version }}
+      - key: values.image.tag
+        value: ${{ imageFrom(vars.image).Tag }}
   - uses: git-commit
     as: commit
     config:
       path: ./src
-      message: "akkoma/${{ ctx.stage }}: promote ${{ chartFrom(vars.chart).Version }}"
+      message: "akkoma/${{ ctx.stage }}: promote chart ${{ chartFrom(vars.chart).Version }}, image ${{ imageFrom(vars.image).Tag }}"
   - uses: git-push
     config:
       path: ./src
