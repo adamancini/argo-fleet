@@ -1,14 +1,16 @@
 ---
 id: AF-q1il
 title: "Cluster Lifecycle Tooling, OpenEBS LocalPV & Traefik Gateway for demo1/demo2"
-status: open
+status: closed
 priority: 1
 type: epic
 created_at: 2026-08-05T14:27:26Z
 created_by: ada
-updated_at: 2026-08-05T14:27:35Z
-content_hash: "sha256:2577e7fc7dbf1eacccff6a39aacc6fdef18c5404a542dbbf49b5091f288521e1"
+updated_at: 2026-08-06T19:40:10Z
+content_hash: "sha256:540f4647cbfb73b01353213f93ba86400f4d4d5ea590cf50bb075fe6835310f2"
 labels: [milestone]
+closed_at: 2026-08-06T19:40:10Z
+close_reason: "Accepted via pvg story accept"
 ---
 
 ## Description
@@ -185,7 +187,7 @@ annotations).
 
 
 ## History
-
+- 2026-08-06T19:40:10Z status: open -> closed
 
 ## Links
 
