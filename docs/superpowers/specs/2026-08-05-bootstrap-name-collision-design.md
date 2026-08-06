@@ -16,7 +16,7 @@ resources — share exact resource names with `akp-platform`'s already-live
 equivalents, all in the `argocd` namespace:
 
 | Resource | Kind | `argo-fleet` file | Collides with (live, `akp-platform`) |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `platform-aoa` | Application | `bootstrap/platform-aoa.yaml` | `argocd/platform-aoa` (repo: `akp-platform`, `Synced`/`Healthy`) |
 | `argocd-apps` | ApplicationSet | `bootstrap/argocd-apps.yaml` | `argocd/argocd-apps` (repo: `akp-platform`, `Healthy`) |
 | `kargo-apps` | ApplicationSet | `bootstrap/kargo-apps.yaml` | `argocd/kargo-apps` (repo: `akp-platform`, `Healthy`) |
@@ -77,6 +77,7 @@ Split by what can run statically versus what touches the live shared
 instance:
 
 **Static (safe for any agent to run):**
+
 - YAML syntax check on the three renamed files.
 - Repo-wide grep confirming no remaining reference to the old unprefixed
   names (`platform-aoa`, `argocd-apps`, `kargo-apps`) outside of git
@@ -85,6 +86,7 @@ instance:
 **Live (human-run only — this touches the shared Argo CD instance that
 already serves the running `akp-platform` demo, so no agent may execute
 these steps):**
+
 1. Baseline: `argocd app list` and `argocd appset list` — confirm no
    `fleet-*`-named resource exists yet, and confirm the *unprefixed*
    `platform-aoa`/`argocd-apps`/`kargo-apps` still show `akp-platform` as
