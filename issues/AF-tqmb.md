@@ -8,7 +8,7 @@ labels: [release-gate, human-execution-required, external-integration, accepted]
 created_at: 2026-08-05T14:34:47Z
 created_by: ada
 updated_at: 2026-08-06T19:39:42Z
-content_hash: "sha256:ed36fe5a79837d4f516e5913de99237e90bbfe3b9b331f7d88158cbd115db3c1"
+content_hash: "sha256:8e92f39fc7a066bd0e17b2515637c79b211a4257a92911f1be3d461e47ddc96c"
 was_blocked_by: [AF-cu83, AF-uw18, AF-cbot]
 parent: AF-q1il
 closed_at: 2026-08-06T19:39:42Z
@@ -263,6 +263,16 @@ before running these steps.)
 
 
 ## Notes
+
+
+## nd_contract
+status: accepted
+
+### evidence
+- PM closeout applied via pvg story accept on 2026-08-06.
+
+### proof
+- [x] Story closed after accepted label was applied.
 
 
 ## History
