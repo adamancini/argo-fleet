@@ -7,8 +7,8 @@ type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T15:06:17Z
-content_hash: "sha256:8f72853f4a4b801de84e903d91b3bc62c81a2dcad1de5d8d691bd67e05889ed7"
+updated_at: 2026-08-07T15:07:16Z
+content_hash: "sha256:88effe3e4feb37ef97d58deb0999b24c4c8bba98abfe380559ce493d3efa0f95"
 ---
 
 ## Description
@@ -78,7 +78,7 @@ DIFF BUDGET:
 1 new file (`grafana-httproute.yaml`), 1 file modified (`appset.yaml`'s `directory.include` glob). Under 30 changed LOC.
 
 CONSUMES:
-- (kube-prometheus-stack story id): infrastructure/kube-prometheus-stack/argocd/appset.yaml -> Grafana Service
+- AF-d3ax: infrastructure/kube-prometheus-stack/argocd/appset.yaml -> Grafana Service
     spec: service name: kube-prometheus-stack-grafana (from helm.releaseName: kube-prometheus-stack, fixed across all clusters); port: 80; namespace: monitoring
     source: that story's PRODUCES (verify against the real deployed Service before trusting this name, per that story's own note that chart fullname conventions must be confirmed, not assumed)
 - infrastructure/traefik-gateway/argocd/appset.yaml -> traefik-gateway Gateway
