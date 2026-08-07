@@ -7,8 +7,8 @@ type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T16:43:28Z
-content_hash: "sha256:b93aa826cfa308d808121ee7ca79d0c739ec87085b81db8ec73ff554624d50fa"
+updated_at: 2026-08-07T17:01:10Z
+content_hash: "sha256:a185f37300b2c38cf8cd269fdf6b1d96145e005557a4bef2438e6592e34b7aab"
 blocks: [AF-7u8n]
 was_blocked_by: [AF-d3ax]
 follows: [AF-d3ax, AF-qmy9]
@@ -114,7 +114,18 @@ devops-toolkit:akp-platform (mandatory), devops-toolkit:yaml-kubernetes-validato
 
 
 ## Notes
+BLOCKED ON SCOPE AUTHORIZATION (not a defect). Work is committed locally on story/AF-j4fp at 72daeff; push denied by the permission classifier.
 
+FINDING: the story's premise that the traefik-gateway Gateway 'already exists correctly' and needs only a consumer is FALSE. Gateway API defaults allowedRoutes.namespaces.from to 'Same' and the traefik chart leaves namespacePolicy unset. Verified read-only on BOTH live clusters:
+  kubectl get gateway traefik-gateway -n traefik -o jsonpath='{.spec.listeners}'
+  => [{"allowedRoutes":{"namespaces":{"from":"Same"}},"name":"web","port":8000,"protocol":"HTTP"}]
+Applying the story's HTTPRoute verbatim to demo1 was REJECTED:
+  reason=NotAllowedByListeners status=False type=Accepted
+So the story as literally specified ships a route that attaches to nothing and 404s, with no apply-time error.
+
+FIX REQUIRES a 2-line value on infrastructure/traefik-gateway/argocd/appset.yaml (gateway.listeners.web.namespacePolicy.from: All), which the story marked OUT OF SCOPE. That out-of-scope line rests on the false premise above. Needs a human scope decision before push.
+
+Baseline restored on both clusters (monitoring ns deleted, gateways untouched, still from:Same).
 
 ## History
 - 2026-08-07T15:07:23Z dep_added: blocked_by AF-d3ax
