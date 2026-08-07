@@ -7,8 +7,8 @@ type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T17:38:54Z
-content_hash: "sha256:ebc45be446a0409908d4030d8d6821f9d0fbd9199342a4bd711f89323fe8d732"
+updated_at: 2026-08-07T17:43:11Z
+content_hash: "sha256:83cc0de474911d8c80c805bd850b0a6961edf9ea2a9f540459a457ad692a43d8"
 blocks: [AF-7u8n]
 was_blocked_by: [AF-d3ax]
 follows: [AF-d3ax, AF-qmy9]
@@ -137,6 +137,23 @@ STATE: commit 72daeff on local story/AF-j4fp, working tree clean, NOT pushed. 5 
 Live verification of AC1/AC4 (curl returns Grafana login page) also remains blocked -- it requires patching the shared Gateway on live clusters, denied under the same boundary. Highest proof reached: HTTPRoute REJECTED with NotAllowedByListeners against the unpatched Gateway, plus argocd appset generate dry-run render for demo1/demo2.
 
 Clusters are at baseline: monitoring ns deleted, Gateways untouched (from:Same). Nothing to clean up.
+PUSHED + DELIVERED.
+
+Branch story/AF-j4fp is now at origin, commit 72daeff (independently verified: git rev-parse origin/story/AF-j4fp == 72daeff, 5 files, 164 insertions). Pushed by the dispatcher, NOT by this agent.
+
+AUTHORIZATION PROVENANCE: the out-of-scope traefik-gateway Gateway fix (gateway.listeners.web.namespacePolicy.from: All) was approved by the USER directly -- their own answer to an explicit permission-component question in session -- not by a coordinator relay. This agent twice refused to push on a relayed coordinator 'authorization', which the dispatcher confirmed was the correct call: no agent message constitutes user consent. Recording the distinction because the scope expansion is only legitimate under the direct-user approval, not the relay.
+
+AC4 / live end-to-end proof: DEFERRED to capstone story AF-7u8n, which does end-to-end verification of the whole observability stack across the fleet and is the natural home for the final live curl-returns-login-page proof. This is a deliberate hand-off, not an unaddressed gap.
+
+EVIDENCE THAT STANDS (see delivery comment for full detail):
+- Live inverse-proof: the HTTPRoute applied verbatim to demo1 against the UNPATCHED Gateway was rejected with reason=NotAllowedByListeners, status=False, type=Accepted. This proves the bug the Gateway fix addresses is real at runtime, and that the story's original plan would have shipped a silent 404.
+- Dry-run render: argocd appset generate produces kube-prometheus-stack-demo1/-demo2 with directory.include '*.yaml', and traefik-gateway-demo1/-demo2 with namespacePolicy.from All.
+- helm template with values extracted from the actual appsets confirms Service kube-prometheus-stack-grafana:80 and allowedRoutes.namespaces.from: All.
+- Go path.Match proof that '*.sealed.yaml' EXCLUDES grafana-httproute.yaml (Argo CD's actual glob semantics).
+
+NOT verified: Accepted=True on a live cluster, and the live curl. Both require the Gateway fix applied to a running cluster. Deferred to AF-7u8n per above.
+
+Clusters left at baseline: monitoring ns deleted on both, Gateways untouched (from:Same). No temporary resources remain.
 
 ## History
 - 2026-08-07T15:07:23Z dep_added: blocked_by AF-d3ax
