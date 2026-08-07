@@ -7,8 +7,8 @@ type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T15:47:20Z
-content_hash: "sha256:b633326aae25c72e892fb9ef246bf19039bdc845130b8f54fc81ff04b96ba8cb"
+updated_at: 2026-08-07T15:48:16Z
+content_hash: "sha256:2df0bb274c13bbca64eeff3d8633475d4000a5136f1caadbe70a0fa43624a560"
 blocks: [AF-qmy9, AF-7u8n]
 was_blocked_by: [AF-ogxu]
 assignee: dev-AF-c8p4
@@ -156,3 +156,140 @@ status: delivered
 - Follows: [[AF-ogxu]]
 
 ## Comments
+
+### 2026-08-07T15:48:16Z ada
+DELIVERED AF-c8p4 -- migrate 5 infra ApplicationSets from `list` to `clusters` generator
+
+Branch: story/AF-c8p4
+Commit SHA: bba5433e7d9707b4320dc41f974af10b696d6f36 (pushed to origin)
+Base: 97105f5 (== epic/AF-d66a head; verified no already-landed work on the epic)
+Diff: 5 files changed, 40 insertions(+), 30 deletions(-)
+
+## PROOF
+
+### Commands run (all against commit bba5433)
+
+1. `pvg verify --format text <5 changed files>`
+   -> `VERIFY: PASSED (0 files scanned, 0 issues)` exit 0.
+   Note: 0 files scanned because pvg verify is a source-code scanner and skips
+   .yaml manifests. It is not a meaningful gate for this story; the real gates
+   are yamllint + kubeconform + argocd appset generate below.
+
+2. `yamllint -d '{extends: default, ... indentation: {spaces: 2, indent-sequences: false}}' infrastructure/*/argocd/appset.yaml`
+   -> exit 0, ZERO errors, ZERO warnings on all 5 files.
+   `indent-sequences: false` matches this repo's house style (repo ships no
+   .yamllint config). Under yamllint's *default* indent-sequences:true the 5
+   files report 15 errors -- but the pre-change HEAD versions report the SAME
+   15 errors, all of class "non-indented block sequence". So the change
+   introduces zero new lint findings. Baseline vs post-change both = 15.
+
+3. `kubeconform -summary -strict -verbose -schema-location default -schema-location <datreeio CRDs-catalog> infrastructure/*/argocd/appset.yaml`
+   -> `Summary: 5 resources found in 5 files - Valid: 5, Invalid: 0, Errors: 0, Skipped: 0`, exit 0.
+   All 5 validated against the real ApplicationSet CRD schema in strict mode
+   (strict = unknown/misspelled fields rejected).
+
+4. Live auth (read-only) per the spike's documented worktree workaround:
+   `source /Users/ada/src/github.com/adamancini/argo-fleet/.envrc`
+   `HOSTNAME=$(terraform -chdir=.../terraform/clusters output -raw argocd_hostname)`
+   `argocd login "$HOSTNAME" --username admin --password "$TF_VAR_admin_password" --grpc-web`
+   -> logged in to augtpjfe5xvyty6u.cd.akuity.cloud. No terraform plan/apply run.
+   `argocd cluster list` -> 4 clusters: in-cluster, kargo, demo1, demo2
+   (independently reconfirms the spike's cluster inventory).
+
+### Pass/fail counts
+- yamllint (repo style): 5/5 files clean -- 0 errors, 0 warnings
+- kubeconform strict:    5/5 valid, 0 invalid, 0 errors, 0 skipped
+- appset render equivalence: 5/5 byte-identical
+- rendered-vs-live match: 10/10 Applications MATCH
+- live Sync/Health:      10/10 Synced + Healthy
+- TOTAL: 35/35 checks passed, 0 failed, 0 skipped
+
+### AC verification table
+
+| # | Acceptance criterion | Evidence | Result |
+|---|---|---|---|
+| 1 | All 5 files use the exact spike-confirmed generator block; none left on `list`; no variant drift | Programmatic structural check parsed all 5 and compared `spec.generators` against the spike's literal block -- identical in all 5. `grep -rn '{{cluster}}\|list:' infrastructure/` -> no matches. Diff shows the same +7/-5 generator hunk in each file. | PASS |
+| 2 | Rendering each edited appset via `argocd appset generate` produces the same Applications as today's live version -- verified, not assumed | Rendered BOTH the HEAD (pre-change, `list`) and edited (`clusters`) version of each file through the live `appset generate` RPC and diffed the FULL Application JSON: `FULL_JSON_IDENTICAL=True` for all 5 (2 apps each, 10 total). Not just names/destinations -- the entire rendered spec. | PASS |
+| 3 | Migration does not add in-cluster/kargo as destinations -- confirmed via rendered dry-run output | Rendered output for all 5 = exactly demo1 + demo2, 2 apps each. Positive control: rendered a temp (uncommitted) bare `clusters: {}` variant -> 4 apps incl. `sealed-secrets-in-cluster` and `sealed-secrets-kargo`. This independently reproduces the spike's warning and proves the selector is load-bearing, not decorative. | PASS |
+| 4 | No file's `source`, `destination.namespace` or `syncPolicy` changes as a side effect | Full `git diff` reviewed line by line before commit: every file's hunks are exactly (a) the `generators` block and (b) two `{{cluster}}`->`{{name}}` renames (metadata.name, destination.name). Zero diff lines touch source/chart/targetRevision/helm values/namespace/syncPolicy. AC2's full-JSON identity is independent confirmation. | PASS |
+| 5 | Report dry-run-verified Synced/Healthy-equivalence for all 5 | All 10 live Applications are Synced + Healthy, and all 10 rendered (name, destination.name) pairs MATCH live. See limitation note below. | PASS |
+
+### Rendered vs live (all 10)
+
+| App | Cluster | Render match | Live sync | Live health | Live dest |
+|---|---|---|---|---|---|
+| sealed-secrets | demo1 | MATCH | Synced | Healthy | demo1/sealed-secrets |
+| sealed-secrets | demo2 | MATCH | Synced | Healthy | demo2/sealed-secrets |
+| traefik-gateway | demo1 | MATCH | Synced | Healthy | demo1/traefik |
+| traefik-gateway | demo2 | MATCH | Synced | Healthy | demo2/traefik |
+| gateway-api-crds | demo1 | MATCH | Synced | Healthy | demo1/default |
+| gateway-api-crds | demo2 | MATCH | Synced | Healthy | demo2/default |
+| openebs-localpv | demo1 | MATCH | Synced | Healthy | demo1/openebs |
+| openebs-localpv | demo2 | MATCH | Synced | Healthy | demo2/openebs |
+| argo-rollouts-crds | demo1 | MATCH | Synced | Healthy | demo1/default |
+| argo-rollouts-crds | demo2 | MATCH | Synced | Healthy | demo2/default |
+
+`destination.server` is absent (None) on every rendered AND every live
+Application -- confirming the spike's rule that `{{server}}` must never be
+used on this instance was honored.
+
+### STATED LIMITATION (per story instructions)
+I did NOT observe live reconciliation of my branch's changes. The live
+`infra-*` Applications track `HEAD` of the repo's default branch, not
+`story/AF-c8p4`, so nothing on my branch has been reconciled by the running
+instance. The Synced/Healthy column above is the CURRENT live state produced
+by the OLD `list` generator, not proof that my branch reconciled cleanly.
+What is proven is stronger than a spot health check: the live `appset
+generate` RPC renders my edited files into Applications byte-identical to
+what the current live version renders, so on merge there is nothing for the
+ApplicationSet controller to change -- zero Application churn, no delete/
+recreate, and therefore no reason for the existing Synced/Healthy state to
+move. Full live confirmation is only possible after this merges to the
+tracked branch.
+
+### Out-of-scope files confirmed untouched
+`bootstrap/infra-apps.yaml`, `bootstrap/fleet-argocd-apps.yaml`,
+`bootstrap/fleet-kargo-apps.yaml`, `docs/infra-dependencies.md`, and
+`infrastructure/kube-prometheus-stack/` -- none appear in the diff (5 files
+changed, all `infrastructure/*/argocd/appset.yaml`).
+
+### Errors / warnings encountered
+Zero test failures, zero build warnings, zero runtime errors. No
+DISCOVERED_BUG to report. `origin/main` advanced during the work (2753ef0
+`soju/dev: promote 0.1.10`) -- verified it touches only
+`apps/soju/env/dev/release.yaml`, no overlap with my 5 files, and
+`epic/AF-d66a` head is still 97105f5 (my base), so no rebase was needed.
+
+### Deviation from plan
+None. The spike's confirmed YAML shape was applied verbatim to all 5 files.
+
+## LEARNINGS
+
+- `argocd appset generate` is a genuinely strong verification primitive for
+  generator migrations: it executes the generator server-side against the real
+  cluster inventory but writes nothing. Rendering the OLD and NEW file versions
+  and diffing the full Application JSON turns "this should be a no-op" into a
+  proof, and it costs one RPC per file. Worth reaching for on any future
+  generator or template change, not just this one.
+- The `NotIn` selector is doing real work and is easy to get wrong by omission.
+  Kubernetes label-selector semantics say `NotIn` also matches when the key is
+  ABSENT -- so the selector only excludes in-cluster/kargo because Akuity
+  actually stamps `akuity.io/argo-cd-cluster-name` on them. I verified this
+  empirically (bare `clusters: {}` -> 4 apps, with selector -> 2) rather than
+  trusting the semantics. Anyone adding a 6th appset must copy the selector, not
+  just `clusters: {}`.
+- Lint findings need a baseline before they mean anything. yamllint's default
+  `indent-sequences: true` flags 15 "errors" on these files -- all pre-existing
+  house style, identical count before and after my change. Reporting the
+  post-change number alone would have looked like I introduced 15 problems.
+  Diffing lint output against HEAD is cheap and prevents that.
+- Worktree gotchas the spike documented were real and the workarounds held:
+  `.envrc` is gitignored so it must be read by absolute path from the main
+  repo, and `terraform -chdir=<main repo>` reads outputs fine without touching
+  state. Additionally, the pvg guard blocks `cd` into a worktree, so this whole
+  story was done with `git -C <worktree>` and absolute paths -- workable, but
+  every non-git command needs absolute paths planned up front.
+- `pvg verify` is a no-op on YAML-only stories (0 files scanned). It should not
+  be mistaken for a passing quality gate here; the real gates were yamllint,
+  kubeconform --strict against the ApplicationSet CRD schema, and the live
+  render diff.
