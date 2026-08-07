@@ -8,8 +8,8 @@ labels: [walking-skeleton]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T15:06:16Z
-content_hash: "sha256:a23824ae6fe546a1310c2529620ee1bc3d64d2096a7146235d9c7c230e66d728"
+updated_at: 2026-08-07T15:07:16Z
+content_hash: "sha256:2049fd7be6e3977f81afb27b36da4551943ffda8253de0cbef860b0d478adbcf"
 ---
 
 ## Description
@@ -103,7 +103,7 @@ DIFF BUDGET:
 3 new files (`README.md`, `argocd/appset.yaml`, `argocd/secret-grafana-admin.sealed.yaml`), 0 files modified elsewhere. Expect roughly 80-150 LOC total (the sealed secret's ciphertext is long but is generated, not hand-written).
 
 CONSUMES:
-- (spike story id): this issue's own Notes/Comments -> Decision record
+- AF-ogxu: this issue's own Notes/Comments -> Decision record
     spec: generator: 'clusters: {}' | 'list (fallback)'; template_field: '{{name}}' | '{{server}}' | '<other>' | 'N/A (fallback)'; confirmed_cluster_names: ['demo1','demo2'] | []
     source: the spike story's empirical finding
 
