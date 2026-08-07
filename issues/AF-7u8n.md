@@ -8,8 +8,8 @@ labels: [capstone, delivered]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T19:09:14Z
-content_hash: "sha256:e68e7435428ee2cf9d627a5de312f9443e6c7f8bfd474416148915ff24380cba"
+updated_at: 2026-08-07T19:09:15Z
+content_hash: "sha256:b121f4e246a6cb7d6527e8d32f7431954775e8c84bcfb088b4612f37cb38a280"
 was_blocked_by: [AF-ogxu, AF-c8p4, AF-qmy9, AF-d3ax, AF-j4fp]
 assignee: dev-AF-7u8n
 follows: [AF-ogxu, AF-c8p4, AF-qmy9, AF-d3ax, AF-j4fp]
@@ -84,6 +84,16 @@ devops-toolkit:akp-platform
 
 
 ## Notes
+
+
+## nd_contract
+status: delivered
+
+### evidence
+- Transitioned via pvg story deliver on 2026-08-07.
+
+### proof
+- [ ] Developer evidence block must remain authoritative above this contract.
 
 
 ## History
