@@ -1,16 +1,18 @@
 ---
 id: AF-qmy9
 title: "Update infra-dependencies.md to document the clusters generator convention"
-status: open
+status: in_progress
 priority: 3
 type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T15:10:01Z
-content_hash: "sha256:4c0d4f995e333687bcf5c8e2c859827d15b7a04d7bab74f2f031ab2092a69658"
+updated_at: 2026-08-07T16:01:53Z
+content_hash: "sha256:ee941364b55a1afc75688d93448acd2ef641b7959e71d3e65204b9e820a88b60"
 blocks: [AF-7u8n]
 was_blocked_by: [AF-c8p4]
+assignee: dev-AF-qmy9
+follows: [AF-c8p4]
 ---
 
 ## Description
@@ -94,10 +96,14 @@ devops-toolkit:markdown-writer, devops-toolkit:akp-platform
 - 2026-08-07T15:07:23Z dep_added: blocked_by AF-c8p4
 - 2026-08-07T15:07:25Z dep_added: blocks AF-7u8n
 - 2026-08-07T15:57:17Z dep_removed: was_blocked_by AF-c8p4
+- 2026-08-07T16:01:53Z status: open -> in_progress
+- 2026-08-07T16:01:53Z auto-follows: linked to predecessor AF-c8p4
+- 2026-08-07T16:01:53Z claimed by dev-AF-qmy9
 
 ## Links
 - Parent: [[AF-d66a]]
 - Blocks: [[AF-7u8n]]
 - Was blocked by: [[AF-c8p4]]
+- Follows: [[AF-c8p4]]
 
 ## Comments
