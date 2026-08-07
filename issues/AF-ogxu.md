@@ -1,17 +1,18 @@
 ---
 id: AF-ogxu
 title: "Spike: confirm Argo CD clusters generator discovers demo1/demo2 on the Akuity-hosted instance"
-status: in_progress
+status: closed
 priority: 0
 type: task
 labels: [spike, delivered]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T15:26:19Z
-content_hash: "sha256:910cc92c268d0481e7c356cd04f7d2a7b421435796ab63629e555090193da6cf"
-blocks: [AF-c8p4, AF-d3ax, AF-7u8n]
+updated_at: 2026-08-07T15:33:33Z
+content_hash: "sha256:3f4064335304ae16b3ae8437da332c298691f839b26e7121af0820cf81a61c8e"
 assignee: dev-AF-ogxu
+closed_at: 2026-08-07T15:33:33Z
+close_reason: "Accepted spike: GO decision with mandatory selector recorded in issue, independently re-verified against live instance"
 ---
 
 ## Description
@@ -123,10 +124,13 @@ status: delivered
 - 2026-08-07T15:14:32Z status: open -> in_progress
 - 2026-08-07T15:14:32Z claimed by dev-AF-ogxu
 - 2026-08-07T15:25:47Z status: in_progress -> in_progress
+- 2026-08-07T15:33:33Z status: in_progress -> closed
+- 2026-08-07T15:33:33Z dep_removed: no_longer_blocks AF-c8p4
+- 2026-08-07T15:33:33Z dep_removed: no_longer_blocks AF-d3ax
+- 2026-08-07T15:33:33Z dep_removed: no_longer_blocks AF-7u8n
 
 ## Links
 - Parent: [[AF-d66a]]
-- Blocks: [[AF-c8p4]], [[AF-d3ax]], [[AF-7u8n]]
 
 ## Comments
 

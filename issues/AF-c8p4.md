@@ -8,9 +8,9 @@ parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
 updated_at: 2026-08-07T15:09:22Z
-content_hash: "sha256:616b3e3ceb5d2a77404d75277b39a4a7bb4ad32928d4ff7c5cb9beee97d719d6"
-blocked_by: [AF-ogxu]
+content_hash: "sha256:e73fa232e8dff3f727d79442f119115b12f1315762742d8cc03d934c2e58d2e7"
 blocks: [AF-qmy9, AF-7u8n]
+was_blocked_by: [AF-ogxu]
 ---
 
 ## Description
@@ -130,10 +130,11 @@ devops-toolkit:akp-platform (mandatory -- its gitops-app-patterns and argocd-dec
 - 2026-08-07T15:07:23Z dep_added: blocked_by AF-ogxu
 - 2026-08-07T15:07:23Z dep_added: blocks AF-qmy9
 - 2026-08-07T15:07:24Z dep_added: blocks AF-7u8n
+- 2026-08-07T15:33:33Z dep_removed: was_blocked_by AF-ogxu
 
 ## Links
 - Parent: [[AF-d66a]]
 - Blocks: [[AF-qmy9]], [[AF-7u8n]]
-- Blocked by: [[AF-ogxu]]
+- Was blocked by: [[AF-ogxu]]
 
 ## Comments
