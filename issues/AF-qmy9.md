@@ -7,8 +7,8 @@ type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T15:06:17Z
-content_hash: "sha256:a96fc72b9daab5a3dd1495f898ca0e5e7b8ed01964907af7d87e4a2321b032b4"
+updated_at: 2026-08-07T15:07:17Z
+content_hash: "sha256:dd3f599219b39cb718499f5ef29e644b64c82b7fbc934bdd5d902fe3844fc70b"
 ---
 
 ## Description
@@ -60,7 +60,7 @@ DIFF BUDGET:
 1 file changed (`docs/infra-dependencies.md`), roughly 10-20 changed LOC.
 
 CONSUMES:
-- (migration story id): infrastructure/sealed-secrets/argocd/appset.yaml (and the other 4 migrated files) -> confirmed generator convention actually applied fleet-wide
+- AF-c8p4: infrastructure/sealed-secrets/argocd/appset.yaml (and the other 4 migrated files) -> confirmed generator convention actually applied fleet-wide
     spec: generators: [{clusters: {}}] (or confirmed fallback); template_field: '{{name}}' (or confirmed alternate)
     source: that story's PRODUCES, itself sourced from the spike story's decision record
 
