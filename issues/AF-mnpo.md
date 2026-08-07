@@ -1,15 +1,17 @@
 ---
 id: AF-mnpo
 title: "Bug: kube-prometheus-stack Application permanently OutOfSync due to Gateway API HTTPRoute server-side defaulting"
-status: open
+status: in_progress
 priority: 0
 type: bug
 parent: AF-d66a
 created_at: 2026-08-07T19:13:30Z
 created_by: ada
-updated_at: 2026-08-07T19:13:30Z
-content_hash: "sha256:59dc3fe773142e1bec12891c60b5883a0a76fd098cb9ae2fc0cd9dd553f9470a"
+updated_at: 2026-08-07T19:16:20Z
+content_hash: "sha256:405e09bcc7a30a9a0a2e5e54346226ffaae268572d9f23f0e6c77e83cbad726d"
 blocked_by: [AF-j4fp]
+assignee: dev-AF-mnpo
+follows: [AF-j4fp]
 ---
 
 ## Description
@@ -93,9 +95,13 @@ devops-toolkit:akp-platform
 
 ## History
 - 2026-08-07T19:13:34Z dep_added: blocked_by AF-j4fp
+- 2026-08-07T19:16:20Z status: open -> in_progress
+- 2026-08-07T19:16:20Z auto-follows: linked to predecessor AF-j4fp
+- 2026-08-07T19:16:20Z claimed by dev-AF-mnpo
 
 ## Links
 - Parent: [[AF-d66a]]
 - Blocked by: [[AF-j4fp]]
+- Follows: [[AF-j4fp]]
 
 ## Comments
