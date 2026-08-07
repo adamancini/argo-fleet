@@ -8,8 +8,8 @@ labels: [walking-skeleton]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T15:09:22Z
-content_hash: "sha256:65ab7da60223dde47da04653b6c9b28f9eb0fb317dd72cc6619d0295be7c72d5"
+updated_at: 2026-08-07T15:10:01Z
+content_hash: "sha256:1c8536493fc2cd5a4c06fba1dd4f402baeb28d9bcd946651d336227ee0559a62"
 blocked_by: [AF-ogxu]
 blocks: [AF-j4fp, AF-7u8n]
 ---
@@ -19,7 +19,7 @@ Description:
 Add `infrastructure/kube-prometheus-stack/` as a new cluster-wide infra dependency (no promotion pipeline, per this repo's existing convention), deploying the single `kube-prometheus-stack` Helm chart (Prometheus Operator + Prometheus + Grafana + Alertmanager + node-exporter + kube-state-metrics bundled together) to every cluster the generator confirmed by the spike story discovers. Grafana's admin password is wired to a `SealedSecret`, and Prometheus's PVC sets `storageClassName` explicitly.
 
 Context:
-This repo's convention for adding a cluster-wide infra dependency (`docs/infra-dependencies.md`, currently instructing a `list` generator that other stories in this epic are replacing) is: create `infrastructure/<name>/{README.md, argocd/appset.yaml}`, no changes to `bootstrap/` (auto-discovered via `bootstrap/infra-apps.yaml`'s git-directories generator over `infrastructure/*/argocd`), and Taskfile commands under a `<name>:<verb>` namespace only if there are repeatable ops commands (there are none needed here beyond the existing `sealed-secrets:seal` command, already provided).
+This repo's convention for adding a cluster-wide infra dependency (`docs/infra-dependencies.md`, currently instructing a `list` generator that other stories in this epic are replacing) is: create `infrastructure/<name>/README.md` and `infrastructure/<name>/argocd/appset.yaml`, no changes to `bootstrap/` (auto-discovered via `bootstrap/infra-apps.yaml`'s git-directories generator over `infrastructure/*/argocd`), and Taskfile commands under a `<name>:<verb>` namespace only if there are repeatable ops commands (there are none needed here beyond the existing `sealed-secrets:seal` command, already provided).
 
 The closest existing template is `infrastructure/traefik-gateway/argocd/appset.yaml` -- a Helm-repo chart source (`repoURL` = chart repo, `chart` = chart name, `targetRevision` = pinned version), not a git-repo-with-path source like `sealed-secrets`. `kube-prometheus-stack` is published the same way: `repoURL: https://prometheus-community.github.io/helm-charts`, `chart: kube-prometheus-stack`. As of this story's authoring (August 2026) the latest stable chart version is in the `88.x` series (e.g. `88.1.5`) -- confirm the actual current version with `helm repo add prometheus-community https://prometheus-community.github.io/helm-charts && helm search repo prometheus-community/kube-prometheus-stack --versions` before pinning `targetRevision`; do not assume `88.1.5` is still current by the time this story executes.
 
@@ -131,7 +131,7 @@ Acceptance Criteria:
 3. [Ubiquitous] Grafana's admin credentials come from `grafana.admin.existingSecret` referencing the `SealedSecret` created in this story -- the chart's own default/random admin password is never active.
 4. [Ubiquitous] Prometheus's PVC sets `storageClassName` explicitly and is `Bound` on both `demo1` and `demo2`.
 5. [Unwanted] The `SealedSecret`'s plaintext password shall never appear in git history, in the ApplicationSet YAML, or in any committed file.
-6. [Event] On `kubectl port-forward` to the Grafana service, logging in with the sealed-secret credentials succeeds.
+6. [Event] On `kubectl port-forward` to the Grafana service, the user can log in with the sealed-secret credentials and Grafana displays its default dashboard home.
 7. No custom dashboards, alerting rules, or non-default storage sizing beyond the one explicit PVC size are introduced (confirmed out of scope).
 
 MANDATORY SKILLS TO REVIEW:
