@@ -1,4 +1,4 @@
-chartVersion: 0.4.7
+chartVersion: 0.5.0
 values:
   image:
     tag: v3.19.0
