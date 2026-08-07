@@ -9,11 +9,11 @@ parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
 updated_at: 2026-08-07T15:34:24Z
-content_hash: "sha256:499ed62b581f9dc6f9c18f92f2a45cc0e88f5565e4aacc453d411463c0f7c114"
+content_hash: "sha256:41e4760dad65299d91d93e5f8a898a786009ed11377da5cd3f61051d650aec0c"
 assignee: dev-AF-ogxu
 closed_at: 2026-08-07T15:33:33Z
 close_reason: "Accepted spike: GO decision with mandatory selector recorded in issue, independently re-verified against live instance"
-led_to: [AF-c8p4]
+led_to: [AF-c8p4, AF-d3ax]
 ---
 
 ## Description
@@ -142,7 +142,7 @@ status: delivered
 
 ## Links
 - Parent: [[AF-d66a]]
-- Led to: [[AF-c8p4]]
+- Led to: [[AF-c8p4]], [[AF-d3ax]]
 
 ## Comments
 

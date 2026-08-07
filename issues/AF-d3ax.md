@@ -1,17 +1,19 @@
 ---
 id: AF-d3ax
 title: "Deploy kube-prometheus-stack as a new cluster-wide infra dependency"
-status: open
+status: in_progress
 priority: 1
 type: task
 labels: [walking-skeleton]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T15:10:01Z
-content_hash: "sha256:f04a7bfa1f79a735d30831f44678ed5c3fe8b9dabf179300d58509ee56186ec4"
+updated_at: 2026-08-07T15:39:03Z
+content_hash: "sha256:a2055fdeed8b8724694ec4d5973383a3e539d5678e4bee13f020431364f3ee00"
 blocks: [AF-j4fp, AF-7u8n]
 was_blocked_by: [AF-ogxu]
+assignee: dev-AF-d3ax
+follows: [AF-ogxu]
 ---
 
 ## Description
@@ -151,10 +153,14 @@ devops-toolkit:akp-platform (mandatory), devops-toolkit:helm-chart-developer (ma
 - 2026-08-07T15:07:23Z dep_added: blocks AF-j4fp
 - 2026-08-07T15:07:24Z dep_added: blocks AF-7u8n
 - 2026-08-07T15:33:33Z dep_removed: was_blocked_by AF-ogxu
+- 2026-08-07T15:39:03Z status: open -> in_progress
+- 2026-08-07T15:39:03Z auto-follows: linked to predecessor AF-ogxu
+- 2026-08-07T15:39:03Z claimed by dev-AF-d3ax
 
 ## Links
 - Parent: [[AF-d66a]]
 - Blocks: [[AF-j4fp]], [[AF-7u8n]]
 - Was blocked by: [[AF-ogxu]]
+- Follows: [[AF-ogxu]]
 
 ## Comments
