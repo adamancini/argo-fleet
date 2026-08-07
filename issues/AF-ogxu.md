@@ -9,7 +9,7 @@ parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
 updated_at: 2026-08-07T15:25:47Z
-content_hash: "sha256:ae685f3a64d0a63be609be426dfc8dff7ffb326da2cb80a38715d82c495446a0"
+content_hash: "sha256:96503cfa4f60fc47d2f881e39ad06d768fd2b78470f2a45e7ca76bd7de6a4035"
 blocks: [AF-c8p4, AF-d3ax, AF-7u8n]
 assignee: dev-AF-ogxu
 ---
@@ -104,6 +104,16 @@ devops-toolkit:akp-platform (mandatory -- especially its argocd-declarative-setu
 
 
 ## Notes
+
+
+## nd_contract
+status: delivered
+
+### evidence
+- Transitioned via pvg story deliver on 2026-08-07.
+
+### proof
+- [ ] Developer evidence block must remain authoritative above this contract.
 
 
 ## History
