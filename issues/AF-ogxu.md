@@ -8,8 +8,8 @@ labels: [spike, delivered]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T15:25:47Z
-content_hash: "sha256:96503cfa4f60fc47d2f881e39ad06d768fd2b78470f2a45e7ca76bd7de6a4035"
+updated_at: 2026-08-07T15:26:19Z
+content_hash: "sha256:910cc92c268d0481e7c356cd04f7d2a7b421435796ab63629e555090193da6cf"
 blocks: [AF-c8p4, AF-d3ax, AF-7u8n]
 assignee: dev-AF-ogxu
 ---
@@ -274,3 +274,58 @@ Worked around read-only via
 `terraform -chdir=<main-repo>/terraform/clusters output -raw argocd_hostname`
 then `argocd login` directly. No terraform state was modified. Any future
 worktree-based story needing `task argocd:login` / `task kargo:login` will hit this.
+
+### 2026-08-07T15:26:19Z ada
+PROOF:
+
+Commands run (all against live instance augtpjfe5xvyty6u.cd.akuity.cloud, argocd CLI v3.5.0 -> server v3.4.6):
+  source /Users/ada/src/github.com/adamancini/argo-fleet/.envrc
+  terraform -chdir=<main-repo>/terraform/clusters output -raw argocd_hostname
+  argocd login "$HOSTNAME" --username admin --password "$TF_VAR_admin_password" --grpc-web
+  argocd cluster list --grpc-web [-o json]
+  argocd appset generate --grpc-web [-o json] <8 scratch manifests>
+  diff -u out-current.json out-migrated.json
+
+Repo SHA results produced from: 97105f5 (story/AF-ogxu, 0 commits ahead of origin/main)
+Repo diff: 0 files changed, 0 commits -- matches the 0-file diff budget for a spike.
+
+No automated tests exist or were written -- this is an empirical verification spike,
+as the story's Testing section specifies. "Test results" below are the observations.
+
+Observation counts: 8 dry-run generations executed, 8 succeeded, 0 errored.
+
+AC VERIFICATION TABLE:
+| AC | Requirement | Status | Evidence |
+|----|-------------|--------|----------|
+| 1 | Generated Application set captured, including zero | PASS | Bare `clusters: {}` -> 4 apps (spike-demo1, spike-demo2, spike-in-cluster, spike-kargo). Full selector matrix of 8 variants recorded in finding comment, incl. one genuine ZERO result (matchLabels fleet=true). |
+| 2 | Template field the generator populates documented | PASS | {{name}}, {{nameNormalized}}, {{server}}, {{project}}, {{metadata.labels.<key>}} all rendered into annotations and captured. {{name}} -> demo1/demo2. |
+| 3 | No throwaway ApplicationSet/Applications left behind | PASS | Satisfied by construction -- `argocd appset generate` is a read-only dry-run RPC; nothing was ever applied. Post-check: 10 ApplicationSets / 26 Applications, all pre-existing, 0 matching spike/cluster-generator/sel-/fields-. |
+| 4 | Clear go/no-go decision recorded | PASS | GO, with mandatory selector. Exact YAML shape recorded. Plus a byte-identical diff proving migration is a no-op on the 5 live infra apps. |
+| 5 | Fallback specific enough to implement if no-go | N/A (PASS) | Decision is GO. Fallback recorded for completeness: templated list generator sourced from the `clusters` map in terraform/clusters/terraform.tfvars. |
+
+pvg verify: not applicable -- 0 files changed, no code to scan.
+
+LEARNINGS:
+
+- The real risk was NOT the one the story predicted. Akuity's control plane does expose
+  Terraform-registered clusters to the generator (the documented "no cluster Secrets here"
+  divergence does not block it). The actual hazard is the opposite: `clusters: {}` returns
+  MORE than expected -- it also matches `in-cluster` and `kargo`. A naive swap would have
+  silently broadened targeting on 5 working apps. Exactly the failure the spike was bought
+  to prevent, just via a different mechanism than anticipated.
+- `argocd appset generate` is the right tool for this class of question: server-side render
+  against real cluster state, zero resources created. It made AC3 (no leftovers) true by
+  construction rather than by cleanup discipline.
+- I burned a cycle on a bad harness, not bad infra: `argocd appset generate -o json` emits a
+  bare object for a single result and an array for multiple. My jq guard `if type=="array"`
+  silently misreported two working selectors as failures, producing a self-contradictory
+  matrix (DoesNotExist excluded kargo while Exists "found" nothing). Lesson: when a result
+  matrix contradicts itself, suspect the harness before the system, and never let one branch
+  of a guard collapse "empty" and "error" into the same label.
+- Diffing the generated output of the current vs proposed manifest was worth more than any
+  amount of prose reasoning -- byte-identical output proves no Application churn, which is
+  the thing the user actually cared about.
+- `task argocd:login` is unusable from a git worktree: the Taskfile resolves
+  TERRAFORM_CLUSTERS_DIR from {{.ROOT_DIR}} but terraform state/tfvars/.terraform are
+  gitignored, so worktrees get config without state. Future worktree stories touching
+  argocd:login / kargo:login need `terraform -chdir=<main-repo>/...` instead.
