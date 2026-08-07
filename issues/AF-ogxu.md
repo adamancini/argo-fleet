@@ -8,8 +8,8 @@ labels: [spike, accepted]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T15:33:33Z
-content_hash: "sha256:3f4064335304ae16b3ae8437da332c298691f839b26e7121af0820cf81a61c8e"
+updated_at: 2026-08-07T15:33:34Z
+content_hash: "sha256:0cecbf7334e00a6494debdca47d9a0bb486909825612758aa6e0a18a919c408d"
 assignee: dev-AF-ogxu
 closed_at: 2026-08-07T15:33:33Z
 close_reason: "Accepted spike: GO decision with mandatory selector recorded in issue, independently re-verified against live instance"
@@ -105,6 +105,16 @@ devops-toolkit:akp-platform (mandatory -- especially its argocd-declarative-setu
 
 
 ## Notes
+
+
+## nd_contract
+status: accepted
+
+### evidence
+- PM closeout applied via pvg story accept on 2026-08-07.
+
+### proof
+- [x] Story closed after accepted label was applied.
 
 
 ## nd_contract
