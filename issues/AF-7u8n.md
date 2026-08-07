@@ -4,11 +4,11 @@ title: "Verify the observability stack end-to-end across the fleet"
 status: closed
 priority: 1
 type: task
-labels: [capstone, delivered]
+labels: [capstone, delivered, accepted]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T19:22:29Z
+updated_at: 2026-08-07T19:22:38Z
 content_hash: "sha256:9de68c0a46db7e8f54e482e91589c39d950e10171d78f045080264e4622c3843"
 was_blocked_by: [AF-ogxu, AF-c8p4, AF-qmy9, AF-d3ax, AF-j4fp]
 assignee: dev-AF-7u8n
