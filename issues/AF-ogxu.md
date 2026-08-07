@@ -1,16 +1,17 @@
 ---
 id: AF-ogxu
 title: "Spike: confirm Argo CD clusters generator discovers demo1/demo2 on the Akuity-hosted instance"
-status: open
+status: in_progress
 priority: 0
 type: task
 labels: [spike]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T15:09:22Z
-content_hash: "sha256:25b6c9ce7e5d176b7d842f0984617c0242d1710529d049f7ea35ba3386c1014d"
+updated_at: 2026-08-07T15:14:32Z
+content_hash: "sha256:883bf48fa6f298566732aa1f1c536f985a7af080b451dce361fce8bbe787a094"
 blocks: [AF-c8p4, AF-d3ax, AF-7u8n]
+assignee: dev-AF-ogxu
 ---
 
 ## Description
@@ -109,6 +110,8 @@ devops-toolkit:akp-platform (mandatory -- especially its argocd-declarative-setu
 - 2026-08-07T15:07:23Z dep_added: blocks AF-c8p4
 - 2026-08-07T15:07:23Z dep_added: blocks AF-d3ax
 - 2026-08-07T15:07:24Z dep_added: blocks AF-7u8n
+- 2026-08-07T15:14:32Z status: open -> in_progress
+- 2026-08-07T15:14:32Z claimed by dev-AF-ogxu
 
 ## Links
 - Parent: [[AF-d66a]]
