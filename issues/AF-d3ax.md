@@ -9,7 +9,7 @@ parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
 updated_at: 2026-08-07T16:29:25Z
-content_hash: "sha256:64574d7d13d7c340070e0b7000faea7ab698973233b4c5812aeae39b82511bfb"
+content_hash: "sha256:d0c346f26263594f259f85241e98d9839c09cc5d15704d50b1a8206ab9b46e26"
 blocks: [AF-j4fp, AF-7u8n]
 was_blocked_by: [AF-ogxu]
 assignee: dev-AF-d3ax
@@ -146,6 +146,16 @@ devops-toolkit:akp-platform (mandatory), devops-toolkit:helm-chart-developer (ma
 
 
 ## Notes
+
+
+## nd_contract
+status: delivered
+
+### evidence
+- Transitioned via pvg story deliver on 2026-08-07.
+
+### proof
+- [ ] Developer evidence block must remain authoritative above this contract.
 
 
 ## History
