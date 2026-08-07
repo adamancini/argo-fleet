@@ -13,6 +13,7 @@ blocks: [AF-7u8n]
 was_blocked_by: [AF-d3ax]
 follows: [AF-d3ax, AF-qmy9, AF-c8p4]
 assignee: dev-AF-j4fp
+labels: [delivered]
 ---
 
 ## Description
