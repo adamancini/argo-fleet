@@ -1,19 +1,21 @@
 ---
 id: AF-d3ax
 title: "Deploy kube-prometheus-stack as a new cluster-wide infra dependency"
-status: in_progress
+status: closed
 priority: 1
 type: task
 labels: [walking-skeleton, delivered]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T16:40:09Z
-content_hash: "sha256:b8299af5197e76fd327d1205fe5333f1f459ebc305d86c16ae423b39f847004b"
-blocks: [AF-j4fp, AF-7u8n]
+updated_at: 2026-08-07T16:40:18Z
+content_hash: "sha256:7df0ffef47e5fbd6b37277c0e813de2e5a129da9b4b0e98a24132a55b74037be"
 was_blocked_by: [AF-ogxu]
 assignee: dev-AF-d3ax
 follows: [AF-ogxu, AF-qmy9]
+closed_at: 2026-08-07T16:40:18Z
+close_reason: "Accepted: kube-prometheus-stack walking skeleton -- both deviations (secrets/ path, ServerSideApply=true) independently verified against the live instance and the pinned chart; AC5 secret-leakage clean across full git object history; pvg verify/gates pass; live dry-run render confirms generator/selector correctness"
+led_to: [AF-j4fp]
 ---
 
 ## Description
@@ -168,12 +170,15 @@ status: delivered
 - 2026-08-07T15:39:03Z claimed by dev-AF-d3ax
 - 2026-08-07T16:29:24Z status: in_progress -> in_progress
 - 2026-08-07T16:29:24Z auto-follows: linked to predecessor AF-qmy9
+- 2026-08-07T16:40:18Z status: in_progress -> closed
+- 2026-08-07T16:40:18Z dep_removed: no_longer_blocks AF-j4fp
+- 2026-08-07T16:40:18Z dep_removed: no_longer_blocks AF-7u8n
 
 ## Links
 - Parent: [[AF-d66a]]
-- Blocks: [[AF-j4fp]], [[AF-7u8n]]
 - Was blocked by: [[AF-ogxu]]
 - Follows: [[AF-ogxu]], [[AF-qmy9]]
+- Led to: [[AF-j4fp]]
 
 ## Comments
 

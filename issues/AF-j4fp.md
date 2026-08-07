@@ -1,16 +1,17 @@
 ---
 id: AF-j4fp
 title: "Expose Grafana externally via a Traefik Gateway API HTTPRoute"
-status: open
+status: in_progress
 priority: 2
 type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T15:07:16Z
-content_hash: "sha256:4ece3480297185186fa1d15ef155efd7088efda1392863e2b4d973f357b7e8a4"
-blocked_by: [AF-d3ax]
+updated_at: 2026-08-07T16:40:18Z
+content_hash: "sha256:7bcdcb90155b4ec3e701156c2e06af93fa3a68c568db5ca5c1fb8d1d1308a183"
 blocks: [AF-7u8n]
+was_blocked_by: [AF-d3ax]
+follows: [AF-d3ax]
 ---
 
 ## Description
@@ -117,10 +118,14 @@ devops-toolkit:akp-platform (mandatory), devops-toolkit:yaml-kubernetes-validato
 ## History
 - 2026-08-07T15:07:23Z dep_added: blocked_by AF-d3ax
 - 2026-08-07T15:07:25Z dep_added: blocks AF-7u8n
+- 2026-08-07T16:40:18Z dep_removed: was_blocked_by AF-d3ax
+- 2026-08-07T16:40:18Z status: open -> in_progress
+- 2026-08-07T16:40:18Z auto-follows: linked to predecessor AF-d3ax
 
 ## Links
 - Parent: [[AF-d66a]]
 - Blocks: [[AF-7u8n]]
-- Blocked by: [[AF-d3ax]]
+- Was blocked by: [[AF-d3ax]]
+- Follows: [[AF-d3ax]]
 
 ## Comments
