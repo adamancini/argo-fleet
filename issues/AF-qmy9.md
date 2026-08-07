@@ -8,14 +8,14 @@ parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
 updated_at: 2026-08-07T16:10:39Z
-content_hash: "sha256:f74729b1f733d7040cf5d810a24eb4139c7efa015adba2608998fb7e48bfb9ed"
+content_hash: "sha256:8072fa59d29e9bb651e06366188af18edbdab9ea151bf1b4c9747bcb1dd9e8a5"
 was_blocked_by: [AF-c8p4]
 assignee: dev-AF-qmy9
 follows: [AF-c8p4, AF-ogxu]
 labels: [accepted]
 closed_at: 2026-08-07T16:10:38Z
 close_reason: "Accepted via pvg story accept"
-led_to: [AF-d3ax]
+led_to: [AF-d3ax, AF-j4fp]
 ---
 
 ## Description
@@ -131,7 +131,7 @@ status: delivered
 - Parent: [[AF-d66a]]
 - Was blocked by: [[AF-c8p4]]
 - Follows: [[AF-c8p4]], [[AF-ogxu]]
-- Led to: [[AF-d3ax]]
+- Led to: [[AF-d3ax]], [[AF-j4fp]]
 
 ## Comments
 
