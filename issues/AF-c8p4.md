@@ -1,16 +1,18 @@
 ---
 id: AF-c8p4
 title: "Migrate 5 existing infra ApplicationSets from static list generator to clusters generator"
-status: open
+status: in_progress
 priority: 1
 type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T15:09:22Z
-content_hash: "sha256:e73fa232e8dff3f727d79442f119115b12f1315762742d8cc03d934c2e58d2e7"
+updated_at: 2026-08-07T15:38:59Z
+content_hash: "sha256:b0171381b9106c301b392ef14ff38d06b4554b248b3e1c83fbe4d6497243fe8b"
 blocks: [AF-qmy9, AF-7u8n]
 was_blocked_by: [AF-ogxu]
+assignee: dev-AF-c8p4
+follows: [AF-ogxu]
 ---
 
 ## Description
@@ -131,10 +133,14 @@ devops-toolkit:akp-platform (mandatory -- its gitops-app-patterns and argocd-dec
 - 2026-08-07T15:07:23Z dep_added: blocks AF-qmy9
 - 2026-08-07T15:07:24Z dep_added: blocks AF-7u8n
 - 2026-08-07T15:33:33Z dep_removed: was_blocked_by AF-ogxu
+- 2026-08-07T15:38:59Z status: open -> in_progress
+- 2026-08-07T15:38:59Z auto-follows: linked to predecessor AF-ogxu
+- 2026-08-07T15:38:59Z claimed by dev-AF-c8p4
 
 ## Links
 - Parent: [[AF-d66a]]
 - Blocks: [[AF-qmy9]], [[AF-7u8n]]
 - Was blocked by: [[AF-ogxu]]
+- Follows: [[AF-ogxu]]
 
 ## Comments
