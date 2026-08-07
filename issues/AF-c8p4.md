@@ -8,7 +8,7 @@ parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
 updated_at: 2026-08-07T15:47:20Z
-content_hash: "sha256:900ad4cd6ab20791dba2373186726db6787595d111e0a456ab83484657610775"
+content_hash: "sha256:b633326aae25c72e892fb9ef246bf19039bdc845130b8f54fc81ff04b96ba8cb"
 blocks: [AF-qmy9, AF-7u8n]
 was_blocked_by: [AF-ogxu]
 assignee: dev-AF-c8p4
@@ -127,6 +127,16 @@ devops-toolkit:akp-platform (mandatory -- its gitops-app-patterns and argocd-dec
 
 
 ## Notes
+
+
+## nd_contract
+status: delivered
+
+### evidence
+- Transitioned via pvg story deliver on 2026-08-07.
+
+### proof
+- [ ] Developer evidence block must remain authoritative above this contract.
 
 
 ## History
