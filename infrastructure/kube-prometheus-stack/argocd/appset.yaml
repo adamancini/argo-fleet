@@ -69,7 +69,8 @@ spec:
                       resources:
                         requests:
                           storage: 10Gi
-      # The Grafana admin SealedSecret. Deliberately NOT under this
+      # The Grafana admin SealedSecret and the Grafana HTTPRoute, both
+      # deliberately NOT under this
       # `argocd/` directory: bootstrap/infra-apps.yaml syncs
       # infrastructure/*/argocd wholesale (recurse: true, auto-prune) to the
       # `in-cluster` destination, which is namespace-scoped to `argocd` and
@@ -80,7 +81,10 @@ spec:
         targetRevision: HEAD
         path: infrastructure/kube-prometheus-stack/secrets
         directory:
-          include: '*.sealed.yaml'
+          # '*.yaml', not '*.sealed.yaml': this path now also carries
+          # grafana-httproute.yaml. A narrower glob silently drops it -- the
+          # file would sit in git looking correct and never reach a cluster.
+          include: '*.yaml'
       destination:
         name: '{{name}}'
         namespace: monitoring
