@@ -6,8 +6,8 @@ priority: 1
 type: epic
 created_at: 2026-08-07T15:06:05Z
 created_by: ada
-updated_at: 2026-08-07T15:06:05Z
-content_hash: "sha256:4a5c974c268c81473d3620f455e541f2985ac2a325848ed26a422691eabdcdef"
+updated_at: 2026-08-07T15:10:51Z
+content_hash: "sha256:fe64742978886b3da6a08e844b9e37e06de9063d712dacdb2b64b0d692963f7a"
 ---
 
 ## Description
@@ -21,7 +21,7 @@ PROBLEM BEING SOLVED:
 Current state: (1) zero observability stack on any cluster; (2) every infra dependency's cluster targeting is a hand-maintained `list` generator with `demo1`/`demo2` baked in -- adding a cluster means editing N files, easy to forget one. Target state: (1) Prometheus + Grafana + Alertmanager running on every registered workload cluster, Grafana externally reachable over HTTP via the existing Traefik Gateway API dependency; (2) every `infrastructure/*/argocd/appset.yaml` (the new kube-prometheus-stack one and the 5 pre-existing ones) uses Argo CD's `clusters: {}` ApplicationSet generator, which fans out over whatever clusters are actually registered with the Argo CD instance -- no file edits needed when `demo1`/`demo2` are joined by a third cluster or eventually replaced by the real `annarchy.net`/`staging.annarchy.net` clusters.
 
 TARGET STATE:
-- `infrastructure/kube-prometheus-stack/{README.md,argocd/appset.yaml}` exists, deploying the `kube-prometheus-stack` chart (Prometheus Operator + Prometheus + Grafana + Alertmanager + node-exporter + kube-state-metrics) to every cluster the `clusters: {}` generator discovers.
+- `infrastructure/kube-prometheus-stack/README.md` and `infrastructure/kube-prometheus-stack/argocd/appset.yaml` exists, deploying the `kube-prometheus-stack` chart (Prometheus Operator + Prometheus + Grafana + Alertmanager + node-exporter + kube-state-metrics) to every cluster the `clusters: {}` generator discovers.
 - Grafana's admin password is wired to a `SealedSecret` via `grafana.admin.existingSecret` -- never a chart-generated random password (Argo CD renders via `helm template` with no cluster access, so a chart-default random admin password would regenerate on every sync -- see AGENTS.md's Secrets section and the `sealed-secrets:seal` Taskfile command).
 - Prometheus's PVC (`prometheus.prometheusSpec.storageSpec`) sets `storageClassName` explicitly to `local-path` (the StorageClass `infrastructure/openebs-localpv` creates, currently `isDefaultClass: true` per that app's current config -- but this MUST NOT be assumed permanent; verify current default-class state at implementation time) -- omitting it risks the exact "PVC never binds" failure mode this fleet has hit before with non-default StorageClasses.
 - Grafana is reachable externally over plain HTTP via an `HTTPRoute` (`gateway.networking.k8s.io/v1`) with `parentRefs` pointing at the existing `traefik-gateway` Gateway (namespace `traefik`) -- the first real workload wired to that Gateway in this repo (traefik-gateway itself notes in its own README that nothing is wired to it yet).
@@ -47,7 +47,7 @@ The single biggest unknown is whether Argo CD's ApplicationSet `clusters: {}` ge
 Acceptance Criteria:
 1. The `clusters: {}` generator's actual behavior against this Akuity-hosted instance is confirmed and documented (works with standard OSS template fields, works with different fields, or does not work at all) before any of the 5 existing infra apps are touched.
 2. All 5 existing `infrastructure/*/argocd/appset.yaml` files use the confirmed generator approach (either `clusters: {}` or the documented fallback) instead of a hardcoded `list` generator, with identical treatment applied to all 5 -- not five bespoke edits.
-3. `infrastructure/kube-prometheus-stack/{README.md,argocd/appset.yaml}` exists, deploys Prometheus + Grafana + Alertmanager + node-exporter + kube-state-metrics via the single `kube-prometheus-stack` chart, to every cluster the confirmed generator approach discovers.
+3. `infrastructure/kube-prometheus-stack/README.md` and `infrastructure/kube-prometheus-stack/argocd/appset.yaml` exists, deploys Prometheus + Grafana + Alertmanager + node-exporter + kube-state-metrics via the single `kube-prometheus-stack` chart, to every cluster the confirmed generator approach discovers.
 4. Grafana's admin credentials come from a `SealedSecret` referenced via `grafana.admin.existingSecret` -- never a chart-generated default.
 5. Prometheus's PVC explicitly sets `storageClassName` and binds successfully (not left to implicit/default StorageClass resolution).
 6. Grafana is reachable externally over HTTP via an `HTTPRoute` against the `traefik-gateway` Gateway from outside the cluster (not port-forward-only), on both `demo1` and `demo2`.
