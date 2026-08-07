@@ -7,8 +7,8 @@ type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T15:06:16Z
-content_hash: "sha256:6e9e7a2e79161715c3c9099060f536fd19a1877b8cf24252000ce6c897d3ff22"
+updated_at: 2026-08-07T15:07:16Z
+content_hash: "sha256:ce1b1c502189dbc85aa46055f85486960dce0b29738084c3faa280e148e52c5d"
 ---
 
 ## Description
@@ -89,7 +89,7 @@ DIFF BUDGET:
 5 files changed, all in `infrastructure/*/argocd/appset.yaml`. Each diff is small (one generator block + 1-2 template-field renames) -- expect well under 100 changed LOC total across all 5 files combined.
 
 CONSUMES:
-- (spike story id): this issue's own Notes/Comments -> Decision record
+- AF-ogxu: this issue's own Notes/Comments -> Decision record
     spec: generator: 'clusters: {}' | 'list (fallback)'; template_field: '{{name}}' | '{{server}}' | '<other>' | 'N/A (fallback)'; confirmed_cluster_names: ['demo1','demo2'] | []
     source: the spike story's empirical finding (see that issue's comments/notes)
 
