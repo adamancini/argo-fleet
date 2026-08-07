@@ -8,8 +8,8 @@ labels: [capstone]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T15:07:17Z
-content_hash: "sha256:55da3268cb23fee1f405a06493b47139d4484a66674167fff095e6fe109be987"
+updated_at: 2026-08-07T15:09:23Z
+content_hash: "sha256:e27ccd3e013f9bb42d0635ea087b8cb9557530273189599e58081e5ca7afcae3"
 blocked_by: [AF-ogxu, AF-c8p4, AF-d3ax, AF-j4fp, AF-qmy9]
 ---
 
@@ -41,11 +41,21 @@ DIFF BUDGET:
 0 files changed.
 
 CONSUMES:
-- AF-ogxu: decision record -> confirmed generator convention (verification baseline)
-- AF-c8p4: 5 migrated appset.yaml files -> Synced/Healthy status expected
-- AF-d3ax: kube-prometheus-stack appset.yaml + SealedSecret -> Synced/Healthy status, bound PVC, working Grafana login expected
-- AF-j4fp: grafana-httproute.yaml -> documented curl verification command, expected to still pass
-- AF-qmy9: docs/infra-dependencies.md -> confirmed to match actual repo state (spot-check, not a runtime dependency)
+- AF-ogxu: this issue's own Notes/Comments -> Decision record
+    spec: generator: 'clusters: {}' | 'list (fallback)'; confirmed_cluster_names: ['demo1','demo2'] | []
+    source: AF-ogxu's empirical spike finding
+- AF-c8p4: infrastructure/{sealed-secrets,traefik-gateway,gateway-api-crds,openebs-localpv,argo-rollouts-crds}/argocd/appset.yaml -> migrated ApplicationSets
+    spec: generators: [{clusters: {}}] (or confirmed fallback); expected status: Synced/Healthy on every discovered cluster
+    source: AF-c8p4's PRODUCES
+- AF-d3ax: infrastructure/kube-prometheus-stack/argocd/appset.yaml -> kube-prometheus-stack ApplicationSet + SealedSecret
+    spec: expected status: Synced/Healthy; Prometheus PVC: Bound; Grafana login: sealed-secret credentials accepted
+    source: AF-d3ax's PRODUCES
+- AF-j4fp: infrastructure/kube-prometheus-stack/argocd/grafana-httproute.yaml -> Grafana HTTPRoute
+    spec: documented curl/Host-header verification command, expected to still return Grafana's login page
+    source: AF-j4fp's delivery notes (TESTING section)
+- AF-qmy9: docs/infra-dependencies.md -> updated generator-convention recipe
+    spec: step 1 text names the generator convention actually in use fleet-wide
+    source: AF-qmy9's PRODUCES
 
 PRODUCES:
 None (verification-only; result recorded as this issue's own comment/notes, not a repo artifact).
