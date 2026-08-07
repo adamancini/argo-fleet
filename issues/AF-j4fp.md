@@ -8,7 +8,7 @@ parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
 updated_at: 2026-08-07T17:56:41Z
-content_hash: "sha256:452bac3cd2a21cc8484983f09c180c45718f30be2300aecca40a78c9b4a757d0"
+content_hash: "sha256:b201a4c83b270752daa887b29826f32ac3606e15b20e464468965fecb1370461"
 was_blocked_by: [AF-d3ax]
 follows: [AF-d3ax, AF-qmy9, AF-c8p4]
 assignee: dev-AF-j4fp
@@ -16,6 +16,7 @@ labels: [delivered, accepted]
 closed_at: 2026-08-07T17:56:41Z
 close_reason: "Accepted: Grafana HTTPRoute wired to traefik-gateway, glob widening and Gateway namespacePolicy fix all independently verified against live chart renders and live cluster state"
 led_to: [AF-7u8n]
+blocks: [AF-mnpo]
 ---
 
 ## Description
@@ -196,9 +197,11 @@ status: delivered
 - 2026-08-07T17:50:51Z auto-follows: linked to predecessor AF-c8p4
 - 2026-08-07T17:56:41Z status: in_progress -> closed
 - 2026-08-07T17:56:41Z dep_removed: no_longer_blocks AF-7u8n
+- 2026-08-07T19:13:34Z dep_added: blocks AF-mnpo
 
 ## Links
 - Parent: [[AF-d66a]]
+- Blocks: [[AF-mnpo]]
 - Was blocked by: [[AF-d3ax]]
 - Follows: [[AF-d3ax]], [[AF-qmy9]], [[AF-c8p4]]
 - Led to: [[AF-7u8n]]

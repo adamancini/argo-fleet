@@ -8,7 +8,8 @@ parent: AF-d66a
 created_at: 2026-08-07T19:13:30Z
 created_by: ada
 updated_at: 2026-08-07T19:13:30Z
-content_hash: "sha256:ed63e02825373e6d9cca41e27719442c2d698093378f591dccc2f7ddda92b2a1"
+content_hash: "sha256:59dc3fe773142e1bec12891c60b5883a0a76fd098cb9ae2fc0cd9dd553f9470a"
+blocked_by: [AF-j4fp]
 ---
 
 ## Description
@@ -91,9 +92,10 @@ devops-toolkit:akp-platform
 
 
 ## History
-
+- 2026-08-07T19:13:34Z dep_added: blocked_by AF-j4fp
 
 ## Links
 - Parent: [[AF-d66a]]
+- Blocked by: [[AF-j4fp]]
 
 ## Comments
