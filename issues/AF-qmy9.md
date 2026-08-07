@@ -7,8 +7,8 @@ type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T16:05:42Z
-content_hash: "sha256:029ab938021b21d50b231b0cd74754df020176be79cd10728ef62e6d42c389c0"
+updated_at: 2026-08-07T16:06:20Z
+content_hash: "sha256:9ace2d67922c24b9b2e0ee6bb43077bdb2837be71a7ab25247afc0947deda5d9"
 blocks: [AF-7u8n]
 was_blocked_by: [AF-c8p4]
 assignee: dev-AF-qmy9
@@ -120,3 +120,86 @@ status: delivered
 - Follows: [[AF-c8p4]], [[AF-ogxu]]
 
 ## Comments
+
+### 2026-08-07T16:06:20Z ada
+PROOF:
+
+Commit: 3de5daa (story/AF-qmy9, pushed to origin, parent a33e48d = epic/AF-d66a head)
+Diff: 1 file changed, 25 insertions(+), 4 deletions(-) -- docs/infra-dependencies.md only.
+Within the 10-20 changed LOC budget (a fenced YAML example accounts for the overage).
+
+Commands run:
+  git -C <wt> --no-pager diff --stat
+      -> docs/infra-dependencies.md | 29 +++++++++++++++++++++++++----
+         1 file changed, 25 insertions(+), 4 deletions(-)
+  npx --yes markdownlint-cli docs/infra-dependencies.md
+      -> exit 0, no output (clean, MD013 line-length included)
+  pvg verify <abs>/docs/infra-dependencies.md --format text
+      -> VERIFY: PASSED (0 files scanned, 0 issues); exit 0
+  Verbatim-shape cross-check (see AC3 below): extracted the doc's fenced yaml
+  block, stripped its 3-space list indent, and diff -u'd it against the
+  generator stanza of each infrastructure/*/argocd/appset.yaml (2-space
+  `spec:` indent stripped).
+      -> MATCH argo-rollouts-crds / gateway-api-crds / openebs-localpv /
+         sealed-secrets / traefik-gateway  (5/5 byte-identical, 0 differ)
+  grep -rn '{{server}}' infrastructure/
+      -> (none)
+
+Test suite: none. Documentation-only story; this repo has no test suite and the
+story ships prose, not code. Verification is the markdownlint run, pvg verify,
+and the mechanical diff of the documented YAML against the five real manifests.
+Coverage: N/A (no executable code changed).
+Errors/warnings encountered: zero. markdownlint exit 0, pvg verify exit 0,
+git push clean.
+
+AC VERIFICATION TABLE:
+| AC | Requirement | Status | Evidence |
+|----|-------------|--------|----------|
+| 1 | Step 1 no longer says "use a list generator"; documents `clusters` + selector | PASS | Diff removes the 4-line `list` paragraph verbatim. New text opens "Use a `clusters` generator" and states "The selector is mandatory." `grep -n 'list' docs/infra-dependencies.md` -> no generator reference remains. |
+| 2 | Names exact generator, exact selector (key/operator/values), exact template field(s); NOT the draft's `{{server}}` suggestion | PASS | Generator: `clusters`. Selector: key `akuity.io/argo-cd-cluster-name`, operator `NotIn`, values `[in-cluster, kargo]`. Template field: `{{name}}` for both `metadata.name` and `spec.destination.name`. `{{server}}` is documented as a PROHIBITION ("Do not use `{{server}}`"), with the concrete reason -- it resolves to an internal proxy URL such as `http://cluster-demo1:8001`, not a reachable API server endpoint. The story draft's suggestion to use it for the API server URL was NOT followed. |
+| 3 | Generator description matches, verbatim in shape, the real merged sealed-secrets appset -- verified by direct comparison, not asserted | PASS | Mechanical `diff -u`, not eyeballing. Doc block vs sealed-secrets/argocd/appset.yaml lines 16-22: empty diff. Extended to all five migrated appsets: 5/5 byte-identical. |
+
+Scope discipline:
+- Steps 2-4 (README.md, Taskfile commands, bootstrap/ auto-discovery) untouched --
+  confirmed by the diff, which shows only the step-1 hunk.
+- "Candidates already identified but deferred" untouched. Nothing in this epic
+  changed the cert-manager rationale (still no real domains for akkoma/soju),
+  so padding it would have been noise.
+- kube-prometheus-stack not mentioned; belongs in its own README per AF-d3ax.
+
+Source of truth used:
+I did NOT use the story body's illustrative draft. I read the actual merged
+infrastructure/sealed-secrets/argocd/appset.yaml on story/AF-qmy9 (whose parent
+is a33e48d, the epic head that merged AF-c8p4's migration commit bba5433), then
+read the full AF-ogxu decision record for the selector rationale. The draft was
+wrong on both counts the dispatcher flagged, and the real file confirms it:
+the selector exists in the merged manifests, and destination is `name: '{{name}}'`
+with no `{{server}}` anywhere under infrastructure/.
+
+LEARNINGS:
+
+- Verifying "matches verbatim in shape" is a diff, not a reading. I extracted the
+  doc's fenced block programmatically, normalized only the two known indent
+  offsets (3-space markdown list continuation, 2-space `spec:` nesting), and
+  diffed. That turns AC3 from an assertion into a reproducible check, and it
+  cheaply generalized to all five appsets instead of just the cited one.
+- The story body's own draft example was wrong in exactly the two places that
+  mattered most (missing selector, recommending `{{server}}`). The dispatcher
+  flagged it, but the general lesson holds: when a story hands you illustrative
+  text, treat it as a hypothesis and confirm against the merged artifact. The
+  merged manifest and the AF-ogxu decision record agreed with each other and
+  disagreed with the draft.
+- AF-ogxu's finding is worth restating because it is counterintuitive: the danger
+  of `clusters: {}` on this Akuity-hosted instance is over-matching, not
+  under-matching. It returns four clusters (demo1, demo2, in-cluster, kargo), so
+  the omission of a selector is a silent broadening rather than a loud failure.
+  I made that the load-bearing sentence of the doc for exactly that reason -- a
+  reader who skims will still see "The selector is mandatory."
+- Denylist over allowlist is the whole point of the migration and deserved one
+  clause in the doc. `NotIn [in-cluster, kargo]` picks up a third workload
+  cluster with zero file edits; `In [demo1, demo2]` would be a list generator
+  wearing a different hat.
+- Environment gotcha, carried forward from AF-ogxu and hit again here: the pvg
+  guard blocks `cd` into a worktree in this dispatcher context. Everything has to
+  run as `git -C <worktree>` plus absolute paths for Read/Edit. Worth knowing
+  before the first command rather than after.
