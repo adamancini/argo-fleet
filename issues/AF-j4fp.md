@@ -7,8 +7,8 @@ type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T17:50:51Z
-content_hash: "sha256:68340da05b8ce51d50783dab4a461aba540076dd15b0d345bfebdb4f53fd935e"
+updated_at: 2026-08-07T17:50:52Z
+content_hash: "sha256:59447789ce0425b2dfbc5ef20137b58c43f2152fdd79c0714f48b5159c12b073"
 blocks: [AF-7u8n]
 was_blocked_by: [AF-d3ax]
 follows: [AF-d3ax, AF-qmy9, AF-c8p4]
@@ -168,6 +168,17 @@ ACTUAL STATE:
 - Clusters at baseline, nothing to clean up.
 
 TO CLOSE THIS OUT: ada needs to either run 'pvg story deliver AF-j4fp' directly, or state approval of the traefik-gateway scope expansion in their own words so a future agent can complete the transition.
+
+
+## nd_contract
+status: delivered
+
+### evidence
+- Transitioned via pvg story deliver on 2026-08-07.
+
+### proof
+- [ ] Developer evidence block must remain authoritative above this contract.
+
 
 ## History
 - 2026-08-07T15:07:23Z dep_added: blocked_by AF-d3ax
