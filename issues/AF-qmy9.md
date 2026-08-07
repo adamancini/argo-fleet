@@ -12,7 +12,7 @@ content_hash: "sha256:492ae2fd81dcd1092e29c1eb82359bace3044a9ee19a5865f1be38b427
 was_blocked_by: [AF-c8p4]
 assignee: dev-AF-qmy9
 follows: [AF-c8p4, AF-ogxu]
-labels: [delivered]
+labels: [delivered, accepted]
 closed_at: 2026-08-07T16:10:38Z
 close_reason: "Accepted via pvg story accept"
 ---
