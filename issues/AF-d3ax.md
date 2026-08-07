@@ -9,13 +9,13 @@ parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
 updated_at: 2026-08-07T16:40:26Z
-content_hash: "sha256:7df0ffef47e5fbd6b37277c0e813de2e5a129da9b4b0e98a24132a55b74037be"
+content_hash: "sha256:2013c1c8c4f0ba4e81cf52dc0e7c57cfa4bd664f822e08b2623103961c674a4a"
 was_blocked_by: [AF-ogxu]
 assignee: dev-AF-d3ax
 follows: [AF-ogxu, AF-qmy9]
 closed_at: 2026-08-07T16:40:18Z
 close_reason: "Accepted: kube-prometheus-stack walking skeleton -- both deviations (secrets/ path, ServerSideApply=true) independently verified against the live instance and the pinned chart; AC5 secret-leakage clean across full git object history; pvg verify/gates pass; live dry-run render confirms generator/selector correctness"
-led_to: [AF-j4fp]
+led_to: [AF-j4fp, AF-7u8n]
 ---
 
 ## Description
@@ -178,7 +178,7 @@ status: delivered
 - Parent: [[AF-d66a]]
 - Was blocked by: [[AF-ogxu]]
 - Follows: [[AF-ogxu]], [[AF-qmy9]]
-- Led to: [[AF-j4fp]]
+- Led to: [[AF-j4fp]], [[AF-7u8n]]
 
 ## Comments
 

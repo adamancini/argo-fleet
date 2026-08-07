@@ -1,16 +1,18 @@
 ---
 id: AF-7u8n
 title: "Verify the observability stack end-to-end across the fleet"
-status: open
+status: in_progress
 priority: 1
 type: task
 labels: [capstone]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T15:09:23Z
-content_hash: "sha256:f44def057757009adf98b2846256c3d249378a501096d0ce43f1e0817bbc0de5"
+updated_at: 2026-08-07T18:01:55Z
+content_hash: "sha256:a50947fe5e90984ac7af6eeb161785aff53333b6c8f8b861f1dbf47961ff6322"
 was_blocked_by: [AF-ogxu, AF-c8p4, AF-qmy9, AF-d3ax, AF-j4fp]
+assignee: dev-AF-7u8n
+follows: [AF-ogxu, AF-c8p4, AF-qmy9, AF-d3ax, AF-j4fp]
 ---
 
 ## Description
@@ -95,9 +97,17 @@ devops-toolkit:akp-platform
 - 2026-08-07T16:10:38Z dep_removed: was_blocked_by AF-qmy9
 - 2026-08-07T16:40:18Z dep_removed: was_blocked_by AF-d3ax
 - 2026-08-07T17:56:41Z dep_removed: was_blocked_by AF-j4fp
+- 2026-08-07T18:01:55Z status: open -> in_progress
+- 2026-08-07T18:01:55Z auto-follows: linked to predecessor AF-ogxu
+- 2026-08-07T18:01:55Z auto-follows: linked to predecessor AF-c8p4
+- 2026-08-07T18:01:55Z auto-follows: linked to predecessor AF-qmy9
+- 2026-08-07T18:01:55Z auto-follows: linked to predecessor AF-d3ax
+- 2026-08-07T18:01:55Z auto-follows: linked to predecessor AF-j4fp
+- 2026-08-07T18:01:55Z claimed by dev-AF-7u8n
 
 ## Links
 - Parent: [[AF-d66a]]
 - Was blocked by: [[AF-ogxu]], [[AF-c8p4]], [[AF-qmy9]], [[AF-d3ax]], [[AF-j4fp]]
+- Follows: [[AF-ogxu]], [[AF-c8p4]], [[AF-qmy9]], [[AF-d3ax]], [[AF-j4fp]]
 
 ## Comments
