@@ -8,7 +8,7 @@ parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
 updated_at: 2026-08-07T16:42:47Z
-content_hash: "sha256:dc26f99c4812803cab832e64c076e3dbf0e0c35b5b2cdc9915abde06b8e555af"
+content_hash: "sha256:5a0f57e8553749f39ff08f042dfc03e039729ffd7d55915090fe4cb70e379711"
 blocks: [AF-7u8n]
 was_blocked_by: [AF-d3ax]
 follows: [AF-d3ax]
@@ -130,3 +130,6 @@ devops-toolkit:akp-platform (mandatory), devops-toolkit:yaml-kubernetes-validato
 - Follows: [[AF-d3ax]]
 
 ## Comments
+
+### 2026-08-07T16:42:47Z ada
+loop: reset orphaned in_progress to open (no developer worktree found; prior session presumed dead)
