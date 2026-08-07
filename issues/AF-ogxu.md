@@ -4,7 +4,7 @@ title: "Spike: confirm Argo CD clusters generator discovers demo1/demo2 on the A
 status: closed
 priority: 0
 type: task
-labels: [spike, delivered]
+labels: [spike, delivered, accepted]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
