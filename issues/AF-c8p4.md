@@ -8,7 +8,7 @@ parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
 updated_at: 2026-08-07T15:57:18Z
-content_hash: "sha256:c0bae1d4509579e4deed0e4b504bac96e30fc973cb539e1ca56630ea34470e9b"
+content_hash: "sha256:6ff25c0a3dc893944ea434af46d59cd67ce2ba8cc38cdfafbe984147dbb0cf7f"
 was_blocked_by: [AF-ogxu]
 assignee: dev-AF-c8p4
 follows: [AF-ogxu]
@@ -128,6 +128,16 @@ devops-toolkit:akp-platform (mandatory -- its gitops-app-patterns and argocd-dec
 
 
 ## Notes
+
+
+## nd_contract
+status: accepted
+
+### evidence
+- PM closeout applied via pvg story accept on 2026-08-07.
+
+### proof
+- [x] Story closed after accepted label was applied.
 
 
 ## nd_contract
