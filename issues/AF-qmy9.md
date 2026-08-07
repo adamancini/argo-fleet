@@ -7,12 +7,12 @@ type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T16:01:53Z
-content_hash: "sha256:ee941364b55a1afc75688d93448acd2ef641b7959e71d3e65204b9e820a88b60"
+updated_at: 2026-08-07T16:05:41Z
+content_hash: "sha256:6eaae341037113e82b94c1865d215680c7662b57cc4d1b2d114800eddf18425b"
 blocks: [AF-7u8n]
 was_blocked_by: [AF-c8p4]
 assignee: dev-AF-qmy9
-follows: [AF-c8p4]
+follows: [AF-c8p4, AF-ogxu]
 ---
 
 ## Description
@@ -99,11 +99,13 @@ devops-toolkit:markdown-writer, devops-toolkit:akp-platform
 - 2026-08-07T16:01:53Z status: open -> in_progress
 - 2026-08-07T16:01:53Z auto-follows: linked to predecessor AF-c8p4
 - 2026-08-07T16:01:53Z claimed by dev-AF-qmy9
+- 2026-08-07T16:05:41Z status: in_progress -> in_progress
+- 2026-08-07T16:05:41Z auto-follows: linked to predecessor AF-ogxu
 
 ## Links
 - Parent: [[AF-d66a]]
 - Blocks: [[AF-7u8n]]
 - Was blocked by: [[AF-c8p4]]
-- Follows: [[AF-c8p4]]
+- Follows: [[AF-c8p4]], [[AF-ogxu]]
 
 ## Comments
