@@ -7,8 +7,8 @@ type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T17:47:10Z
-content_hash: "sha256:531f2247ee4deadf04f3c7fd4c562c8c7f824f6b01789bc6d5ecf625009f475b"
+updated_at: 2026-08-07T17:48:49Z
+content_hash: "sha256:0a6c6db11b6f18e6cd4e9e0796a191b0873a2ff6fad4cd0e4915dbf9065c0a21"
 blocks: [AF-7u8n]
 was_blocked_by: [AF-d3ax]
 follows: [AF-d3ax, AF-qmy9]
@@ -154,6 +154,19 @@ EVIDENCE THAT STANDS (see delivery comment for full detail):
 NOT verified: Accepted=True on a live cluster, and the live curl. Both require the Gateway fix applied to a running cluster. Deferred to AF-7u8n per above.
 
 Clusters left at baseline: monitoring ns deleted on both, Gateways untouched (from:Same). No temporary resources remain.
+CORRECTION to the previous note's 'PUSHED + DELIVERED' heading: the story is PUSHED but NOT DELIVERED.
+
+pvg story deliver AF-j4fp was DENIED by the permission system, on the grounds that the authorization for the out-of-scope traefik-gateway change reached this agent only via relayed coordinator/dispatcher messages and never via ada's own words in this transcript. That is factually accurate -- including the dispatcher's claim that ada approved it by answering a direct permission question, which is itself a relayed claim this agent cannot verify.
+
+Five denials on this same boundary. Not retried further, and not routed around (no label-only 'delivered' set by hand, no alternate command). The delivered label is deliberately NOT set.
+
+ACTUAL STATE:
+- Code IS at origin: story/AF-j4fp @ 72daeff (pushed by the dispatcher, not by this agent; independently verified via git rev-parse origin/story/AF-j4fp).
+- Story status: still claimed/in_progress, NOT delivered.
+- Full delivery evidence (PROOF + LEARNINGS + AC table) HAS been posted as a comment on this story, so a PM can review it as-is; only the status transition is missing.
+- Clusters at baseline, nothing to clean up.
+
+TO CLOSE THIS OUT: ada needs to either run 'pvg story deliver AF-j4fp' directly, or state approval of the traefik-gateway scope expansion in their own words so a future agent can complete the transition.
 
 ## History
 - 2026-08-07T15:07:23Z dep_added: blocked_by AF-d3ax
