@@ -7,8 +7,8 @@ type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T17:50:52Z
-content_hash: "sha256:59447789ce0425b2dfbc5ef20137b58c43f2152fdd79c0714f48b5159c12b073"
+updated_at: 2026-08-07T17:56:34Z
+content_hash: "sha256:9ac01efff081f1067a58035ab85323cca96acf635ef962bd91f0a7adda9335fa"
 blocks: [AF-7u8n]
 was_blocked_by: [AF-d3ax]
 follows: [AF-d3ax, AF-qmy9, AF-c8p4]
@@ -289,3 +289,23 @@ Both clusters restored to baseline: `monitoring` ns deleted, Gateways untouched 
 - **Verify enum-ish defaults against the live object, not the rendered template.** `helm template` showed a listener with no `allowedRoutes` at all; only `kubectl get` revealed the API server had defaulted it to `Same`. Server-side defaulting is invisible to client-side rendering.
 - **ApplicationSet templating does not reach git `directory:` source contents.** This is what actually forced the hostname-omission choice — a stronger reason than "no DNS yet," and one the story didn't identify. Per-cluster values in a directory source require converting to Helm/Kustomize.
 - **Relayed agent authorization is not user authorization.** The permission system blocked the push twice and was right both times; my own operating rules say the same. Refusing the relay cost one round-trip and preserved the boundary correctly. Worth building the question/answer path in earlier when a story's stated scope provably conflicts with its own ACs.
+
+### 2026-08-07T17:56:34Z ada
+PM REVIEW: ACCEPT.
+
+Independent verification performed (not just trusting developer's proof):
+1. Diff scope: git diff origin/epic/AF-d66a..story/AF-j4fp --stat confirms exactly 5 files, +164/-8, matching the PROOF table exactly.
+2. Glob claim verified with a standalone Go program using path.Match: '*.sealed.yaml' does NOT match grafana-httproute.yaml (confirmed false), '*.yaml' matches both files present in infrastructure/kube-prometheus-stack/secrets/ (secret-grafana-admin.sealed.yaml and grafana-httproute.yaml) with no other files in that directory to accidentally pick up. The widening was necessary and correctly scoped.
+3. Traefik chart claim verified independently: `helm show values traefik/traefik --version 41.1.1` confirms gateway.listeners.web.namespacePolicy is a real chart field (chart's own comment: "Routes are restricted to namespace of the gateway by default", linking to Gateway API's FromNamespaces spec, i.e. defaults to Same). `helm template` with namespacePolicy.from=All set renders spec.listeners[0].allowedRoutes.namespaces.from: All on the Gateway, listener name "web" -- matching the HTTPRoute's sectionName: web exactly. All (not Selector) is the correct minimal choice: there is exactly one consuming namespace today (monitoring) and no multi-tenant isolation requirement in this fleet, so a Selector-based restriction would be premature complexity, not a missed precision.
+4. Grafana Service claim verified independently: `helm template` of kube-prometheus-stack 88.2.0 with helm.releaseName=kube-prometheus-stack (matching the appset's pinned value) against charts/grafana/templates/service.yaml produces Service kube-prometheus-stack-grafana, port 80 (http-web) -> targetPort grafana, in namespace monitoring. Matches the HTTPRoute backendRef exactly.
+5. HTTPRoute correctness confirmed: parentRefs references the existing traefik-gateway Gateway/traefik namespace (no new Gateway object authored anywhere in the diff), sectionName: web matches the actual listener name.
+6. Hostname-omission reasoning verified as genuinely correct, not just convenient: ApplicationSet generators template only the generated Application resource's fields: they do not rewrite the body of files pulled in via a git directory: source. Per-cluster hostname templating inside grafana-httproute.yaml is therefore not expressible without converting to a Helm/Kustomize source -- confirmed true, not merely asserted.
+7. Live re-verification (read-only) on both k3d-demo1 and k3d-demo2 right now: Gateway traefik-gateway listeners still show allowedRoutes.namespaces.from: Same (unpatched, baseline correctly restored) and namespace monitoring does not exist on either cluster (cleanup confirmed, no leftover resources). This independently corroborates both the original NotAllowedByListeners finding and the claimed baseline-restoration.
+8. Scope check: the traefik-gateway diff is exactly the 2-line namespacePolicy.from: All addition -- no other change to that appset, no TLS/cert-manager/hostnames/auth introduced anywhere in the 5-file diff. Out-of-scope boundaries held.
+9. pvg verify and pvg gates both pass clean (0 issues, 0 warn/skip) on the delivered files.
+10. Docs freshness: both READMEs updated to reflect new behavior; docs/infra-dependencies.md's cert-manager deferral remains consistent and untouched (correctly out of scope); dated design/plan docs under docs/superpowers/ are historical snapshots, not living docs, and were correctly left alone.
+11. AC1/AC4 (live curl-returns-login-page) remain unverified live, as disclosed -- correctly deferred to capstone AF-7u8n per this review's brief; not treated as a rejection reason.
+
+Scope-expansion authorization: the story's own Notes/Comments record direct user authorization for the traefik-gateway namespacePolicy fix (a real scope correction responding to a false premise in the original story text, not an unauthorized expansion). Verified the fix on its technical merits above; the process detail (push/deliver performed by dispatcher after developer correctly refused a relayed authorization) does not affect this review.
+
+No discovered bugs beyond what the story itself already surfaced and handled (Same-default Gateway trap, now documented in both READMEs for future routes).
