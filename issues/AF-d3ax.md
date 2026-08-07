@@ -4,11 +4,11 @@ title: "Deploy kube-prometheus-stack as a new cluster-wide infra dependency"
 status: closed
 priority: 1
 type: task
-labels: [walking-skeleton, delivered]
+labels: [walking-skeleton, delivered, accepted]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T16:40:18Z
+updated_at: 2026-08-07T16:40:26Z
 content_hash: "sha256:7df0ffef47e5fbd6b37277c0e813de2e5a129da9b4b0e98a24132a55b74037be"
 was_blocked_by: [AF-ogxu]
 assignee: dev-AF-d3ax
