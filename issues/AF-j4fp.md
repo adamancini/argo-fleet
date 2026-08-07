@@ -1,19 +1,20 @@
 ---
 id: AF-j4fp
 title: "Expose Grafana externally via a Traefik Gateway API HTTPRoute"
-status: in_progress
+status: closed
 priority: 2
 type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T17:56:34Z
-content_hash: "sha256:9ac01efff081f1067a58035ab85323cca96acf635ef962bd91f0a7adda9335fa"
-blocks: [AF-7u8n]
+updated_at: 2026-08-07T17:56:41Z
+content_hash: "sha256:aa5caad0ef9a08c18094eac85180166da0404d9500639c43e1ffb4a6c60222b7"
 was_blocked_by: [AF-d3ax]
 follows: [AF-d3ax, AF-qmy9, AF-c8p4]
 assignee: dev-AF-j4fp
 labels: [delivered]
+closed_at: 2026-08-07T17:56:41Z
+close_reason: "Accepted: Grafana HTTPRoute wired to traefik-gateway, glob widening and Gateway namespacePolicy fix all independently verified against live chart renders and live cluster state"
 ---
 
 ## Description
@@ -192,10 +193,11 @@ status: delivered
 - 2026-08-07T16:43:28Z claimed by dev-AF-j4fp
 - 2026-08-07T17:50:51Z status: in_progress -> in_progress
 - 2026-08-07T17:50:51Z auto-follows: linked to predecessor AF-c8p4
+- 2026-08-07T17:56:41Z status: in_progress -> closed
+- 2026-08-07T17:56:41Z dep_removed: no_longer_blocks AF-7u8n
 
 ## Links
 - Parent: [[AF-d66a]]
-- Blocks: [[AF-7u8n]]
 - Was blocked by: [[AF-d3ax]]
 - Follows: [[AF-d3ax]], [[AF-qmy9]], [[AF-c8p4]]
 
