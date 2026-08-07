@@ -8,8 +8,9 @@ parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
 updated_at: 2026-08-07T15:07:17Z
-content_hash: "sha256:f0c6f30160a97906949bf2063082fb54389ab377d4e0f4caa1018d509a1cbe4b"
+content_hash: "sha256:6c51386d99e9b4b74513ef471f3746d3663cfa3a8c16b6cf6b54bb51603dc24f"
 blocked_by: [AF-c8p4]
+blocks: [AF-7u8n]
 ---
 
 ## Description
@@ -91,9 +92,11 @@ devops-toolkit:markdown-writer, devops-toolkit:akp-platform
 
 ## History
 - 2026-08-07T15:07:23Z dep_added: blocked_by AF-c8p4
+- 2026-08-07T15:07:25Z dep_added: blocks AF-7u8n
 
 ## Links
 - Parent: [[AF-d66a]]
+- Blocks: [[AF-7u8n]]
 - Blocked by: [[AF-c8p4]]
 
 ## Comments
