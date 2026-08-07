@@ -1,0 +1,92 @@
+# One Application per workload cluster, installing the whole
+# kube-prometheus-stack bundle (Prometheus Operator + Prometheus +
+# Grafana + Alertmanager + node-exporter + kube-state-metrics) from the
+# single upstream chart -- not six separate charts.
+#
+# Unlike the older infra appsets (traefik-gateway, openebs-localpv), this
+# uses a `clusters` generator rather than a hand-maintained `list`, so a
+# cluster registered later picks the stack up with no edit here. The
+# selector is mandatory: without it the generator also matches the
+# Akuity-hosted control plane (`in-cluster`, namespace-scoped to `argocd`)
+# and the `kargo` cluster, neither of which should run a monitoring stack.
+#
+# `destination.name` -- never `destination.server`. On an Akuity-hosted
+# instance `{{server}}` resolves to an internal proxy URL
+# (http://cluster-demo1:8001), not a reachable API endpoint.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: kube-prometheus-stack
+  namespace: argocd
+spec:
+  generators:
+  - clusters:
+      selector:
+        matchExpressions:
+        - key: akuity.io/argo-cd-cluster-name
+          operator: NotIn
+          values: [in-cluster, kargo]
+  template:
+    metadata:
+      name: 'kube-prometheus-stack-{{name}}'
+    spec:
+      project: default
+      sources:
+      - repoURL: https://prometheus-community.github.io/helm-charts
+        chart: kube-prometheus-stack
+        targetRevision: 88.2.0
+        helm:
+          # Fixed, NOT templated per cluster. The release name prefixes
+          # every Service the chart creates, so pinning it keeps
+          # kube-prometheus-stack-grafana / -prometheus identical on every
+          # cluster -- which the follow-on HTTPRoute work depends on.
+          releaseName: kube-prometheus-stack
+          valuesObject:
+            grafana:
+              # Without this the bundled grafana subchart falls back to
+              # `grafana.password`, which is `lookup`-then-randAlphaNum 40.
+              # Argo CD renders with `helm template` (no cluster access), so
+              # the lookup always misses and the admin password would be
+              # regenerated on EVERY sync. See AGENTS.md "Secrets".
+              # Key names match the subchart defaults
+              # (admin.userKey / admin.passwordKey).
+              admin:
+                existingSecret: grafana-admin
+                userKey: admin-user
+                passwordKey: admin-password
+            prometheus:
+              prometheusSpec:
+                storageSpec:
+                  volumeClaimTemplate:
+                    spec:
+                      # Set explicitly on purpose. openebs-localpv marks
+                      # `local-path` default today, but a PVC that relies on
+                      # the default silently stays Pending forever the moment
+                      # that stops being true -- an incident this fleet has
+                      # already had once.
+                      storageClassName: local-path
+                      accessModes: ["ReadWriteOnce"]
+                      resources:
+                        requests:
+                          storage: 10Gi
+      # The Grafana admin SealedSecret. Deliberately NOT under this
+      # `argocd/` directory: bootstrap/infra-apps.yaml syncs
+      # infrastructure/*/argocd wholesale (recurse: true, auto-prune) to the
+      # `in-cluster` destination, which is namespace-scoped to `argocd` and
+      # has no bitnami.com/v1alpha1 SealedSecret CRD at all. Anything
+      # cluster-bound has to live outside that glob -- same separation
+      # apps/akkoma uses (appset in argocd/, sealed secrets in env/<stage>/).
+      - repoURL: https://github.com/adamancini/argo-fleet.git
+        targetRevision: HEAD
+        path: infrastructure/kube-prometheus-stack/secrets
+        directory:
+          include: '*.sealed.yaml'
+      destination:
+        name: '{{name}}'
+        namespace: monitoring
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
