@@ -133,11 +133,71 @@ templated per cluster, so Service names (`kube-prometheus-stack-grafana`,
 follow-up that exposes Grafana through the Traefik `Gateway` depends on
 that.
 
+## Exposing Grafana: `secrets/grafana-httproute.yaml`
+
+Grafana is reachable through the shared `traefik-gateway` `Gateway` that
+`infrastructure/traefik-gateway` installs in the `traefik` namespace — the
+first workload in this fleet wired to it. The route targets
+`kube-prometheus-stack-grafana:80` (stable across clusters thanks to the
+pinned `helm.releaseName`; port 80 is the grafana subchart's `http-web`
+port, targeting container port 3000).
+
+`hostnames` is **omitted on purpose**, so the route matches any `Host`
+header. Two reasons, and the second is the binding one:
+
+1. Nothing in this fleet resolves a real domain yet — no DNS, no TLS, no
+   cert-manager (deferred fleet-wide, same reason `akkoma`/`soju` still use
+   placeholder `*.example.com` with `ingress.enabled: false`).
+2. Files under a git `directory:` source are applied **verbatim**. An
+   ApplicationSet templates the *Application* manifest, never the contents
+   of a directory source, so a per-cluster hostname like
+   `grafana.demo1.example.com` is not expressible here at all without
+   converting this to a Helm/Kustomize source or forking a directory per
+   cluster.
+
+Because it declares no hostname, this is effectively the Gateway's
+catch-all backend: any request the LoadBalancer receives that no
+more-specific route claims lands on Grafana. Gateway API matches hostnames
+most-specific-first, so a future route that *does* declare one still wins
+for it.
+
+This depends on the Gateway's `web` listener allowing cross-namespace
+routes (`allowedRoutes.namespaces.from: All`). Gateway API defaults that to
+`Same`, which rejects this route with `NotAllowedByListeners` and yields a
+404 with no apply-time error — see `infrastructure/traefik-gateway/README.md`.
+
+Reach it via the Gateway's LoadBalancer address:
+
+```bash
+kubectl --context k3d-demo1 -n traefik get svc traefik-gateway-demo1 \
+  -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+curl -sS http://<that-ip>/login
+```
+
+Or bypass the Gateway entirely and hit the Service directly:
+
+```bash
+kubectl --context k3d-demo1 -n monitoring \
+  port-forward svc/kube-prometheus-stack-grafana 3000:80
+```
+
+### Why the `include` glob is `*.yaml`
+
+`argocd/appset.yaml`'s git source uses `directory.include: '*.yaml'`, not
+the narrower `'*.sealed.yaml'` it started with. `secrets/` now holds a
+non-secret file too, and Argo CD matches that glob against the file name
+with Go's `path.Match` — `'*.sealed.yaml'` does **not** match
+`grafana-httproute.yaml`, so the route would sit in git looking perfectly
+correct and never reach a single cluster. Any new `*.yaml` added to
+`secrets/` is now synced to every workload cluster; that is the intent, but
+it does mean the directory name undersells its contents.
+
 ## What's NOT configured
 
 - No custom dashboards or datasources beyond the chart's own bundled
   Prometheus datasource and default dashboards.
 - No custom alerting rules or Alertmanager routing beyond chart defaults.
-- No external reachability — no `HTTPRoute` yet. Reach Grafana with
-  `kubectl -n monitoring port-forward svc/kube-prometheus-stack-grafana 3000:80`
-  until that lands.
+- No TLS and no real hostname on the `HTTPRoute` — plain HTTP only.
+- No auth in front of Grafana beyond its own admin login; there is no
+  SSO/Authelia layer in this fleet yet. Combined with the catch-all route
+  above, Grafana answers on the Gateway's address for any hostname.

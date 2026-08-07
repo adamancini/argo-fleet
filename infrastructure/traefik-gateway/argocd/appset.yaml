@@ -40,6 +40,23 @@ spec:
             gateway:
               enabled: true
               name: traefik-gateway
+              listeners:
+                web:
+                  # Gateway API defaults allowedRoutes.namespaces.from to
+                  # `Same`, and the chart leaves it unset -- so before this,
+                  # the Gateway accepted HTTPRoutes from the `traefik`
+                  # namespace ONLY. Verified on both live clusters:
+                  #   kubectl get gateway traefik-gateway -n traefik \
+                  #     -o jsonpath='{.spec.listeners}'
+                  #   => [{"allowedRoutes":{"namespaces":{"from":"Same"}},...}]
+                  # Every workload that wants in lives in its own namespace
+                  # (monitoring, akkoma-*, soju-*), so without this a route
+                  # attaches to nothing and fails with NotAllowedByListeners
+                  # -- no error at apply time, just a 404 at request time.
+                  # `All` matches how the still-enabled classic Ingress
+                  # provider already behaves (no namespace restriction).
+                  namespacePolicy:
+                    from: All
             service:
               enabled: true
               type: LoadBalancer
