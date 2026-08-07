@@ -7,8 +7,8 @@ type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T16:05:41Z
-content_hash: "sha256:6eaae341037113e82b94c1865d215680c7662b57cc4d1b2d114800eddf18425b"
+updated_at: 2026-08-07T16:05:42Z
+content_hash: "sha256:029ab938021b21d50b231b0cd74754df020176be79cd10728ef62e6d42c389c0"
 blocks: [AF-7u8n]
 was_blocked_by: [AF-c8p4]
 assignee: dev-AF-qmy9
@@ -91,6 +91,16 @@ devops-toolkit:markdown-writer, devops-toolkit:akp-platform
 
 
 ## Notes
+
+
+## nd_contract
+status: delivered
+
+### evidence
+- Transitioned via pvg story deliver on 2026-08-07.
+
+### proof
+- [ ] Developer evidence block must remain authoritative above this contract.
 
 
 ## History
