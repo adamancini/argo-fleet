@@ -8,8 +8,8 @@ labels: [walking-skeleton]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T15:07:16Z
-content_hash: "sha256:b26a92b0761d8095c186401640ccb68ee869862b4f6d8e1f934c0735dc395343"
+updated_at: 2026-08-07T15:09:22Z
+content_hash: "sha256:65ab7da60223dde47da04653b6c9b28f9eb0fb317dd72cc6619d0295be7c72d5"
 blocked_by: [AF-ogxu]
 blocks: [AF-j4fp, AF-7u8n]
 ---
@@ -102,7 +102,7 @@ OUT OF SCOPE:
 - The 5 existing infra apps' generator migration -- that's a separate follow-on story, running in parallel (both depend only on the spike story).
 
 DIFF BUDGET:
-3 new files (`README.md`, `argocd/appset.yaml`, `argocd/secret-grafana-admin.sealed.yaml`), 0 files modified elsewhere. Expect roughly 80-150 LOC total (the sealed secret's ciphertext is long but is generated, not hand-written).
+3 new files (`infrastructure/kube-prometheus-stack/README.md`, `infrastructure/kube-prometheus-stack/argocd/appset.yaml`, `infrastructure/kube-prometheus-stack/argocd/secret-grafana-admin.sealed.yaml`), 0 files modified elsewhere. Expect roughly 80-150 LOC total (the sealed secret's ciphertext is long but is generated, not hand-written).
 
 CONSUMES:
 - AF-ogxu: this issue's own Notes/Comments -> Decision record
