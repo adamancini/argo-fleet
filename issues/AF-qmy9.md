@@ -7,8 +7,8 @@ type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T16:10:38Z
-content_hash: "sha256:492ae2fd81dcd1092e29c1eb82359bace3044a9ee19a5865f1be38b427e90988"
+updated_at: 2026-08-07T16:10:39Z
+content_hash: "sha256:e7845b434b3bbdb498dd83d41565f4f6b50eb204d5a5678312f5105f95f531ec"
 was_blocked_by: [AF-c8p4]
 assignee: dev-AF-qmy9
 follows: [AF-c8p4, AF-ogxu]
@@ -92,6 +92,16 @@ devops-toolkit:markdown-writer, devops-toolkit:akp-platform
 
 
 ## Notes
+
+
+## nd_contract
+status: accepted
+
+### evidence
+- PM closeout applied via pvg story accept on 2026-08-07.
+
+### proof
+- [x] Story closed after accepted label was applied.
 
 
 ## nd_contract
