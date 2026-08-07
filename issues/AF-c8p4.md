@@ -8,7 +8,8 @@ parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
 updated_at: 2026-08-07T15:07:16Z
-content_hash: "sha256:ce1b1c502189dbc85aa46055f85486960dce0b29738084c3faa280e148e52c5d"
+content_hash: "sha256:fbbde6b320729161328096481ead3f0a56a768fd2ecee6b04ff31027055f41d4"
+blocked_by: [AF-ogxu]
 ---
 
 ## Description
@@ -125,9 +126,10 @@ devops-toolkit:akp-platform (mandatory -- `references/gitops-app-patterns.md` an
 
 
 ## History
-
+- 2026-08-07T15:07:23Z dep_added: blocked_by AF-ogxu
 
 ## Links
 - Parent: [[AF-d66a]]
+- Blocked by: [[AF-ogxu]]
 
 ## Comments
