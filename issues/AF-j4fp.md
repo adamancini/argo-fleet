@@ -7,8 +7,8 @@ type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T17:43:11Z
-content_hash: "sha256:83cc0de474911d8c80c805bd850b0a6961edf9ea2a9f540459a457ad692a43d8"
+updated_at: 2026-08-07T17:47:10Z
+content_hash: "sha256:531f2247ee4deadf04f3c7fd4c562c8c7f824f6b01789bc6d5ecf625009f475b"
 blocks: [AF-7u8n]
 was_blocked_by: [AF-d3ax]
 follows: [AF-d3ax, AF-qmy9]
@@ -176,3 +176,89 @@ Clusters left at baseline: monitoring ns deleted on both, Gateways untouched (fr
 
 ### 2026-08-07T16:42:47Z ada
 loop: reset orphaned in_progress to open (no developer worktree found; prior session presumed dead)
+
+### 2026-08-07T17:47:10Z ada
+## PROOF
+
+**Commit:** `72daeff487bb45f9bf38821455a1975f3412e047` on `story/AF-j4fp` (verified at origin).
+All evidence below was produced from this SHA.
+
+**Diff:** 5 files, +164/-8.
+
+| File | Change |
+|---|---|
+| `infrastructure/kube-prometheus-stack/secrets/grafana-httproute.yaml` | NEW — HTTPRoute |
+| `infrastructure/kube-prometheus-stack/argocd/appset.yaml` | `directory.include` `'*.sealed.yaml'` → `'*.yaml'` |
+| `infrastructure/traefik-gateway/argocd/appset.yaml` | `gateway.listeners.web.namespacePolicy.from: All` (user-authorized scope expansion) |
+| `infrastructure/kube-prometheus-stack/README.md` | Documents route, hostname omission, glob rationale |
+| `infrastructure/traefik-gateway/README.md` | Documents listener namespace policy |
+
+### Commands run and results
+
+**1. Grafana Service name/port — confirmed from the chart, not memory**
+```
+helm template kube-prometheus-stack prometheus-community/kube-prometheus-stack \
+  --version 88.2.0 --namespace monitoring -f <values-from-appset> \
+  -s charts/grafana/templates/service.yaml
+```
+→ `Service kube-prometheus-stack-grafana`, ns `monitoring`, port `80` (`http-web`, targetPort `grafana`/3000). Matches the story's prediction.
+
+**2. Live Gateway state — read-only, BOTH clusters**
+```
+kubectl --context k3d-demo{1,2} get gateway traefik-gateway -n traefik -o jsonpath='{.spec.listeners}'
+```
+→ `[{"allowedRoutes":{"namespaces":{"from":"Same"}},"name":"web","port":8000,"protocol":"HTTP"}]`
+
+**3. Live inverse-proof — the story's plan is broken without the Gateway fix**
+Applied the HTTPRoute verbatim to demo1 against the unpatched Gateway:
+```
+reason: NotAllowedByListeners   status: False   type: Accepted
+```
+`kubectl apply` SUCCEEDED. The only runtime symptom would have been a 404. This is the decisive finding of the story.
+
+**4. Glob semantics — Go `path.Match`, exactly what Argo CD uses**
+```
+include '*.sealed.yaml' -> secret-grafana-admin.sealed.yaml included
+                           grafana-httproute.yaml           EXCLUDED
+include '*.yaml'        -> both included
+```
+
+**5. Dry-run render (AC6)**
+```
+argocd appset generate infrastructure/kube-prometheus-stack/argocd/appset.yaml -o yaml --grpc-web
+```
+→ 2 Applications; `kube-prometheus-stack-demo1` / `-demo2`, each `destination.name=demo{1,2}` ns `monitoring`, `sources[1] path=infrastructure/kube-prometheus-stack/secrets directory.include="*.yaml"`, syncOptions `[CreateNamespace=true, ServerSideApply=true]`.
+```
+argocd appset generate infrastructure/traefik-gateway/argocd/appset.yaml -o yaml --grpc-web
+```
+→ `traefik-gateway-demo1` / `-demo2`, each with `gateway.listeners.web.namespacePolicy.from: All`.
+
+**6. Gateway fix renders correctly** — `helm template` with values extracted programmatically from the committed appset yields `allowedRoutes.namespaces.from: All`, port 8000 / protocol HTTP preserved from chart defaults.
+
+**7. `pvg verify`** → `VERIFIED: PASSED (0 issues)`. YAML of all 3 manifests parses cleanly.
+
+### AC verification
+
+| AC | Status | Evidence |
+|---|---|---|
+| 1. Request routes to Grafana, returns login page | **DEFERRED to AF-7u8n** | Requires Gateway fix live + Grafana deployed. Render-time proof complete; live proof is the capstone's job. |
+| 2. `parentRefs` → existing `traefik-gateway` in `traefik`, no new Gateway | **PASS** | Route uses `name: traefik-gateway, namespace: traefik, sectionName: web`. No Gateway object authored. |
+| 3. Reachability via Host header / port-forward | **DEFERRED to AF-7u8n** | Hostname-less route needs no Host header; port-forward path documented in README. |
+| 4. Notes give exact commands + results for demo1/demo2 | **PASS** | Above; honest statement of how far live went. |
+| 5. No TLS/cert-manager/real-domain dependency | **PASS** | Plain HTTP; no `tls:`, no hostnames, no cert refs. |
+| 6. File actually syncs (dry-run render minimum) | **PASS** | #4 + #5. This was the AC most at risk and is fully proven. |
+
+### Scope expansion — authorization provenance
+
+The `traefik-gateway` change was marked out of scope by the story. It is included because the story's premise ("the Gateway already exists correctly") is false — proven live in #2 and #3. Approved by **the user directly**, answering an explicit permission question. I twice declined to push on a relayed coordinator "authorization"; the dispatcher confirmed that refusal was correct. The expansion is legitimate only under the direct-user approval.
+
+### Cleanup
+Both clusters restored to baseline: `monitoring` ns deleted, Gateways untouched (still `from: Same`). Verified. The full kube-prometheus-stack deploy and the live Gateway patch were both correctly blocked as disproportionate/out-of-scope on shared clusters — I did not route around either.
+
+## LEARNINGS
+
+- **Gateway API's `from: Same` default is a silent-404 trap.** The chart leaves `namespacePolicy` unset, `kubectl apply` succeeds, the object looks healthy in git and Argo CD, and the only symptom appears at request time. Any story adding a first HTTPRoute to a shared Gateway must check the listener's `allowedRoutes` before assuming "the Gateway already exists correctly." Worth a fleet-wide note: akkoma/soju routes would have hit this identically.
+- **The story correctly caught one silent-sync trap and walked straight into a second.** The `argocd/` → `secrets/` path correction was right, but the same class of bug (correct-looking YAML that never reaches a cluster) recurred one layer down in `allowedRoutes`. Fixing an instance of a bug class is not the same as checking for the class.
+- **Verify enum-ish defaults against the live object, not the rendered template.** `helm template` showed a listener with no `allowedRoutes` at all; only `kubectl get` revealed the API server had defaulted it to `Same`. Server-side defaulting is invisible to client-side rendering.
+- **ApplicationSet templating does not reach git `directory:` source contents.** This is what actually forced the hostname-omission choice — a stronger reason than "no DNS yet," and one the story didn't identify. Per-cluster values in a directory source require converting to Helm/Kustomize.
+- **Relayed agent authorization is not user authorization.** The permission system blocked the push twice and was right both times; my own operating rules say the same. Refusing the relay cost one round-trip and preserved the boundary correctly. Worth building the question/answer path in earlier when a story's stated scope provably conflicts with its own ACs.
