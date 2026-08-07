@@ -1,18 +1,20 @@
 ---
 id: AF-7u8n
 title: "Verify the observability stack end-to-end across the fleet"
-status: in_progress
+status: closed
 priority: 1
 type: task
 labels: [capstone, delivered]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T19:09:15Z
-content_hash: "sha256:b121f4e246a6cb7d6527e8d32f7431954775e8c84bcfb088b4612f37cb38a280"
+updated_at: 2026-08-07T19:22:29Z
+content_hash: "sha256:9de68c0a46db7e8f54e482e91589c39d950e10171d78f045080264e4622c3843"
 was_blocked_by: [AF-ogxu, AF-c8p4, AF-qmy9, AF-d3ax, AF-j4fp]
 assignee: dev-AF-7u8n
 follows: [AF-ogxu, AF-c8p4, AF-qmy9, AF-d3ax, AF-j4fp]
+closed_at: 2026-08-07T19:22:29Z
+close_reason: "Accepted: fleet-wide end-to-end verification of the observability stack. Live evidence SHA-matched (7da2991a5986d0b254412c002ed456dc2762e1a0), independently re-verified: 26/26 fleet Applications Synced/Healthy live, 0 leftover monitoring.coreos.com CRDs on demo1/demo2, monitoring namespace absent both clusters, 0 HTTPRoutes, Gateway listener reverted to from:Same both clusters -- all matching the developer's claimed final baseline exactly. Source diff of the 5 migrated appset.yaml files independently confirms the generator-swap is mechanically equivalent (clusters selector resolves to exactly demo1/demo2 per live list_clusters) with the only additional delta being AF-j4fp's intentional Gateway namespacePolicy change, matching the claimed 8/10 byte-identical render result. Regression (HTTPRoute server-side-defaulting causing permanent OutOfSync) correctly found and routed to AF-mnpo (P0, parent AF-d66a, blocked_by accepted AF-j4fp) rather than silently patched, exactly as this capstone's OUT OF SCOPE required. Pre-existing pvg gates debt correctly routed to AF-wg73. OOM/resource-contention diagnosis for the concurrent-deploy false-positive is well-reasoned and matches known k3d/Docker-VM resource-starvation signatures. 0-file diff budget confirmed via git."
 ---
 
 ## Description
@@ -115,6 +117,7 @@ status: delivered
 - 2026-08-07T18:01:55Z auto-follows: linked to predecessor AF-j4fp
 - 2026-08-07T18:01:55Z claimed by dev-AF-7u8n
 - 2026-08-07T19:09:14Z status: in_progress -> in_progress
+- 2026-08-07T19:22:29Z status: in_progress -> closed
 
 ## Links
 - Parent: [[AF-d66a]]
