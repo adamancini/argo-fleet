@@ -9,8 +9,8 @@ parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
 updated_at: 2026-08-07T15:06:16Z
-content_hash: "sha256:7dd341af1948128d80632fbf514137e4fa0f41eb42a92ae184070061467ab45d"
-blocks: [AF-c8p4, AF-d3ax]
+content_hash: "sha256:7e3b729199bf4f14b8fce52d509ec723f6dfc14b01b8648217665bb123020c2a"
+blocks: [AF-c8p4, AF-d3ax, AF-7u8n]
 ---
 
 ## Description
@@ -108,9 +108,10 @@ devops-toolkit:akp-platform (mandatory -- especially `references/argocd-declarat
 ## History
 - 2026-08-07T15:07:23Z dep_added: blocks AF-c8p4
 - 2026-08-07T15:07:23Z dep_added: blocks AF-d3ax
+- 2026-08-07T15:07:24Z dep_added: blocks AF-7u8n
 
 ## Links
 - Parent: [[AF-d66a]]
-- Blocks: [[AF-c8p4]], [[AF-d3ax]]
+- Blocks: [[AF-c8p4]], [[AF-d3ax]], [[AF-7u8n]]
 
 ## Comments
