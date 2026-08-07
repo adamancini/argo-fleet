@@ -14,13 +14,15 @@ metadata:
   namespace: argocd
 spec:
   generators:
-  - list:
-      elements:
-      - cluster: demo1
-      - cluster: demo2
+  - clusters:
+      selector:
+        matchExpressions:
+        - key: akuity.io/argo-cd-cluster-name
+          operator: NotIn
+          values: [in-cluster, kargo]
   template:
     metadata:
-      name: 'sealed-secrets-{{cluster}}'
+      name: 'sealed-secrets-{{name}}'
     spec:
       project: default
       source:
@@ -31,7 +33,7 @@ spec:
           valuesObject:
             fullnameOverride: sealed-secrets
       destination:
-        name: '{{cluster}}'
+        name: '{{name}}'
         namespace: sealed-secrets
       syncPolicy:
         automated:
