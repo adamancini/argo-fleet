@@ -7,11 +7,11 @@ type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T17:48:49Z
-content_hash: "sha256:0a6c6db11b6f18e6cd4e9e0796a191b0873a2ff6fad4cd0e4915dbf9065c0a21"
+updated_at: 2026-08-07T17:50:51Z
+content_hash: "sha256:68340da05b8ce51d50783dab4a461aba540076dd15b0d345bfebdb4f53fd935e"
 blocks: [AF-7u8n]
 was_blocked_by: [AF-d3ax]
-follows: [AF-d3ax, AF-qmy9]
+follows: [AF-d3ax, AF-qmy9, AF-c8p4]
 assignee: dev-AF-j4fp
 ---
 
@@ -178,12 +178,14 @@ TO CLOSE THIS OUT: ada needs to either run 'pvg story deliver AF-j4fp' directly,
 - 2026-08-07T16:43:28Z status: open -> in_progress
 - 2026-08-07T16:43:28Z auto-follows: linked to predecessor AF-qmy9
 - 2026-08-07T16:43:28Z claimed by dev-AF-j4fp
+- 2026-08-07T17:50:51Z status: in_progress -> in_progress
+- 2026-08-07T17:50:51Z auto-follows: linked to predecessor AF-c8p4
 
 ## Links
 - Parent: [[AF-d66a]]
 - Blocks: [[AF-7u8n]]
 - Was blocked by: [[AF-d3ax]]
-- Follows: [[AF-d3ax]], [[AF-qmy9]]
+- Follows: [[AF-d3ax]], [[AF-qmy9]], [[AF-c8p4]]
 
 ## Comments
 
