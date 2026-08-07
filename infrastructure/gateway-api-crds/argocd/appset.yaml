@@ -15,13 +15,15 @@ metadata:
   namespace: argocd
 spec:
   generators:
-  - list:
-      elements:
-      - cluster: demo1
-      - cluster: demo2
+  - clusters:
+      selector:
+        matchExpressions:
+        - key: akuity.io/argo-cd-cluster-name
+          operator: NotIn
+          values: [in-cluster, kargo]
   template:
     metadata:
-      name: 'gateway-api-crds-{{cluster}}'
+      name: 'gateway-api-crds-{{name}}'
       annotations:
         argocd.argoproj.io/sync-wave: "-1"
     spec:
@@ -33,7 +35,7 @@ spec:
         directory:
           recurse: true
       destination:
-        name: '{{cluster}}'
+        name: '{{name}}'
         namespace: default
       syncPolicy:
         automated:

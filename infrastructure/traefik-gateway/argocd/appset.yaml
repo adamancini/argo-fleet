@@ -9,13 +9,15 @@ metadata:
   namespace: argocd
 spec:
   generators:
-  - list:
-      elements:
-      - cluster: demo1
-      - cluster: demo2
+  - clusters:
+      selector:
+        matchExpressions:
+        - key: akuity.io/argo-cd-cluster-name
+          operator: NotIn
+          values: [in-cluster, kargo]
   template:
     metadata:
-      name: 'traefik-gateway-{{cluster}}'
+      name: 'traefik-gateway-{{name}}'
     spec:
       project: default
       source:
@@ -42,7 +44,7 @@ spec:
               enabled: true
               type: LoadBalancer
       destination:
-        name: '{{cluster}}'
+        name: '{{name}}'
         namespace: traefik
       syncPolicy:
         automated:

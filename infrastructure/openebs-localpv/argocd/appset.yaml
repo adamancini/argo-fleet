@@ -11,13 +11,15 @@ metadata:
   namespace: argocd
 spec:
   generators:
-  - list:
-      elements:
-      - cluster: demo1
-      - cluster: demo2
+  - clusters:
+      selector:
+        matchExpressions:
+        - key: akuity.io/argo-cd-cluster-name
+          operator: NotIn
+          values: [in-cluster, kargo]
   template:
     metadata:
-      name: 'openebs-localpv-{{cluster}}'
+      name: 'openebs-localpv-{{name}}'
     spec:
       project: default
       source:
@@ -46,7 +48,7 @@ spec:
               isDefaultClass: true
               reclaimPolicy: Delete
       destination:
-        name: '{{cluster}}'
+        name: '{{name}}'
         namespace: openebs
       syncPolicy:
         automated:
