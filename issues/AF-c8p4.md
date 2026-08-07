@@ -7,8 +7,8 @@ type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T15:57:18Z
-content_hash: "sha256:6ff25c0a3dc893944ea434af46d59cd67ce2ba8cc38cdfafbe984147dbb0cf7f"
+updated_at: 2026-08-07T15:57:42Z
+content_hash: "sha256:9a4dc88e6019ab8f371a0319be143a6b6cae9ede9922e8993fc41511a8d21aad"
 was_blocked_by: [AF-ogxu]
 assignee: dev-AF-c8p4
 follows: [AF-ogxu]
@@ -306,3 +306,6 @@ None. The spike's confirmed YAML shape was applied verbatim to all 5 files.
   be mistaken for a passing quality gate here; the real gates were yamllint,
   kubeconform --strict against the ApplicationSet CRD schema, and the live
   render diff.
+
+### 2026-08-07T15:57:42Z ada
+PM REVIEW: ACCEPTED. Independently re-verified: (1) git diff origin/epic/AF-d66a..story/AF-c8p4 --stat matches claim exactly (5 files, +40/-30); full diff review confirms only spec.generators + two {{cluster}}->{{name}} renames changed per file, zero touches to source/chart/targetRevision/helm-values/destination.namespace/syncPolicy. (2) All 5 files' generator blocks are byte-identical (grep -A6 generators: on all 5 -- confirmed via direct comparison, same NotIn selector, same values list). (3) Re-ran the render-equivalence proof myself for 3/5 files (sealed-secrets, traefik-gateway, argo-rollouts-crds) via argocd appset generate --grpc-web -o json against the live instance (logged in via the documented worktree workaround) -- diffed old (list) vs new (clusters) rendered Application JSON: byte-identical (diff exit 0) for all 3. Also independently reproduced the counterfactual: a scratch bare 'clusters: {}' (no selector) on sealed-secrets rendered 4 apps including sealed-secrets-in-cluster and sealed-secrets-kargo, confirming the selector is load-bearing. (4) Confirmed bootstrap/infra-apps.yaml, bootstrap/fleet-argocd-apps.yaml, bootstrap/fleet-kargo-apps.yaml, docs/infra-dependencies.md, infrastructure/kube-prometheus-stack/ are absent from the diff. (5) Confirmed destination.server absent in all 5 edited files (grep for server under destination: no matches). (6) kubeconform --strict re-run by me: 5/5 valid, 0 invalid, 0 errors -- matches claim. yamllint not installed in this environment so I could not independently reproduce that specific claim; treated as low-stakes given kubeconform (stronger schema check) passed and full line-by-line diff review found no stray changes. (7) mcp__argocd-akuity__list_clusters and list_applications independently confirm live cluster inventory (demo1/demo2/in-cluster/kargo, matching labels) and sealed-secrets-demo1/demo2 Synced+Healthy -- consistent with developer's claims. pvg verify: 0 files scanned (confirmed no-op on YAML, as claimed). pvg gates --changed origin/epic/AF-d66a: PASS, 0 warn. Live reconciliation of the story branch itself is structurally unobservable (Applications track default branch) -- not held against this story per its own stated limitation; render-equivalence proof is sufficiently rigorous.
