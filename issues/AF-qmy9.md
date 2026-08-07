@@ -1,19 +1,20 @@
 ---
 id: AF-qmy9
 title: "Update infra-dependencies.md to document the clusters generator convention"
-status: in_progress
+status: closed
 priority: 3
 type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T16:06:20Z
-content_hash: "sha256:9ace2d67922c24b9b2e0ee6bb43077bdb2837be71a7ab25247afc0947deda5d9"
-blocks: [AF-7u8n]
+updated_at: 2026-08-07T16:10:38Z
+content_hash: "sha256:492ae2fd81dcd1092e29c1eb82359bace3044a9ee19a5865f1be38b427e90988"
 was_blocked_by: [AF-c8p4]
 assignee: dev-AF-qmy9
 follows: [AF-c8p4, AF-ogxu]
 labels: [delivered]
+closed_at: 2026-08-07T16:10:38Z
+close_reason: "Accepted via pvg story accept"
 ---
 
 ## Description
@@ -112,10 +113,11 @@ status: delivered
 - 2026-08-07T16:01:53Z claimed by dev-AF-qmy9
 - 2026-08-07T16:05:41Z status: in_progress -> in_progress
 - 2026-08-07T16:05:41Z auto-follows: linked to predecessor AF-ogxu
+- 2026-08-07T16:10:38Z status: in_progress -> closed
+- 2026-08-07T16:10:38Z dep_removed: no_longer_blocks AF-7u8n
 
 ## Links
 - Parent: [[AF-d66a]]
-- Blocks: [[AF-7u8n]]
 - Was blocked by: [[AF-c8p4]]
 - Follows: [[AF-c8p4]], [[AF-ogxu]]
 
