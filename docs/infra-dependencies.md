@@ -6,10 +6,31 @@ cert-manager-style singleton. `sealed-secrets` is the current example.
 
 ## Steps
 
-1. Create `infrastructure/<name>/argocd/appset.yaml`. Use a `list`
-   generator with one element per cluster destination -- there's no
-   per-cluster directory to discover, just a fixed, known set of clusters
-   (currently `demo1`, `demo2`).
+1. Create `infrastructure/<name>/argocd/appset.yaml`. Use a `clusters`
+   generator so cluster targeting is discovered rather than hardcoded --
+   there's no per-cluster directory to discover, and a third workload
+   cluster then needs no file edits:
+
+   ```yaml
+   generators:
+   - clusters:
+       selector:
+         matchExpressions:
+         - key: akuity.io/argo-cd-cluster-name
+           operator: NotIn
+           values: [in-cluster, kargo]
+   ```
+
+   The selector is mandatory. A bare `clusters: {}` also matches
+   `in-cluster` (the Akuity control plane, which only permits the
+   `argocd` namespace) and `kargo`, silently broadening the app's
+   targeting -- confirmed against the live instance, not theoretical.
+   Template `{{name}}` for both `metadata.name` and
+   `spec.destination.name`. Do not use `{{server}}`: on this
+   Akuity-hosted instance it resolves to an internal proxy URL such as
+   `http://cluster-demo1:8001`, not a reachable API server endpoint.
+   `infrastructure/sealed-secrets/argocd/appset.yaml` is the worked
+   example.
 2. Write `infrastructure/<name>/README.md` explaining what it is, why every
    cluster needs it, and any bootstrap step required before the
    ApplicationSet can sync cleanly (e.g. `sealed-secrets` needs its shared
