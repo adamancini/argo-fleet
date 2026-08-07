@@ -7,12 +7,12 @@ type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T15:57:17Z
+updated_at: 2026-08-07T15:57:18Z
 content_hash: "sha256:c0bae1d4509579e4deed0e4b504bac96e30fc973cb539e1ca56630ea34470e9b"
 was_blocked_by: [AF-ogxu]
 assignee: dev-AF-c8p4
 follows: [AF-ogxu]
-labels: [delivered]
+labels: [delivered, accepted]
 closed_at: 2026-08-07T15:57:17Z
 close_reason: "Accepted via pvg story accept"
 ---
