@@ -8,8 +8,9 @@ parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
 updated_at: 2026-08-07T15:07:16Z
-content_hash: "sha256:422cd435daf5d22ea8ed14c43e3aa2ebce045ba906832646a4f64626278b1236"
+content_hash: "sha256:4ece3480297185186fa1d15ef155efd7088efda1392863e2b4d973f357b7e8a4"
 blocked_by: [AF-d3ax]
+blocks: [AF-7u8n]
 ---
 
 ## Description
@@ -115,9 +116,11 @@ devops-toolkit:akp-platform (mandatory), devops-toolkit:yaml-kubernetes-validato
 
 ## History
 - 2026-08-07T15:07:23Z dep_added: blocked_by AF-d3ax
+- 2026-08-07T15:07:25Z dep_added: blocks AF-7u8n
 
 ## Links
 - Parent: [[AF-d66a]]
+- Blocks: [[AF-7u8n]]
 - Blocked by: [[AF-d3ax]]
 
 ## Comments
