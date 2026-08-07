@@ -8,8 +8,8 @@ labels: [spike, accepted]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T15:33:34Z
-content_hash: "sha256:0cecbf7334e00a6494debdca47d9a0bb486909825612758aa6e0a18a919c408d"
+updated_at: 2026-08-07T15:34:24Z
+content_hash: "sha256:0b9a46d16dfe24c01b4d7eb9613f5ee97303fda019bd6bb6ebde1789ff496f95"
 assignee: dev-AF-ogxu
 closed_at: 2026-08-07T15:33:33Z
 close_reason: "Accepted spike: GO decision with mandatory selector recorded in issue, independently re-verified against live instance"
@@ -343,3 +343,6 @@ LEARNINGS:
   TERRAFORM_CLUSTERS_DIR from {{.ROOT_DIR}} but terraform state/tfvars/.terraform are
   gitignored, so worktrees get config without state. Future worktree stories touching
   argocd:login / kargo:login need `terraform -chdir=<main-repo>/...` instead.
+
+### 2026-08-07T15:34:24Z ada
+PM REVIEW: ACCEPTED. Verified independently against live instance augtpjfe5xvyty6u.cd.akuity.cloud via argocd-akuity MCP (list_clusters, list_applications): cluster list returned exactly demo1/demo2/in-cluster/kargo with matching labels (akuity.io/argo-cd-cluster-name, akuity.io/direct-cluster=true on kargo, akuity.io/argo-cd-instance-id on in-cluster) -- matches the developer's finding byte-for-byte. Application list returned 26 total, zero named spike-*/cluster-generator-spike/sel-*/fields-* -- confirms AC3 no-leftover claim; consistent with argocd appset generate being a read-only dry-run RPC that never persists. Repo verification: story/AF-ogxu and epic/AF-d66a are the same commit (97105f5), git diff --stat empty -- 0 files/0 commits confirmed, matches the 0-file diff budget. Skill cross-check: devops-toolkit:akp-platform's references/argocd-declarative-setup.md Akuity-hosted-divergence section was quoted accurately in the story description; the empirical finding (cluster API still surfaces Terraform-registered clusters despite the Secret-based mechanism not being hand-authored) resolves the skill's explicitly-flagged open question rather than contradicting it -- not a misreading. Critical requirement met: the GO decision is NOT bare -- the mandatory NotIn selector (excluding in-cluster, kargo) is durably recorded in this issue's own comments with exact YAML, a full 5-variant selector matrix, and a byte-identical before/after diff proof on the real sealed-secrets appset, so AF-c8p4/AF-d3ax can consume it without re-deriving anything. Environment finding (task argocd:login broken in worktrees due to gitignored terraform state/tfvars) independently reproduced: this worktree's terraform/clusters/ has no .terraform/, tfstate, or tfvars, matching .gitignore lines 20-24. Workaround (terraform -chdir=<main-repo>/terraform/clusters output -raw) is read-only; no state was modified.
