@@ -12,7 +12,7 @@ content_hash: "sha256:aa5caad0ef9a08c18094eac85180166da0404d9500639c43e1ffb4a6c6
 was_blocked_by: [AF-d3ax]
 follows: [AF-d3ax, AF-qmy9, AF-c8p4]
 assignee: dev-AF-j4fp
-labels: [delivered]
+labels: [delivered, accepted]
 closed_at: 2026-08-07T17:56:41Z
 close_reason: "Accepted: Grafana HTTPRoute wired to traefik-gateway, glob widening and Gateway namespacePolicy fix all independently verified against live chart renders and live cluster state"
 ---
