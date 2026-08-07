@@ -7,8 +7,8 @@ type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T15:07:17Z
-content_hash: "sha256:6c51386d99e9b4b74513ef471f3746d3663cfa3a8c16b6cf6b54bb51603dc24f"
+updated_at: 2026-08-07T15:10:01Z
+content_hash: "sha256:7d77bf29368938c151b01c9a88aec252e96ab551eb8d10b1339d3d72fc2dbfbe"
 blocked_by: [AF-c8p4]
 blocks: [AF-7u8n]
 ---
@@ -74,7 +74,7 @@ TESTING:
 Documentation-only change -- no automated test. Verification: the doc's step 1 text matches, verbatim in generator shape, what `infrastructure/sealed-secrets/argocd/appset.yaml` (or whichever file is cited as the worked example) actually contains after the migration story closes -- a manual diff-read side by side.
 
 Acceptance Criteria:
-1. [Ubiquitous] Step 1 of `docs/infra-dependencies.md`'s "Steps" section no longer instructs "use a list generator."
+1. [Ubiquitous] Step 1 of `docs/infra-dependencies.md`'s "Steps" section displays the confirmed generator convention and no longer instructs "use a list generator."
 2. [Ubiquitous] The replacement text names the exact generator (`clusters: {}` or the confirmed fallback) and, if applicable, the exact template field(s) (`{{name}}`, `{{server}}`, etc.) actually in use.
 3. [Unwanted] The updated doc shall not describe a generator convention that differs from what the 5 migrated files or the new kube-prometheus-stack app actually use -- verified by direct comparison against those files.
 
