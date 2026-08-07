@@ -107,6 +107,24 @@ is scheduled — that is normal, not the failure mode above.
 
 Size is a flat `10Gi`; retention is left at chart default.
 
+## `ServerSideApply=true` is required
+
+Six of the prometheus-operator CRDs (`prometheuses`, `alertmanagers`,
+`alertmanagerconfigs`, `prometheusagents`, `scrapeconfigs`, `thanosrulers`)
+are larger than the 262144-byte ceiling Kubernetes puts on the
+`kubectl.kubernetes.io/last-applied-configuration` annotation that
+client-side apply writes. Without this sync option the sync fails with:
+
+```
+CustomResourceDefinition ... is invalid: metadata.annotations: Too long:
+  may not be more than 262144 bytes
+```
+
+and then, as a knock-on, the `Prometheus`/`Alertmanager` CRs fail with
+`no matches for kind "Prometheus" ... ensure CRDs are installed first`.
+Server-side apply doesn't write that annotation. This was observed on this
+instance, not assumed — see the story's delivery notes.
+
 ## Release name
 
 `helm.releaseName` is pinned to `kube-prometheus-stack` rather than

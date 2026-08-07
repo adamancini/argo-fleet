@@ -90,3 +90,12 @@ spec:
           selfHeal: true
         syncOptions:
         - CreateNamespace=true
+        # Mandatory for this chart, not a preference. Six of the
+        # prometheus-operator CRDs exceed the 262144-byte limit on the
+        # kubectl.kubernetes.io/last-applied-configuration annotation that
+        # client-side apply writes, so the CRDs fail to apply and the
+        # Prometheus/Alertmanager CRs that depend on them then fail with
+        # "no matches for kind ... ensure CRDs are installed first".
+        # Server-side apply doesn't write that annotation. Verified: sync
+        # fails without this, succeeds with it.
+        - ServerSideApply=true
