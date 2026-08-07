@@ -8,8 +8,8 @@ labels: [capstone]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
-updated_at: 2026-08-07T15:06:17Z
-content_hash: "sha256:c9671019e47b25cc8d12c4da1ce1693115a11197caea088f72cd0357f3b448e6"
+updated_at: 2026-08-07T15:07:17Z
+content_hash: "sha256:07872668a25fc72c176090e39b079e091e0c8e1ee8f6d1895263fa78b8bb8e99"
 ---
 
 ## Description
@@ -40,11 +40,11 @@ DIFF BUDGET:
 0 files changed.
 
 CONSUMES:
-- (spike story id): decision record -> confirmed generator convention (verification baseline)
-- (migration story id): 5 migrated appset.yaml files -> Synced/Healthy status expected
-- (kube-prometheus-stack story id): kube-prometheus-stack appset.yaml + SealedSecret -> Synced/Healthy status, bound PVC, working Grafana login expected
-- (HTTPRoute story id): grafana-httproute.yaml -> documented curl verification command, expected to still pass
-- (docs story id): docs/infra-dependencies.md -> confirmed to match actual repo state (spot-check, not a runtime dependency)
+- AF-ogxu: decision record -> confirmed generator convention (verification baseline)
+- AF-c8p4: 5 migrated appset.yaml files -> Synced/Healthy status expected
+- AF-d3ax: kube-prometheus-stack appset.yaml + SealedSecret -> Synced/Healthy status, bound PVC, working Grafana login expected
+- AF-j4fp: grafana-httproute.yaml -> documented curl verification command, expected to still pass
+- AF-qmy9: docs/infra-dependencies.md -> confirmed to match actual repo state (spot-check, not a runtime dependency)
 
 PRODUCES:
 None (verification-only; result recorded as this issue's own comment/notes, not a repo artifact).
