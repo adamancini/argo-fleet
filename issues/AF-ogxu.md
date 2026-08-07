@@ -8,8 +8,8 @@ labels: [spike]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T15:06:16Z
-content_hash: "sha256:7e3b729199bf4f14b8fce52d509ec723f6dfc14b01b8648217665bb123020c2a"
+updated_at: 2026-08-07T15:09:22Z
+content_hash: "sha256:25b6c9ce7e5d176b7d842f0984617c0242d1710529d049f7ea35ba3386c1014d"
 blocks: [AF-c8p4, AF-d3ax, AF-7u8n]
 ---
 
@@ -30,7 +30,7 @@ generators:
 
 The user wants this replaced everywhere with Argo CD's built-in `clusters: {}` ApplicationSet generator so cluster targeting is discovered automatically -- no file edits needed when a third cluster joins the fleet (or when the fleet eventually migrates to the real `annarchy.net`/`staging.annarchy.net` clusters).
 
-The risk: standard OSS Argo CD's `clusters: {}` generator works by listing Kubernetes `Secret` objects labeled `argocd.argoproj.io/secret-type: cluster` in the Argo CD namespace -- these are normally hand-authored (or created by `argocd cluster add`) with the target cluster's server URL and credentials embedded. On this repo's Akuity-hosted instance, cluster registration does NOT go through that mechanism: `devops-toolkit:akp-platform`'s `references/argocd-declarative-setup.md` states explicitly (Akuity-hosted divergence section): "cluster/agent registration instead goes through the `akp` Terraform provider... the Akuity Agent connects outbound and no cluster credentials are stored centrally, so this Secret-based mechanism isn't something you author yourself here." Whether Akuity's control plane creates an equivalent, generator-discoverable Secret under the hood for each Terraform-registered cluster is genuinely unknown from documentation alone -- this story exists to answer that question empirically, against the real instance, before 5 existing files and 1 new file are all rewritten to depend on the answer.
+The risk: standard OSS Argo CD's `clusters: {}` generator works by listing Kubernetes `Secret` objects labeled `argocd.argoproj.io/secret-type: cluster` in the Argo CD namespace -- these are normally hand-authored (or created by `argocd cluster add`) with the target cluster's server URL and credentials embedded. On this repo's Akuity-hosted instance, cluster registration does NOT go through that mechanism: `devops-toolkit:akp-platform`'s argocd-declarative-setup reference states explicitly (Akuity-hosted divergence section): "cluster/agent registration instead goes through the `akp` Terraform provider... the Akuity Agent connects outbound and no cluster credentials are stored centrally, so this Secret-based mechanism isn't something you author yourself here." Whether Akuity's control plane creates an equivalent, generator-discoverable Secret under the hood for each Terraform-registered cluster is genuinely unknown from documentation alone -- this story exists to answer that question empirically, against the real instance, before 5 existing files and 1 new file are all rewritten to depend on the answer.
 
 USER INTENT:
 The user needs confidence that switching to the `clusters` generator is not going to silently break cluster targeting on 5 already-working infra apps. They explicitly asked for a spike specifically because this is "cheap to fail fast on" -- they would rather learn the generator doesn't work on this instance from one throwaway test than from 5 broken production ApplicationSets.
@@ -81,7 +81,7 @@ None -- this is the first story in the epic and depends on nothing else in this 
 PRODUCES:
 - This issue's own Notes/Comments -> Decision record with signature:
   spec: generator: 'clusters: {}' | 'list (fallback)'; template_field: '{{name}}' | '{{server}}' | '<other>' | 'N/A (fallback)'; confirmed_cluster_names: ['demo1','demo2'] | []
-  source: empirical observation against the live Akuity-hosted Argo CD instance (this story's own execution), cross-checked against `devops-toolkit:akp-platform`'s `references/argocd-declarative-setup.md` Akuity-hosted divergence section and `https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Cluster/`.
+  source: empirical observation against the live Akuity-hosted Argo CD instance (this story's own execution), cross-checked against devops-toolkit:akp-platform's argocd-declarative-setup reference (Akuity-hosted divergence section) and https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Cluster/
 
 TESTING:
 Not applicable in the unit/integration sense -- this is an empirical verification spike. "Testing" here means the observation itself: apply the throwaway ApplicationSet, observe the Application(s) it generates (or doesn't), and record the exact result. No automated test is written.
@@ -94,7 +94,7 @@ Acceptance Criteria:
 5. If the decision is "confirmed failed," the fallback approach is specific enough to implement (not just "figure something out") -- e.g., naming the exact mechanism (templated list generator sourced from `terraform.tfvars`, a small pre-commit script, a `git` generator over `.kubeconfigs/*.yaml` filenames) even though the fallback's own implementation is out of scope for this story.
 
 MANDATORY SKILLS TO REVIEW:
-devops-toolkit:akp-platform (mandatory -- especially `references/argocd-declarative-setup.md`'s Akuity-hosted divergence section and `references/terraform-provisioning.md` for how cluster registration actually works on this instance)
+devops-toolkit:akp-platform (mandatory -- especially its argocd-declarative-setup reference's Akuity-hosted divergence section and its terraform-provisioning reference for how cluster registration actually works on this instance)
 
 ## Acceptance Criteria
 
