@@ -9,9 +9,9 @@ parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
 updated_at: 2026-08-07T15:07:16Z
-content_hash: "sha256:5c9044576433c4746989eb4e4116eae343fc75e056c9e0536176b07fc1d45099"
+content_hash: "sha256:b26a92b0761d8095c186401640ccb68ee869862b4f6d8e1f934c0735dc395343"
 blocked_by: [AF-ogxu]
-blocks: [AF-j4fp]
+blocks: [AF-j4fp, AF-7u8n]
 ---
 
 ## Description
@@ -149,10 +149,11 @@ devops-toolkit:akp-platform (mandatory), devops-toolkit:helm-chart-developer (ma
 ## History
 - 2026-08-07T15:07:23Z dep_added: blocked_by AF-ogxu
 - 2026-08-07T15:07:23Z dep_added: blocks AF-j4fp
+- 2026-08-07T15:07:24Z dep_added: blocks AF-7u8n
 
 ## Links
 - Parent: [[AF-d66a]]
-- Blocks: [[AF-j4fp]]
+- Blocks: [[AF-j4fp]], [[AF-7u8n]]
 - Blocked by: [[AF-ogxu]]
 
 ## Comments
