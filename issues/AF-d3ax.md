@@ -8,8 +8,8 @@ labels: [walking-skeleton, delivered]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T16:29:25Z
-content_hash: "sha256:d0c346f26263594f259f85241e98d9839c09cc5d15704d50b1a8206ab9b46e26"
+updated_at: 2026-08-07T16:30:40Z
+content_hash: "sha256:be36d0a4744b6cd724d44f2db7af67f5fae442ae1354f111b9124547a10bdc22"
 blocks: [AF-j4fp, AF-7u8n]
 was_blocked_by: [AF-ogxu]
 assignee: dev-AF-d3ax
@@ -176,3 +176,158 @@ status: delivered
 - Follows: [[AF-ogxu]], [[AF-qmy9]]
 
 ## Comments
+
+### 2026-08-07T16:30:40Z ada
+## Delivered: AF-d3ax -- kube-prometheus-stack as a cluster-wide infra dependency
+
+Commit SHAs: `bf14749` (implementation), `ada47a0` (ServerSideApply fix -- HEAD)
+Branch: `story/AF-d3ax` (pushed to origin)
+Chart: `prometheus-community/kube-prometheus-stack` **88.2.0** (app v0.93.0) -- confirmed current stable via `helm search repo --versions` on 2026-08-07.
+
+### PROOF
+
+This is a declarative GitOps change -- there is no unit-test suite. Verification is
+render-level (`helm template`, `argocd appset generate`) plus a **real live deploy to
+both clusters**, then cleanup. Commands and outputs below.
+
+**Files (3 new, 0 modified elsewhere -- within diff budget):**
+```
+infrastructure/kube-prometheus-stack/README.md
+infrastructure/kube-prometheus-stack/argocd/appset.yaml
+infrastructure/kube-prometheus-stack/secrets/secret-grafana-admin.sealed.yaml
+```
+
+**`pvg verify`** -- `VERIFY: PASSED (0 files scanned, 0 issues)`, exit 0.
+**YAML parse** -- both YAML files load clean; 0 tabs, 0 trailing whitespace, EOF newline present.
+
+**Live sync results (real, observed -- not dry-run):**
+
+| Cluster | Sync | Health | Operation | Notes |
+|---|---|---|---|---|
+| demo1 | Synced | Healthy | -- | first sync failed pre-fix (see deviation 2); healthy after |
+| demo2 | **Synced** | **Healthy** | **Succeeded** | clean install, **first try, zero manual intervention** |
+
+demo2 was an untouched cluster (0 `monitoring.coreos.com` CRDs, no `monitoring` ns at
+baseline) and is the authoritative proof of the committed spec.
+
+**AC verification table:**
+
+| AC | Result | Evidence |
+|---|---|---|
+| 1. Renders `kube-prometheus-stack-<cluster>` for both demo1+demo2, NOT in-cluster/kargo | PASS | `argocd appset generate` returned exactly 2 Applications: `kube-prometheus-stack-demo1`, `kube-prometheus-stack-demo2`. `argocd cluster list` shows 4 clusters (demo1, demo2, in-cluster, kargo); the two excluded ones did not render. |
+| 2. All 5 components from the single chart | PASS | `helm template` of the one chart yields `Prometheus/kube-prometheus-stack-prometheus` (CR), `Alertmanager/kube-prometheus-stack-alertmanager` (CR), `Deployment/kube-prometheus-stack-grafana`, `Deployment/kube-prometheus-stack-kube-state-metrics`, `DaemonSet/kube-prometheus-stack-prometheus-node-exporter` (+ operator Deployment). Live on demo2: 6/6 pods Running. |
+| 3. Grafana admin from SealedSecret; chart default never active | PASS | Rendered manifest: `GF_SECURITY_ADMIN_USER`/`GF_SECURITY_ADMIN_PASSWORD` both `secretKeyRef -> grafana-admin` (`admin-user`/`admin-password`). Chart's own `kube-prometheus-stack-grafana` Secret is **not rendered at all** and `kubectl get secret kube-prometheus-stack-grafana` returned NotFound live. **Live login test (port-forward, demo1 and demo2): HTTP 200, `login=admin isGrafanaAdmin=true`.** Controls: wrong password -> 401; chart default `prom-operator` -> 401 on both clusters. |
+| 4. Prometheus PVC sets `storageClassName` explicitly | PASS | `storageClassName: local-path` present in the rendered `Prometheus` CR `volumeClaimTemplate`. Live PVC on **both** clusters: `STATUS=Bound, CAPACITY=10Gi, STORAGECLASS=local-path`. Verified against live clusters that `local-path` is currently the default class on both -- set explicitly anyway per AC. |
+| 5. Plaintext password never in git | PASS | `grep -rIl` over the working tree: no match. `git rev-list --all --objects \| git cat-file --batch \| grep -c`: **0 occurrences** across all history blobs. 0 matches in appset.yaml/README.md. Sealed file contains `encryptedData` only -- no `data:`/`stringData:`. Unsealed in-cluster value matched the sealed plaintext, confirming the ciphertext is correct without ever committing it. |
+| 6. Real verification reported honestly | PASS | Full live deploy achieved on both clusters, then cleaned up. Scope and residue documented below. |
+| 7. No custom dashboards/alerts/sizing beyond the one PVC size | PASS | `valuesObject` contains exactly two keys: `grafana.admin.*` and `prometheus.prometheusSpec.storageSpec.*`. Nothing else overridden. |
+
+**Extra live evidence (demo2):** Prometheus scraping healthy -- `count(up==1) = 12`; all
+active targets up: apiserver 1/1, coredns 1/1, alertmanager 2/2, grafana 1/1, operator 1/1,
+prometheus 2/2, kube-state-metrics 1/1, kubelet 3/3, node-exporter 1/1. Bundled datasources
+present: `Prometheus` (default) + `Alertmanager`.
+
+**Counterfactual proof for AC3** -- rendering the chart *without* `admin.existingSecret`
+twice produced a `kube-prometheus-stack-grafana` Secret with a **different**
+`admin-password` each render (sha256 prefixes `0c3fa183...` vs `c2ee35ce...`). Root cause
+confirmed in chart source: `grafana.password` in `charts/grafana/templates/_helpers.tpl` is
+`lookup`-then-`randAlphaNum 40`, and Argo CD renders with `helm template` (no cluster
+access), so the lookup always misses. Exactly the AGENTS.md "Secrets" hazard; closed.
+
+**Sealed-secret generation approach:** `task sealed-secrets:seal -- monitoring grafana-admin
+<path> admin-user=admin admin-password=<generated>`, password from
+`openssl rand -base64 24 | tr -dc 'A-Za-z0-9'`. **I did hit the worktree gotcha** the story
+predicted: `KEYPAIR_CERT` resolves via `{{.ROOT_DIR}}`, which from the worktree points at a
+`.sealed-secrets-keypair/` that does not exist there (it's gitignored, main repo only).
+Worked around **read-only** by invoking the main repo's Taskfile in place --
+`task -s -t <main-repo>/Taskfile.yml sealed-secrets:seal -- ... <absolute-output-path>` --
+so `ROOT_DIR` resolved to the main repo (reading `tls.crt` only) while output was written
+into the worktree. Confirmed the story's hypothesis: sealing needs **no terraform state at
+all**, only the cert. No terraform `plan`/`apply` was ever run; the only main-repo touches
+were reading `tls.crt`, sourcing `.envrc`, and `terraform output -raw argocd_hostname`.
+
+### Deviations from the plan (2, both justified by evidence)
+
+**1. SealedSecret path: `secrets/` not `argocd/`** (story specified
+`infrastructure/kube-prometheus-stack/argocd/secret-grafana-admin.sealed.yaml`).
+
+`bootstrap/infra-apps.yaml` discovers `infrastructure/*/argocd` and syncs each matched
+directory **wholesale** (`directory.recurse: true`, auto-prune) to the `in-cluster`
+destination. Verified against the live instance:
+- `argocd cluster get in-cluster` -> `namespaces: [argocd]` (namespace-scoped to argocd only)
+- its `apiVersions` list contains **zero** `bitnami.com` entries -- no SealedSecret CRD
+- `argocd cluster get demo1` -> `bitnami.com/v1alpha1/SealedSecret` present
+
+So a SealedSecret in `argocd/` would have been pushed to the Akuity control plane, into a
+namespace it isn't scoped for, for a CRD it doesn't have -- a guaranteed permanent sync
+failure on the auto-generated `infra-kube-prometheus-stack` Application. Moving it to a
+sibling `secrets/` dir (outside the `infrastructure/*/argocd` glob) mirrors exactly how
+`apps/akkoma` already separates them (appset in `argocd/`, sealed secrets in `env/<stage>/`).
+Still 3 files, still 0 files modified elsewhere.
+
+**2. Added `ServerSideApply=true` to `syncOptions`** (not in the story's spec).
+
+Not a preference -- the spec as written **does not deploy**. Observed live:
+```
+CustomResourceDefinition.apiextensions.k8s.io "prometheuses.monitoring.coreos.com" is
+  invalid: metadata.annotations: Too long: may not be more than 262144 bytes
+```
+for six CRDs (`prometheuses`, `alertmanagers`, `alertmanagerconfigs`, `prometheusagents`,
+`scrapeconfigs`, `thanosrulers`), cascading into
+`no matches for kind "Prometheus" in version "monitoring.coreos.com/v1" ensure CRDs are
+installed first` for the Prometheus and Alertmanager CRs. Client-side apply writes the
+`kubectl.kubernetes.io/last-applied-configuration` annotation, which these CRDs blow past.
+Server-side apply doesn't write it. With the option added, demo2 (clean cluster) synced
+Succeeded/Healthy first try. Documented in both the appset comment and the README.
+
+### Verification scope -- what I did and did NOT leave running
+
+I had full `argocd` admin + `kubectl` access to both clusters, so I went past dry-run:
+created temporary Applications (identical to the generated spec, git source pointed at
+`story/AF-d3ax`), synced, verified, then **deleted them and restored baseline**. Post-cleanup:
+`monitoring` namespace NotFound and 0 `monitoring.coreos.com` CRDs on both clusters; all 26
+pre-existing fleet Applications still `Synced/Healthy` (unchanged from baseline).
+
+The ApplicationSet itself was **never applied** to the live instance -- it will be created
+by `infra-apps` automatically once this merges to `main`. Its rendering was verified
+server-side via `argocd appset generate` against real cluster state.
+
+One honesty note: on demo1 the prometheus-operator needed a `rollout restart` before it
+reconciled the Prometheus/Alertmanager CRs into StatefulSets. That was an artifact of my
+*first, pre-fix* sync leaving the operator running while its CRDs had failed to apply, so
+its informers never registered the types. demo2 -- clean cluster, final config, first sync --
+needed no such intervention, which is why I ran it as a separate control.
+
+### Retrieving the Grafana password
+
+Never committed. Read it from a live cluster once deployed:
+```bash
+kubectl --context k3d-demo1 -n monitoring get secret grafana-admin \
+  -o jsonpath='{.data.admin-password}' | base64 -d
+```
+Recommend the user also file it in `pass`. Re-seal instructions are in the README.
+
+### LEARNINGS
+
+- **Directory placement is a load-bearing interface when a git-directories generator is
+  involved.** The obvious spot for the SealedSecret (next to the appset) was the one place
+  it could not go, because `infra-apps` syncs that whole glob to a namespace-scoped control
+  plane with no SealedSecret CRD. Worth checking what *already* globs a directory before
+  adding files to it -- `apps/akkoma` had quietly solved this and the pattern was copyable.
+- **Dry-run render proves templating, not deployability.** `argocd appset generate` returned
+  a perfect two-Application render for a spec that then failed hard on the CRD annotation
+  size limit. Any story whose chart ships large CRDs (kube-prometheus-stack, cert-manager,
+  Gateway API) should assume `ServerSideApply=true` is required and verify with a real sync.
+- **Counterfactual rendering is cheap, high-value evidence.** Rendering the chart *without*
+  `existingSecret` twice and diffing the generated password turned "the docs say it's
+  random" into a proof that the AGENTS.md hazard is real and that our config closes it.
+  Two `helm template` runs; worth doing for any `existingSecret` wiring.
+- **Taskfile `{{.ROOT_DIR}}` + worktrees is a recurring trap in this repo** (third instance
+  after `argocd:login`/`kargo:login`). `task -t <main-repo>/Taskfile.yml` with absolute
+  output paths is a clean read-only escape hatch. If it keeps recurring, a `KEYPAIR_DIR`
+  env override in the Taskfile would remove the whole class of problem.
+- **Gotcha for future agents in this repo:** the pvg guard blocks `cd` into a worktree, so
+  the "prefix every command with `cd <worktree>`" instruction cannot be followed literally.
+  Everything has to run via absolute paths, `git -C`, and `task -t`/`-d`. Also,
+  `helm template` of the prometheus container is distroless (no shell), so in-cluster HTTP
+  probing needs `kubectl get --raw .../proxy/...` rather than `exec ... wget`.
