@@ -8,12 +8,12 @@ labels: [walking-skeleton]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T15:39:03Z
-content_hash: "sha256:a2055fdeed8b8724694ec4d5973383a3e539d5678e4bee13f020431364f3ee00"
+updated_at: 2026-08-07T16:29:24Z
+content_hash: "sha256:64574d7d13d7c340070e0b7000faea7ab698973233b4c5812aeae39b82511bfb"
 blocks: [AF-j4fp, AF-7u8n]
 was_blocked_by: [AF-ogxu]
 assignee: dev-AF-d3ax
-follows: [AF-ogxu]
+follows: [AF-ogxu, AF-qmy9]
 ---
 
 ## Description
@@ -156,11 +156,13 @@ devops-toolkit:akp-platform (mandatory), devops-toolkit:helm-chart-developer (ma
 - 2026-08-07T15:39:03Z status: open -> in_progress
 - 2026-08-07T15:39:03Z auto-follows: linked to predecessor AF-ogxu
 - 2026-08-07T15:39:03Z claimed by dev-AF-d3ax
+- 2026-08-07T16:29:24Z status: in_progress -> in_progress
+- 2026-08-07T16:29:24Z auto-follows: linked to predecessor AF-qmy9
 
 ## Links
 - Parent: [[AF-d66a]]
 - Blocks: [[AF-j4fp]], [[AF-7u8n]]
 - Was blocked by: [[AF-ogxu]]
-- Follows: [[AF-ogxu]]
+- Follows: [[AF-ogxu]], [[AF-qmy9]]
 
 ## Comments
