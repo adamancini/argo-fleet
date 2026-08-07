@@ -1,19 +1,20 @@
 ---
 id: AF-c8p4
 title: "Migrate 5 existing infra ApplicationSets from static list generator to clusters generator"
-status: in_progress
+status: closed
 priority: 1
 type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T15:48:16Z
-content_hash: "sha256:2df0bb274c13bbca64eeff3d8633475d4000a5136f1caadbe70a0fa43624a560"
-blocks: [AF-qmy9, AF-7u8n]
+updated_at: 2026-08-07T15:57:17Z
+content_hash: "sha256:c0bae1d4509579e4deed0e4b504bac96e30fc973cb539e1ca56630ea34470e9b"
 was_blocked_by: [AF-ogxu]
 assignee: dev-AF-c8p4
 follows: [AF-ogxu]
 labels: [delivered]
+closed_at: 2026-08-07T15:57:17Z
+close_reason: "Accepted via pvg story accept"
 ---
 
 ## Description
@@ -148,10 +149,12 @@ status: delivered
 - 2026-08-07T15:38:59Z auto-follows: linked to predecessor AF-ogxu
 - 2026-08-07T15:38:59Z claimed by dev-AF-c8p4
 - 2026-08-07T15:47:19Z status: in_progress -> in_progress
+- 2026-08-07T15:57:17Z status: in_progress -> closed
+- 2026-08-07T15:57:17Z dep_removed: no_longer_blocks AF-qmy9
+- 2026-08-07T15:57:17Z dep_removed: no_longer_blocks AF-7u8n
 
 ## Links
 - Parent: [[AF-d66a]]
-- Blocks: [[AF-qmy9]], [[AF-7u8n]]
 - Was blocked by: [[AF-ogxu]]
 - Follows: [[AF-ogxu]]
 
