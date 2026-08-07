@@ -4,7 +4,7 @@ title: "Verify the observability stack end-to-end across the fleet"
 status: in_progress
 priority: 1
 type: task
-labels: [capstone]
+labels: [capstone, delivered]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
