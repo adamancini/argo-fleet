@@ -7,8 +7,8 @@ type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T15:07:16Z
-content_hash: "sha256:be2dad0e33e957aada48a625bff39413b74d71f0c07bd913d30826046d697fd0"
+updated_at: 2026-08-07T15:09:22Z
+content_hash: "sha256:616b3e3ceb5d2a77404d75277b39a4a7bb4ad32928d4ff7c5cb9beee97d719d6"
 blocked_by: [AF-ogxu]
 blocks: [AF-qmy9, AF-7u8n]
 ---
@@ -115,7 +115,7 @@ Acceptance Criteria:
 5. All 5 apps report `Synced`/`Healthy` status after the change, confirmed operationally (not just "no YAML errors").
 
 MANDATORY SKILLS TO REVIEW:
-devops-toolkit:akp-platform (mandatory -- `references/gitops-app-patterns.md` and `references/argocd-declarative-setup.md`), devops-toolkit:yaml-kubernetes-validator
+devops-toolkit:akp-platform (mandatory -- its gitops-app-patterns and argocd-declarative-setup references), devops-toolkit:yaml-kubernetes-validator
 
 ## Acceptance Criteria
 
