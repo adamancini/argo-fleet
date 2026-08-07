@@ -8,8 +8,8 @@ labels: [spike]
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T15:14:32Z
-content_hash: "sha256:883bf48fa6f298566732aa1f1c536f985a7af080b451dce361fce8bbe787a094"
+updated_at: 2026-08-07T15:25:34Z
+content_hash: "sha256:2792ff0eabd771b25bc503a66e76780efde0dba4999a7e1a05d5ee551fbdccad"
 blocks: [AF-c8p4, AF-d3ax, AF-7u8n]
 assignee: dev-AF-ogxu
 ---
@@ -118,3 +118,148 @@ devops-toolkit:akp-platform (mandatory -- especially its argocd-declarative-setu
 - Blocks: [[AF-c8p4]], [[AF-d3ax]], [[AF-7u8n]]
 
 ## Comments
+
+### 2026-08-07T15:25:34Z ada
+DECISION: GO -- `clusters: {}` WORKS on this Akuity-hosted instance, but MUST carry a selector.
+
+SIGNATURE:
+spec: generator: 'clusters: {} (with selector)'; template_field: '{{name}}'; confirmed_cluster_names: ['demo1','demo2']
+
+## AC1 -- Generated Applications captured
+
+Method: `argocd appset generate` (server-side dry-run RPC, argocd CLI v3.5.0 -> server v3.4.6).
+Chosen over `kubectl apply` deliberately: it renders the templated Applications
+server-side against the REAL cluster list without creating any resource, so AC3
+(no leftovers) is satisfied by construction.
+
+Instance: augtpjfe5xvyty6u.cd.akuity.cloud (`ada-quickstart-argocd`).
+
+`argocd cluster list` -- the Akuity control plane DOES expose Terraform-registered
+clusters through the normal Argo CD cluster API, so the generator's underlying
+mechanism works here:
+
+  SERVER                          NAME        VERSION  STATUS
+  http://cluster-demo1:8001       demo1
+  http://cluster-demo2:8001       demo2
+  https://kubernetes.default.svc  in-cluster  v1.33.8  Successful
+  https://cluster-kargo:6445      kargo       v1.33.8  Successful
+
+Bare `clusters: {}` generated FOUR Applications, not two:
+
+  argocd/spike-demo1       demo1
+  argocd/spike-demo2       demo2
+  argocd/spike-in-cluster  in-cluster   <-- REGRESSION
+  argocd/spike-kargo       kargo        <-- REGRESSION
+
+*** This is the load-bearing finding. A naive `clusters: {}` swap on the 5 existing
+appsets is NOT equivalent to today's 2-element list generator -- it would additionally
+target the Akuity control plane (`in-cluster`) and the Kargo cluster (`kargo`).
+Concretely: `sealed-secrets` would try to install the controller into `kargo`, and
+`in-cluster` is namespace-restricted to `argocd` only, so a destination namespace of
+`sealed-secrets`/`traefik`/`openebs` would be rejected outright. ***
+
+## AC2 -- Template fields the generator populates
+
+Verified by rendering every candidate field into annotations:
+
+  {{name}}            -> demo1 / demo2 / in-cluster / kargo   <-- USE THIS
+  {{nameNormalized}}  -> identical to {{name}} here
+  {{server}}          -> http://cluster-demo1:8001            <-- DO NOT USE
+  {{project}}         -> "" (empty)
+  {{metadata.labels.<key>}} -> resolves, e.g.
+        akuity.io/argo-cd-cluster-name -> demo1
+        generation                     -> 7
+
+`{{server}}` returns Akuity-INTERNAL proxy URLs, not real API server URLs. Use
+`destination.name: '{{name}}'`, never `destination.server`.
+
+GOTCHA (non-goTemplate mode): an unresolved `{{metadata.labels.X}}` renders as the
+LITERAL placeholder string, not empty -- e.g. demo1 rendered
+`{{metadata.labels.akuity.io/direct-cluster}}` verbatim. Do not rely on a missing
+label evaluating falsy. Set `goTemplate: true` if conditional logic is ever needed.
+
+Cluster labels observed (all Akuity-managed; tfvars sets none):
+  demo1/demo2 : akuity.io/argo-cd-cluster-name=<name>, generation=7
+  in-cluster  : + akuity.io/argo-cd-instance-id=augtpjfe5xvyty6u
+  kargo       : + akuity.io/direct-cluster=true
+
+## Selector matrix (all empirically run)
+
+  bare clusters: {} (no selector)              => demo1,demo2,in-cluster,kargo
+  NotIn cluster-name [in-cluster,kargo]        => demo1,demo2          <-- RECOMMENDED
+  DoesNotExist instance-id + direct-cluster    => demo1,demo2          <-- alternative
+  In cluster-name [demo1,demo2]                => demo1,demo2  (a list generator in disguise; rejected)
+  matchLabels fleet=true                       => ZERO APPS    (no cluster carries `fleet` today)
+
+matchLabels/Exists confirmed functional via positive controls
+(matchLabels akuity.io/direct-cluster=true => kargo; matchLabels cluster-name=demo1 => demo1),
+so the ZERO for `fleet=true` is a genuine absent-label result, not a broken selector.
+
+## AC4 -- Exact YAML shape confirmed to work
+
+  spec:
+    generators:
+    - clusters:
+        selector:
+          matchExpressions:
+          - key: akuity.io/argo-cd-cluster-name
+            operator: NotIn
+            values: [in-cluster, kargo]
+    template:
+      metadata:
+        name: '<app>-{{name}}'
+      spec:
+        destination:
+          name: '{{name}}'
+
+Migration is `list:` -> `clusters:` + selector, and `{{cluster}}` -> `{{name}}`.
+
+PROOF OF NO-OP: rendered the real infrastructure/sealed-secrets/argocd/appset.yaml
+both ways and diffed the generated Applications (name, destination, project, source,
+syncPolicy). Result: BYTE-IDENTICAL -- sealed-secrets-demo1 + sealed-secrets-demo2.
+Because Application names are unchanged, migration causes no recreation, no prune,
+no downtime on the 5 live infra apps.
+
+## AC5 -- Fallback
+
+Not needed (decision is GO). Recorded for completeness: had the generator returned
+nothing, the fallback was a templated list generator sourced from the same
+`clusters` map in terraform/clusters/terraform.tfvars.
+
+## Follow-on notes for AF-c8p4 / AF-d3ax / AF-7u8n
+
+1. The selector is MANDATORY, not optional. A bare `clusters: {}` is a regression.
+2. Denylist (NotIn) is preferred over allowlist so a 3rd workload cluster is picked
+   up with zero file edits -- the story's actual goal.
+3. Longer-term hardening option: set `labels = { fleet = "true" }` per cluster in
+   terraform.tfvars and switch to `matchLabels: {fleet: "true"}`. More robust (does
+   not depend on Akuity-internal label semantics) but requires a terraform apply, and
+   terraform.tfvars warns labels must be added only AFTER first successful apply
+   (two-phase registration, docs/day-2.md). Not done here -- out of scope.
+4. Only `infrastructure/*` appsets should migrate. `fleet-argocd-apps`, `infra-apps`,
+   and `fleet-kargo-apps` intentionally target in-cluster/kargo via git generators --
+   leave them alone.
+
+## AC3 -- Cleanup
+
+Nothing to clean: `argocd appset generate` never persists. Verified after the fact --
+10 ApplicationSets and 26 Applications on the instance, all pre-existing, zero matching
+spike/cluster-generator/sel-/fields-. All scratch YAML was written to the session
+scratchpad, never to the repo. Repo diff: 0 files changed, 0 commits.
+(Cascade note per the fleet gotcha: `argocd app delete` cascades by default; had real
+Applications been created, `--cascade=false` would have been required to avoid the
+generated apps taking managed resources with them. Not exercised -- nothing was applied.)
+
+## Environment finding (reported, not fixed, per story instructions)
+
+`task argocd:login` FAILS from a git worktree. The Taskfile derives
+TERRAFORM_CLUSTERS_DIR from {{.ROOT_DIR}}, but terraform/clusters/.terraform/,
+*.tfstate and *.tfvars are gitignored, so a worktree has config without state:
+
+  Error: Required plugins are not installed
+  - registry.terraform.io/akuity/akp: there is no package for ... 0.13.0 cached in .terraform/providers
+
+Worked around read-only via
+`terraform -chdir=<main-repo>/terraform/clusters output -raw argocd_hostname`
+then `argocd login` directly. No terraform state was modified. Any future
+worktree-based story needing `task argocd:login` / `task kargo:login` will hit this.
