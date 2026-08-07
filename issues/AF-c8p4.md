@@ -7,12 +7,13 @@ type: task
 parent: AF-d66a
 created_at: 2026-08-07T15:06:16Z
 created_by: ada
-updated_at: 2026-08-07T15:47:19Z
+updated_at: 2026-08-07T15:47:20Z
 content_hash: "sha256:900ad4cd6ab20791dba2373186726db6787595d111e0a456ab83484657610775"
 blocks: [AF-qmy9, AF-7u8n]
 was_blocked_by: [AF-ogxu]
 assignee: dev-AF-c8p4
 follows: [AF-ogxu]
+labels: [delivered]
 ---
 
 ## Description
