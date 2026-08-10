@@ -8,7 +8,7 @@ parent: AF-d66a
 created_at: 2026-08-07T19:13:30Z
 created_by: ada
 updated_at: 2026-08-10T15:35:12Z
-content_hash: "sha256:e3ece45253fe1b9629e52a8f750d263aa4b65d1516ea2ca72d0800b5060b7019"
+content_hash: "sha256:8c3dd2f7a3f717befbb5d81a82e5cb5eab8bb0d5c6af58bd086f5de805d99a6e"
 blocked_by: [AF-j4fp]
 assignee: dev-AF-mnpo
 follows: [AF-j4fp, AF-7u8n]
@@ -95,6 +95,16 @@ devops-toolkit:akp-platform
 
 ## Notes
 CONCURRENT-SESSION CONFLICT (dev-AF-mnpo, 2026-08-10T14:55Z): a SECOND live Claude session (pid 27700, running since 2026-08-07) is actively executing this same story RIGHT NOW -- it is not abandoned. Observed pid 32494/40309 spawned by it at 10:47:54 EDT running a ruby appset render + 'argocd app create -f app-demo2-before.yaml --upsert' + a 40x15s health poll for kube-prometheus-stack-demo2. It shares this story's worktree, scratchpad dir and both k3d clusters. It deleted kube-prometheus-stack-demo1 and created kube-prometheus-stack-demo2 mid-flight under me. STOPPING rather than racing it. My own live residue reverted (demo1 gateway listener All->Same). Worktree clean at 6ab1ce5, no extra branches. NOT delivered -- orchestrator must arbitrate which session owns AF-mnpo.
+
+
+## nd_contract
+status: accepted
+
+### evidence
+- PM closeout applied via pvg story accept on 2026-08-10.
+
+### proof
+- [x] Story closed after accepted label was applied.
 
 
 ## nd_contract
