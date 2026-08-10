@@ -1,13 +1,15 @@
 ---
 id: AF-d66a
 title: "Cluster-wide observability: kube-prometheus-stack + ApplicationSet generator consistency"
-status: open
+status: closed
 priority: 1
 type: epic
 created_at: 2026-08-07T15:06:05Z
 created_by: ada
-updated_at: 2026-08-07T15:10:51Z
-content_hash: "sha256:fe64742978886b3da6a08e844b9e37e06de9063d712dacdb2b64b0d692963f7a"
+updated_at: 2026-08-10T16:09:14Z
+content_hash: "sha256:74c4bff4a6809df42040bf87a64efe20463ee03a47f5e3616ce57e5e824461c6"
+closed_at: 2026-08-10T16:09:14Z
+close_reason: "All 7 stories/bugs accepted, e2e gate passed (150/150 assertions), Anchor milestone review VALIDATED, merged to main clean (0fffaaa)"
 ---
 
 ## Description
@@ -67,7 +69,7 @@ devops-toolkit:akp-platform (always -- especially `references/gitops-app-pattern
 
 
 ## History
-
+- 2026-08-10T16:09:14Z status: open -> closed
 
 ## Links
 
