@@ -7,11 +7,11 @@ type: bug
 parent: AF-d66a
 created_at: 2026-08-07T19:13:30Z
 created_by: ada
-updated_at: 2026-08-10T14:56:11Z
-content_hash: "sha256:ee80dbc1b96de4d05e0f07afb176aea5cc277a8b82b43417c2522390dba4ba01"
+updated_at: 2026-08-10T15:18:31Z
+content_hash: "sha256:eda4bfb92a0c7d9f139a35e9b7c16463ef2096a17fd175f72ae7d4c2c729c90a"
 blocked_by: [AF-j4fp]
 assignee: dev-AF-mnpo
-follows: [AF-j4fp]
+follows: [AF-j4fp, AF-7u8n]
 ---
 
 ## Description
@@ -98,10 +98,12 @@ CONCURRENT-SESSION CONFLICT (dev-AF-mnpo, 2026-08-10T14:55Z): a SECOND live Clau
 - 2026-08-07T19:16:20Z status: open -> in_progress
 - 2026-08-07T19:16:20Z auto-follows: linked to predecessor AF-j4fp
 - 2026-08-07T19:16:20Z claimed by dev-AF-mnpo
+- 2026-08-10T15:18:31Z status: in_progress -> in_progress
+- 2026-08-10T15:18:31Z auto-follows: linked to predecessor AF-7u8n
 
 ## Links
 - Parent: [[AF-d66a]]
 - Blocked by: [[AF-j4fp]]
-- Follows: [[AF-j4fp]]
+- Follows: [[AF-j4fp]], [[AF-7u8n]]
 
 ## Comments

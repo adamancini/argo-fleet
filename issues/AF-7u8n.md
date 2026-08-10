@@ -9,12 +9,13 @@ parent: AF-d66a
 created_at: 2026-08-07T15:06:17Z
 created_by: ada
 updated_at: 2026-08-07T19:22:38Z
-content_hash: "sha256:9de68c0a46db7e8f54e482e91589c39d950e10171d78f045080264e4622c3843"
+content_hash: "sha256:847d78ca7c4697087fabf788566d17170e90cbc3eed249744c1a08fb3c5a7d3f"
 was_blocked_by: [AF-ogxu, AF-c8p4, AF-qmy9, AF-d3ax, AF-j4fp]
 assignee: dev-AF-7u8n
 follows: [AF-ogxu, AF-c8p4, AF-qmy9, AF-d3ax, AF-j4fp]
 closed_at: 2026-08-07T19:22:29Z
 close_reason: "Accepted: fleet-wide end-to-end verification of the observability stack. Live evidence SHA-matched (7da2991a5986d0b254412c002ed456dc2762e1a0), independently re-verified: 26/26 fleet Applications Synced/Healthy live, 0 leftover monitoring.coreos.com CRDs on demo1/demo2, monitoring namespace absent both clusters, 0 HTTPRoutes, Gateway listener reverted to from:Same both clusters -- all matching the developer's claimed final baseline exactly. Source diff of the 5 migrated appset.yaml files independently confirms the generator-swap is mechanically equivalent (clusters selector resolves to exactly demo1/demo2 per live list_clusters) with the only additional delta being AF-j4fp's intentional Gateway namespacePolicy change, matching the claimed 8/10 byte-identical render result. Regression (HTTPRoute server-side-defaulting causing permanent OutOfSync) correctly found and routed to AF-mnpo (P0, parent AF-d66a, blocked_by accepted AF-j4fp) rather than silently patched, exactly as this capstone's OUT OF SCOPE required. Pre-existing pvg gates debt correctly routed to AF-wg73. OOM/resource-contention diagnosis for the concurrent-deploy false-positive is well-reasoned and matches known k3d/Docker-VM resource-starvation signatures. 0-file diff budget confirmed via git."
+led_to: [AF-mnpo]
 ---
 
 ## Description
@@ -123,6 +124,7 @@ status: delivered
 - Parent: [[AF-d66a]]
 - Was blocked by: [[AF-ogxu]], [[AF-c8p4]], [[AF-qmy9]], [[AF-d3ax]], [[AF-j4fp]]
 - Follows: [[AF-ogxu]], [[AF-c8p4]], [[AF-qmy9]], [[AF-d3ax]], [[AF-j4fp]]
+- Led to: [[AF-mnpo]]
 
 ## Comments
 
