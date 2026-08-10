@@ -12,7 +12,7 @@ content_hash: "sha256:e3ece45253fe1b9629e52a8f750d263aa4b65d1516ea2ca72d0800b506
 blocked_by: [AF-j4fp]
 assignee: dev-AF-mnpo
 follows: [AF-j4fp, AF-7u8n]
-labels: [delivered]
+labels: [delivered, accepted]
 closed_at: 2026-08-10T15:35:11Z
 close_reason: "Accepted via pvg story accept"
 ---
