@@ -7,8 +7,8 @@ type: bug
 parent: AF-d66a
 created_at: 2026-08-07T19:13:30Z
 created_by: ada
-updated_at: 2026-08-10T15:35:12Z
-content_hash: "sha256:8c3dd2f7a3f717befbb5d81a82e5cb5eab8bb0d5c6af58bd086f5de805d99a6e"
+updated_at: 2026-08-10T15:36:00Z
+content_hash: "sha256:fea4b2e7811a080826c6234309ffe3bed65f78eccaa97427bd2e76a4ee67b819"
 blocked_by: [AF-j4fp]
 assignee: dev-AF-mnpo
 follows: [AF-j4fp, AF-7u8n]
@@ -304,3 +304,6 @@ Worktree clean, no stray branches.
   "prefix every command with cd <worktree>" instruction is unusable -- everything must run
   via absolute paths and `git -C`. Also on macOS/zsh here: `sed -i ''` silently swallows the
   script as a filename (use `perl -pi -e`), and there is no `timeout` or `yq` on PATH.
+
+### 2026-08-10T15:36:00Z ada
+PM-ACCEPTOR REVIEW: ACCEPTED. Diff verified 1 file +39/-0 matches claimed ignoreDifferences block verbatim (SHA 6ab1ce5 matches nd record). pvg verify: PASSED (0 issues); pvg gates: PASS. Live re-verification performed independently on demo1 (fresh temp Application, story/AF-mnpo@6ab1ce5, not trusting proof alone per dispatcher instruction): (1) live HTTPRoute spec confirmed = git spec + exactly the 6 claimed defaulted fields, nothing else; del() of those 6 jqPathExpressions from live yields git spec byte-for-byte (AC3). (2) Confirmed the actual causal mechanism: OutOfSync only manifests with ServerSideApply=true sync option -- a first test without SSA showed Synced even with defaulting present, which initially looked like it contradicted the BEFORE claim; adding ServerSideApply=true (which the real appset always sets, non-optionally, for CRD-size reasons) reproduced OutOfSync/Degraded exactly as claimed, and re-adding ignoreDifferences flipped it back to Synced, stable across hard-refresh (AC1/AC4/AC5/AC8). argocd app diff confirmed empty/exit 0 in both states, corroborating the documented sharp edge. (3) AC7 narrowness confirmed live: parentRefs[].sectionName mutation surfaced as OutOfSync; backendRefs[].weight mutation (an ignored field) stayed masked/Synced -- ignore rule is genuinely narrow. (4) Cleanup fully confirmed on both demo1 and demo2 post-delivery and post my own additional testing: 0 monitoring.coreos.com CRDs, no monitoring namespace, 0 HTTPRoutes, gateway listener at baseline 'Same' on both clusters, argocd app list = 26/26 Synced/Healthy, no kube-prometheus-stack-related apps. (5) SSA field-ownership near-miss in developer's LEARNINGS is plausible and consistent with known Argo CD SSA edge cases; my own from-scratch reproduction was not confounded and independently corroborates the final claimed numbers, so no still-present problem. (6) demo2's Gateway-attachment Degraded state confirmed as pre-existing/out-of-scope (gateway listener at main's baseline 'Same', AF-j4fp fix only on epic branch) -- not masked by this fix, sync status is Synced on both regardless. One documentation nit (non-blocking): the appset comment/commit message attribute the OutOfSync purely to Gateway API defaulting without noting SSA sync mode is the actual trigger condition -- functionally irrelevant since the real appset always uses SSA, just an incomplete mechanistic note for future readers.
