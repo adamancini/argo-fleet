@@ -7,8 +7,8 @@ type: bug
 parent: AF-d66a
 created_at: 2026-08-07T19:13:30Z
 created_by: ada
-updated_at: 2026-08-07T19:16:20Z
-content_hash: "sha256:405e09bcc7a30a9a0a2e5e54346226ffaae268572d9f23f0e6c77e83cbad726d"
+updated_at: 2026-08-10T14:56:11Z
+content_hash: "sha256:ee80dbc1b96de4d05e0f07afb176aea5cc277a8b82b43417c2522390dba4ba01"
 blocked_by: [AF-j4fp]
 assignee: dev-AF-mnpo
 follows: [AF-j4fp]
@@ -91,7 +91,7 @@ devops-toolkit:akp-platform
 
 
 ## Notes
-
+CONCURRENT-SESSION CONFLICT (dev-AF-mnpo, 2026-08-10T14:55Z): a SECOND live Claude session (pid 27700, running since 2026-08-07) is actively executing this same story RIGHT NOW -- it is not abandoned. Observed pid 32494/40309 spawned by it at 10:47:54 EDT running a ruby appset render + 'argocd app create -f app-demo2-before.yaml --upsert' + a 40x15s health poll for kube-prometheus-stack-demo2. It shares this story's worktree, scratchpad dir and both k3d clusters. It deleted kube-prometheus-stack-demo1 and created kube-prometheus-stack-demo2 mid-flight under me. STOPPING rather than racing it. My own live residue reverted (demo1 gateway listener All->Same). Worktree clean at 6ab1ce5, no extra branches. NOT delivered -- orchestrator must arbitrate which session owns AF-mnpo.
 
 ## History
 - 2026-08-07T19:13:34Z dep_added: blocked_by AF-j4fp
