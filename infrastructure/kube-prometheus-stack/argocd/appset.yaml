@@ -1,0 +1,144 @@
+# One Application per workload cluster, installing the whole
+# kube-prometheus-stack bundle (Prometheus Operator + Prometheus +
+# Grafana + Alertmanager + node-exporter + kube-state-metrics) from the
+# single upstream chart -- not six separate charts.
+#
+# Unlike the older infra appsets (traefik-gateway, openebs-localpv), this
+# uses a `clusters` generator rather than a hand-maintained `list`, so a
+# cluster registered later picks the stack up with no edit here. The
+# selector is mandatory: without it the generator also matches the
+# Akuity-hosted control plane (`in-cluster`, namespace-scoped to `argocd`)
+# and the `kargo` cluster, neither of which should run a monitoring stack.
+#
+# `destination.name` -- never `destination.server`. On an Akuity-hosted
+# instance `{{server}}` resolves to an internal proxy URL
+# (http://cluster-demo1:8001), not a reachable API endpoint.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: kube-prometheus-stack
+  namespace: argocd
+spec:
+  generators:
+  - clusters:
+      selector:
+        matchExpressions:
+        - key: akuity.io/argo-cd-cluster-name
+          operator: NotIn
+          values: [in-cluster, kargo]
+  template:
+    metadata:
+      name: 'kube-prometheus-stack-{{name}}'
+    spec:
+      project: default
+      sources:
+      - repoURL: https://prometheus-community.github.io/helm-charts
+        chart: kube-prometheus-stack
+        targetRevision: 88.2.0
+        helm:
+          # Fixed, NOT templated per cluster. The release name prefixes
+          # every Service the chart creates, so pinning it keeps
+          # kube-prometheus-stack-grafana / -prometheus identical on every
+          # cluster -- which the follow-on HTTPRoute work depends on.
+          releaseName: kube-prometheus-stack
+          valuesObject:
+            grafana:
+              # Without this the bundled grafana subchart falls back to
+              # `grafana.password`, which is `lookup`-then-randAlphaNum 40.
+              # Argo CD renders with `helm template` (no cluster access), so
+              # the lookup always misses and the admin password would be
+              # regenerated on EVERY sync. See AGENTS.md "Secrets".
+              # Key names match the subchart defaults
+              # (admin.userKey / admin.passwordKey).
+              admin:
+                existingSecret: grafana-admin
+                userKey: admin-user
+                passwordKey: admin-password
+            prometheus:
+              prometheusSpec:
+                storageSpec:
+                  volumeClaimTemplate:
+                    spec:
+                      # Set explicitly on purpose. openebs-localpv marks
+                      # `local-path` default today, but a PVC that relies on
+                      # the default silently stays Pending forever the moment
+                      # that stops being true -- an incident this fleet has
+                      # already had once.
+                      storageClassName: local-path
+                      accessModes: ["ReadWriteOnce"]
+                      resources:
+                        requests:
+                          storage: 10Gi
+      # The Grafana admin SealedSecret and the Grafana HTTPRoute, both
+      # deliberately NOT under this
+      # `argocd/` directory: bootstrap/infra-apps.yaml syncs
+      # infrastructure/*/argocd wholesale (recurse: true, auto-prune) to the
+      # `in-cluster` destination, which is namespace-scoped to `argocd` and
+      # has no bitnami.com/v1alpha1 SealedSecret CRD at all. Anything
+      # cluster-bound has to live outside that glob -- same separation
+      # apps/akkoma uses (appset in argocd/, sealed secrets in env/<stage>/).
+      - repoURL: https://github.com/adamancini/argo-fleet.git
+        targetRevision: HEAD
+        path: infrastructure/kube-prometheus-stack/secrets
+        directory:
+          # '*.yaml', not '*.sealed.yaml': this path now also carries
+          # grafana-httproute.yaml. A narrower glob silently drops it -- the
+          # file would sit in git looking correct and never reach a cluster.
+          include: '*.yaml'
+      destination:
+        name: '{{name}}'
+        namespace: monitoring
+      # The Gateway API API-server defaults six fields on every HTTPRoute at
+      # admission time. grafana-httproute.yaml specifies none of them, so the
+      # live object is permanently a superset of the git manifest and the
+      # controller's sync-status computation reports `OutOfSync` forever
+      # (Health stays `Healthy`, traffic is unaffected). Confirmed on live
+      # demo1 and demo2 -- `kubectl get httproute grafana -o json | jq .spec`
+      # returns exactly the git spec plus these six, and nothing else.
+      #
+      # Sharp edge: `argocd app diff` returns EMPTY (exit 0) while the app
+      # reports OutOfSync, and that survives `--hard-refresh`. The client-side
+      # diff path normalizes these Gateway API defaults away; the server-side
+      # sync-status path does not. Anyone triaging this with `app diff` will
+      # conclude "no drift" and be wrong -- read `.status.sync.status` instead.
+      #
+      # Scoped to this one object (group/kind/name/namespace all pinned) and to
+      # the six defaulted leaves only -- NOT a blanket ignore of `spec`. A real
+      # change to a backendRef `name`/`port`, a parentRef `name`/`namespace`/
+      # `sectionName`, or an added `hostnames` still shows up as a diff.
+      # jqPathExpressions rather than jsonPointers because every one of these
+      # sits under an array; Argo compiles each into `del(<expr>)` and applies
+      # it to both live and desired state.
+      ignoreDifferences:
+      - group: gateway.networking.k8s.io
+        kind: HTTPRoute
+        name: grafana
+        namespace: monitoring
+        jqPathExpressions:
+        # + group: gateway.networking.k8s.io
+        - .spec.parentRefs[].group
+        # + kind: Gateway
+        - .spec.parentRefs[].kind
+        # + group: ""
+        - .spec.rules[].backendRefs[].group
+        # + kind: Service
+        - .spec.rules[].backendRefs[].kind
+        # + weight: 1
+        - .spec.rules[].backendRefs[].weight
+        # + matches: [{path: {type: PathPrefix, value: /}}]
+        - .spec.rules[].matches
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
+        # Mandatory for this chart, not a preference. Six of the
+        # prometheus-operator CRDs exceed the 262144-byte limit on the
+        # kubectl.kubernetes.io/last-applied-configuration annotation that
+        # client-side apply writes, so the CRDs fail to apply and the
+        # Prometheus/Alertmanager CRs that depend on them then fail with
+        # "no matches for kind ... ensure CRDs are installed first".
+        # Server-side apply doesn't write that annotation. Verified: sync
+        # fails without this, succeeds with it.
+        - ServerSideApply=true
