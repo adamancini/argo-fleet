@@ -12,6 +12,7 @@ content_hash: "sha256:eda4bfb92a0c7d9f139a35e9b7c16463ef2096a17fd175f72ae7d4c2c7
 blocked_by: [AF-j4fp]
 assignee: dev-AF-mnpo
 follows: [AF-j4fp, AF-7u8n]
+labels: [delivered]
 ---
 
 ## Description
