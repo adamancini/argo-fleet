@@ -88,6 +88,45 @@ spec:
       destination:
         name: '{{name}}'
         namespace: monitoring
+      # The Gateway API API-server defaults six fields on every HTTPRoute at
+      # admission time. grafana-httproute.yaml specifies none of them, so the
+      # live object is permanently a superset of the git manifest and the
+      # controller's sync-status computation reports `OutOfSync` forever
+      # (Health stays `Healthy`, traffic is unaffected). Confirmed on live
+      # demo1 and demo2 -- `kubectl get httproute grafana -o json | jq .spec`
+      # returns exactly the git spec plus these six, and nothing else.
+      #
+      # Sharp edge: `argocd app diff` returns EMPTY (exit 0) while the app
+      # reports OutOfSync, and that survives `--hard-refresh`. The client-side
+      # diff path normalizes these Gateway API defaults away; the server-side
+      # sync-status path does not. Anyone triaging this with `app diff` will
+      # conclude "no drift" and be wrong -- read `.status.sync.status` instead.
+      #
+      # Scoped to this one object (group/kind/name/namespace all pinned) and to
+      # the six defaulted leaves only -- NOT a blanket ignore of `spec`. A real
+      # change to a backendRef `name`/`port`, a parentRef `name`/`namespace`/
+      # `sectionName`, or an added `hostnames` still shows up as a diff.
+      # jqPathExpressions rather than jsonPointers because every one of these
+      # sits under an array; Argo compiles each into `del(<expr>)` and applies
+      # it to both live and desired state.
+      ignoreDifferences:
+      - group: gateway.networking.k8s.io
+        kind: HTTPRoute
+        name: grafana
+        namespace: monitoring
+        jqPathExpressions:
+        # + group: gateway.networking.k8s.io
+        - .spec.parentRefs[].group
+        # + kind: Gateway
+        - .spec.parentRefs[].kind
+        # + group: ""
+        - .spec.rules[].backendRefs[].group
+        # + kind: Service
+        - .spec.rules[].backendRefs[].kind
+        # + weight: 1
+        - .spec.rules[].backendRefs[].weight
+        # + matches: [{path: {type: PathPrefix, value: /}}]
+        - .spec.rules[].matches
       syncPolicy:
         automated:
           prune: true
