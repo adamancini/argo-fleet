@@ -1,4 +1,4 @@
 # paivot-graph project vault settings
 # Managed by: pvg settings key=value
 
-lint.quality_gates: gitignore|terraform fmt|byte-identical|secrets committed|verbatim
+lint.quality_gates: gitignore|terraform fmt|byte-identical|secrets committed|verbatim|existingSecret|externalSecret|storageClassName|sealed-secrets:seal|CreateNamespace=true|never add app-specific config
