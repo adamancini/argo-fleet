@@ -6,10 +6,11 @@ priority: 1
 type: epic
 created_at: 2026-08-07T15:06:05Z
 created_by: ada
-updated_at: 2026-08-10T16:09:14Z
+updated_at: 2026-08-10T16:09:21Z
 content_hash: "sha256:74c4bff4a6809df42040bf87a64efe20463ee03a47f5e3616ce57e5e824461c6"
 closed_at: 2026-08-10T16:09:14Z
 close_reason: "All 7 stories/bugs accepted, e2e gate passed (150/150 assertions), Anchor milestone review VALIDATED, merged to main clean (0fffaaa)"
+labels: [accepted]
 ---
 
 ## Description
