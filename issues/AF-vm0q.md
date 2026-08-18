@@ -9,8 +9,8 @@ parent: AF-j5rz
 created_at: 2026-08-18T18:57:46Z
 created_by: ada
 updated_at: 2026-08-18T18:57:46Z
-content_hash: "sha256:7981e255a98c53e9cdba379340e6657a80cac445945e0727736e805d1be1f2d4"
-blocked_by: [AF-q5yh, AF-8r8l, AF-iv8x]
+content_hash: "sha256:b7bb148c93d92f1b72d2020d05571938c3f1bc6d56658339362f3a2d0a03dd01"
+blocked_by: [AF-q5yh, AF-8r8l, AF-iv8x, AF-6jta]
 ---
 
 ## Description
@@ -110,9 +110,10 @@ devops-toolkit:akp-platform (mandatory), devops-toolkit:yaml-kubernetes-validato
 - 2026-08-18T18:57:52Z dep_added: blocked_by AF-q5yh
 - 2026-08-18T18:57:53Z dep_added: blocked_by AF-8r8l
 - 2026-08-18T18:57:53Z dep_added: blocked_by AF-iv8x
+- 2026-08-18T18:57:54Z dep_added: blocked_by AF-6jta
 
 ## Links
 - Parent: [[AF-j5rz]]
-- Blocked by: [[AF-q5yh]], [[AF-8r8l]], [[AF-iv8x]]
+- Blocked by: [[AF-q5yh]], [[AF-8r8l]], [[AF-iv8x]], [[AF-6jta]]
 
 ## Comments
