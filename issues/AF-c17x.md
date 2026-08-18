@@ -1,15 +1,15 @@
 ---
 id: AF-c17x
 title: "Human-gated: confirm Sonarr healthy in arr-stack-dev + Kargo trio healthy on kargo cluster"
-status: open
+status: deferred
 priority: 1
 type: task
 labels: [human-execution-required, external-integration]
 parent: AF-j5rz
 created_at: 2026-08-18T18:59:18Z
 created_by: ada
-updated_at: 2026-08-18T18:59:18Z
-content_hash: "sha256:e5490817a53b2c98f63753c16a8baf81b0749ceb72edc77a9ba98101673bfbca"
+updated_at: 2026-08-18T18:59:25Z
+content_hash: "sha256:02ccbe4428c91ba4b1b178c44de839fbc255ff25037a04f312bef94ce70785c6"
 blocked_by: [AF-o0rw, AF-pfbv]
 ---
 
@@ -93,6 +93,7 @@ devops-toolkit:akp-platform (mandatory)
 ## History
 - 2026-08-18T18:59:24Z dep_added: blocked_by AF-o0rw
 - 2026-08-18T18:59:25Z dep_added: blocked_by AF-pfbv
+- 2026-08-18T18:59:25Z status: open -> deferred
 
 ## Links
 - Parent: [[AF-j5rz]]
