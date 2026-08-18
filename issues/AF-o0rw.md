@@ -1,15 +1,15 @@
 ---
 id: AF-o0rw
 title: "Human-gated: merge arr-stack, confirm wrapper Application + ApplicationSet child counts live"
-status: open
+status: deferred
 priority: 1
 type: task
 labels: [human-execution-required, external-integration]
 parent: AF-j5rz
 created_at: 2026-08-18T18:58:35Z
 created_by: ada
-updated_at: 2026-08-18T18:58:35Z
-content_hash: "sha256:4a5a3400d989c6caf07dc941daddff6a7b6744bda7b52b0942e272f6a6dbea38"
+updated_at: 2026-08-18T18:58:41Z
+content_hash: "sha256:243747729e11b7bf55ed98d76bb2de06e96bd0d0c39a3a034364d0ea60c6c76b"
 blocked_by: [AF-vm0q]
 ---
 
@@ -97,6 +97,7 @@ devops-toolkit:akp-platform (mandatory)
 
 ## History
 - 2026-08-18T18:58:41Z dep_added: blocked_by AF-vm0q
+- 2026-08-18T18:58:41Z status: open -> deferred
 
 ## Links
 - Parent: [[AF-j5rz]]
