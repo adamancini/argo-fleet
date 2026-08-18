@@ -8,8 +8,8 @@ labels: [human-execution-required]
 parent: AF-j5rz
 created_at: 2026-08-18T18:56:41Z
 created_by: ada
-updated_at: 2026-08-18T18:56:46Z
-content_hash: "sha256:789972efc6ab9652b845d531626a9a9d7fdff6b8ffa552a35a3379bfd948abc2"
+updated_at: 2026-08-18T19:06:09Z
+content_hash: "sha256:2db052dff045f3b1962a955f3f28c54fcfa84de5ff8b897ffd7d4c5e26891c0a"
 blocks: [AF-c17x]
 ---
 
@@ -25,7 +25,7 @@ DISCOVERED DURING / WHY THIS IS DIFFERENT IN KIND:
 The design spec states: "no explicit storageClass is set on config/downloads PVCs... relies on the cluster's default StorageClass." This repo has a real, previously-hit failure mode (`.vault/knowledge/debug/Non-default StorageClass leaves PVCs permanently unbound without explicit storageClassName.md`): a PVC with no explicit `storageClassName` never binds -- not slowly, forever -- if the cluster's provisioner isn't actually marked default; the only live symptom is a pod stuck `Pending` with `FailedBinding: no persistent volumes available for this claim and no storage class is set`. The CURRENT committed state of `infrastructure/openebs-localpv/argocd/appset.yaml` (verified by reading it directly during this epic's authoring) sets `hostpathClass.isDefaultClass: true` with an explicit code comment explaining exactly why ("charts (akkoma, soju) don't set storageClassName explicitly, so without a default their PVCs bind to nothing, forever") -- a strong positive signal, but a git file describing intent is not the same as confirmed live cluster state, and this repo's own prior epic (`AF-d66a`, AF-d3ax's story body) independently flagged the same caution: "verify current default-class state at implementation time... this MUST NOT be assumed permanent." This story is that verification, applied to arr-stack's specific reliance on the same assumption.
 
 USER INTENT:
-The user needs certainty, from their own eyes reading real `kubectl get storageclass` output, that `arr-stack`'s Sonarr (and the other 5 apps) will not silently hang `Pending` forever the first time it's deployed live -- discovering this live, mid-deploy, with a stuck pod and no clear error surfaced in Argo CD's own health status, is exactly the failure mode this story exists to prevent by moving the check earlier and making it explicit.
+The user needs certainty, from their own eyes reading real `kubectl get storageclass` output, that `arr-stack`'s Sonarr (and the other 5 apps) will not silently hang `Pending` forever the first time it's deployed live -- discovering this live, mid-deploy, with a stuck pod and no clear error surfaced in Argo CD's own health status, is exactly the failure mode this story exists to prevent by moving the check earlier and making it explicit. The user can trust the live Sonarr deploy in Story 8 only once this story's recorded output confirms the assumption it relies on.
 
 STEPS (run by a human operator, one at a time, from `/Users/ada/src/github.com/adamancini/argo-fleet`):
 
