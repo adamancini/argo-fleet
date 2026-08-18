@@ -8,8 +8,8 @@ labels: [spike]
 parent: AF-j5rz
 created_at: 2026-08-18T18:55:02Z
 created_by: ada
-updated_at: 2026-08-18T19:43:02Z
-content_hash: "sha256:710f5f2836949a8c96b4e6737c56f4f256d0bdd1a3f2a0b023711d2926472f81"
+updated_at: 2026-08-18T19:43:19Z
+content_hash: "sha256:2c0d5278f92ca266b01945e0b9902a476156261e0ecdc3d8956d70d7d35a706a"
 blocks: [AF-6jta, AF-vm0q]
 assignee: dev-AF-iv8x
 ---
@@ -69,7 +69,7 @@ devops-toolkit:akp-platform (mandatory -- check before guessing at generator beh
 
 
 ## Notes
-
+SPIKE RESOLVED: supported: true; fallback_required: false. Matrix inner (2nd) child generator DOES interpolate outer (1st) child's params into its own config fields, incl. git-files 'path'. Evidence: (1) source -- matrix.go:50-55 passes child#1 params into child#2 getParams; generator_spec_processor.go:175-176 'InterpolateGenerator allows interpolating the matrix's 2nd child generator with values from the 1st child generator'; utils.go:337 RenderGeneratorParams deep-walks all string fields (GitGenerator.Files[].Path covered). Landed in v2.5.0 (commit 5515cde64, #10236); server is v3.4.6+c2a2a97.dirty (client v3.5.1). (2) live dry-run -- 'argocd appset generate -o json --grpc-web' on a throwaway list x git-files matrix returned 6 apps with correct per-element interpolated paths, cross-contamination mismatches=0 (12 would indicate no interpolation); negative control with a bogus list element still returned 6 (not 9, no error), proving per-element resolution; a third probe confirmed the exact {{.name}}-immediately-before-* glob adjacency the design uses. (3) webhook re-render works -- webhook.go:536-550 interpolates child#2 before deciding to refresh, so Kargo-commit auto-pickup is preserved. NO live mutation: version/generate/list are read-only or server-side dry-run; verified no probe-*/arr-* Applications or ApplicationSets exist. 0 files changed. AF-6jta UNBLOCKED as currently scoped. Caveats for AF-6jta: (a) list MUST be generators[0], git MUST be generators[1] -- interpolation flows first->second only; (b) a list element whose dir does not exist yields ZERO apps SILENTLY (exit 0, no error) -- assert rendered app COUNT, not just exit code, and land AF-8r8l first; (c) matrix takes exactly 2 children; (d) valuesObject string-field-only templating restriction still applies.
 
 ## History
 - 2026-08-18T18:56:07Z dep_added: blocks AF-6jta
