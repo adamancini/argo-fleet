@@ -1,15 +1,15 @@
 ---
 id: AF-pfbv
 title: "Confirm demo1/demo2 default StorageClass before relying on arr-stack's unset storageClassName"
-status: open
+status: deferred
 priority: 1
 type: task
 labels: [human-execution-required]
 parent: AF-j5rz
 created_at: 2026-08-18T18:56:41Z
 created_by: ada
-updated_at: 2026-08-18T18:56:41Z
-content_hash: "sha256:6fcc74d2665104131857fc09046fa6851dcc0acc4f48189fe7d7a71ccc925577"
+updated_at: 2026-08-18T18:56:46Z
+content_hash: "sha256:0daedcb9ce3212d15c39e246b6642a852b03ef2734176f10c63cedc810e8f9f0"
 ---
 
 ## Description
@@ -77,7 +77,7 @@ devops-toolkit:akp-platform (mandatory -- confirms StorageClass/PVC binding conv
 
 
 ## History
-
+- 2026-08-18T18:56:46Z status: open -> deferred
 
 ## Links
 - Parent: [[AF-j5rz]]
