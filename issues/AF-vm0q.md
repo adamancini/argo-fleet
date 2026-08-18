@@ -9,8 +9,9 @@ parent: AF-j5rz
 created_at: 2026-08-18T18:57:46Z
 created_by: ada
 updated_at: 2026-08-18T19:06:10Z
-content_hash: "sha256:ad77e1d0bf99b16760f8395f36244c66ff7d454a42c4fe177a92406efb8c8b94"
-blocked_by: [AF-q5yh, AF-8r8l, AF-iv8x, AF-6jta, AF-pfbv, AF-o0rw, AF-c17x, AF-4wkn]
+content_hash: "sha256:8707b8331266ae844dc76903605a343dc3902ce54824228531c8caca9dc3b1d6"
+blocked_by: [AF-8r8l, AF-iv8x, AF-6jta, AF-pfbv, AF-o0rw, AF-c17x, AF-4wkn]
+was_blocked_by: [AF-q5yh]
 ---
 
 ## Description
@@ -121,9 +122,11 @@ devops-toolkit:akp-platform (mandatory), devops-toolkit:yaml-kubernetes-validato
 - 2026-08-18T19:06:20Z dep_added: blocked_by AF-o0rw
 - 2026-08-18T19:06:20Z dep_added: blocked_by AF-c17x
 - 2026-08-18T19:06:21Z dep_added: blocked_by AF-4wkn
+- 2026-08-18T19:11:20Z dep_removed: was_blocked_by AF-q5yh
 
 ## Links
 - Parent: [[AF-j5rz]]
-- Blocked by: [[AF-q5yh]], [[AF-8r8l]], [[AF-iv8x]], [[AF-6jta]], [[AF-pfbv]], [[AF-o0rw]], [[AF-c17x]], [[AF-4wkn]]
+- Blocked by: [[AF-8r8l]], [[AF-iv8x]], [[AF-6jta]], [[AF-pfbv]], [[AF-o0rw]], [[AF-c17x]], [[AF-4wkn]]
+- Was blocked by: [[AF-q5yh]]
 
 ## Comments
