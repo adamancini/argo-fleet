@@ -8,8 +8,8 @@ labels: [human-execution-required, external-integration]
 parent: AF-j5rz
 created_at: 2026-08-18T18:58:35Z
 created_by: ada
-updated_at: 2026-08-18T18:58:41Z
-content_hash: "sha256:deb001e78cc60e9326772befdd216e6e7fc7dadcd939201b110d0fdfa78c6aa2"
+updated_at: 2026-08-18T19:06:10Z
+content_hash: "sha256:bed769c2edcfc34a621c7ab56fd6be01102826b966ee771b6f57a8ee33d30a38"
 blocked_by: [AF-vm0q]
 blocks: [AF-c17x]
 ---
@@ -26,9 +26,15 @@ DISCOVERED DURING / WHY THIS IS DIFFERENT IN KIND:
 This is the first time anything under `apps/arr-stack/` touches the real shared instance -- everything up to this point (AF-q5yh, AF-8r8l, AF-iv8x's spike, AF-6jta, AF-vm0q's static suite) was authored and verified statically, deliberately, per this epic's two-tier design. This repo's own vault knowledge (`.vault/knowledge/debug/Argo CD targetRevision: HEAD resolves against remote default branch.md`) documents a standing trap directly relevant here: `HEAD` on an Application/ApplicationSet source resolves against the git REMOTE's default branch, not local checkout state -- an unpushed local merge is invisible to a live `syncPolicy.automated` reconcile. Confirm the merge is actually on `origin/main` before expecting anything below to happen.
 
 USER INTENT:
-The user needs certainty, verified by their own eyes against real `argocd app list`/`argocd appset list` output -- not an agent's summary -- that merging this epic's branch did not disturb anything already running on the shared instance, and that the new `arr-stack` tree comes up healthy with exactly the child counts the design predicts. A wrong child count (17 instead of 18, 5 instead of 6) is the first observable sign of exactly the kind of cross-file drift Story AF-vm0q's static suite is meant to prevent -- but a live generator can still surprise even a clean static pass (e.g. if the spike's confirmed generator shape behaves differently against real live git-files discovery than a dry-run predicted).
+The user needs certainty, verified by their own eyes against real `argocd app list`/`argocd appset list` output -- not an agent's summary -- that merging this epic's branch did not disturb anything already running on the shared instance, and that the new `arr-stack` tree comes up healthy with exactly the child counts the design predicts. The user can trust that story AF-c17x's Sonarr-specific health check rests on a correctly-sized foundation only once this story's recorded output confirms it. A wrong child count (17 instead of 18, 5 instead of 6) is the first observable sign of exactly the kind of cross-file drift Story AF-vm0q's static suite is meant to prevent -- but a live generator can still surprise even a clean static pass (e.g. if the spike's confirmed generator shape behaves differently against real live git-files discovery than a dry-run predicted).
 
-STEPS (run by a human operator, one at a time, from `/Users/ada/src/github.com/adamancini/argo-fleet`; every step assumes AF-vm0q -- the static verification capstone -- is complete, committed, and its `ruby e2e/observability_test.rb` run is clean):
+STEPS (run by a human operator, one at a time, from `/Users/ada/src/github.com/adamancini/argo-fleet`; every step assumes AF-6jta -- the last implementation story -- is complete and committed):
+
+Step 0 -- Confirm the static suite is clean BEFORE merging (mechanical dependency note: this story's nd ticket is NOT `blocked_by` AF-vm0q, the capstone, because the capstone's own ticket is `blocked_by` every sibling including this one and would deadlock otherwise -- but the static suite's CONTENT must still be written and passing before this step, regardless of whether AF-vm0q's ticket has formally closed yet):
+```bash
+ruby e2e/observability_test.rb
+```
+Expected: 0 failures. Do not proceed to Step 1 if this fails or hasn't been run.
 
 Step 1 -- Baseline the live instance BEFORE merging:
 ```bash
