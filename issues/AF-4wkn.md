@@ -4,11 +4,11 @@ title: "Human-gated release proof: trigger arr-stack promotion, confirm DRY auto
 status: deferred
 priority: 0
 type: task
-labels: [human-execution-required, external-integration, release-gate]
+labels: [human-execution-required, external-integration]
 parent: AF-j5rz
 created_at: 2026-08-18T19:00:10Z
 created_by: ada
-updated_at: 2026-08-18T19:06:11Z
+updated_at: 2026-08-18T19:06:19Z
 content_hash: "sha256:0adbfda9b0556061c103c8dda6a106242ea9bbe1e2ca2adbfd1ae9a09a529207"
 blocked_by: [AF-c17x]
 was_blocked_by: [AF-vm0q]
