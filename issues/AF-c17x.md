@@ -8,8 +8,8 @@ labels: [human-execution-required, external-integration]
 parent: AF-j5rz
 created_at: 2026-08-18T18:59:18Z
 created_by: ada
-updated_at: 2026-08-18T18:59:25Z
-content_hash: "sha256:3795d0e2ccc0e37c4ad807e4c80dce468c7052eaf56f4588efb763de55ad3efa"
+updated_at: 2026-08-18T19:06:10Z
+content_hash: "sha256:a7ca7822841496dd57c4508143e28cd645b9167271efb87054440c6d1a45e58d"
 blocked_by: [AF-o0rw, AF-pfbv]
 blocks: [AF-4wkn]
 ---
@@ -28,7 +28,7 @@ This story is `blocked_by` both AF-o0rw (confirms the ApplicationSets generated 
 This repo's own vault knowledge on shared-cluster capacity (`.vault/knowledge/conventions/Agent-operating discipline learnings from AF-d66a.md`, "Shared-cluster capacity is part of the test environment") documents that the k3d/Docker-VM host OOMs under concurrent multi-cluster live deploys, producing OOMKills and spurious sync failures that read exactly like real chart defects but aren't -- if this step needs to touch `demo2` at all (it shouldn't, `arr-stack-dev` runs on `demo1` only per the design), serialize rather than running concurrently, and check `docker stats` before concluding a sync failure is a real defect.
 
 USER INTENT:
-The user needs to see, with their own eyes, one complete real app running end to end on the real instance -- not just "the ApplicationSet rendered the right count" (AF-o0rw) but "a real Sonarr pod is Running, its PVCs are Bound, and its Kargo pipeline objects exist and are healthy on the kargo cluster" -- the concrete, observable proof that this design produces a genuinely deployable app, not just a syntactically-plausible-looking generator.
+The user can trust the DRY-proof promotion in Story 9 only once this story's evidence shows a real, healthy app underneath it. The user needs to see, with their own eyes, one complete real app running end to end on the real instance -- not just "the ApplicationSet rendered the right count" (AF-o0rw) but "a real Sonarr pod is Running, its PVCs are Bound, and its Kargo pipeline objects exist and are healthy on the kargo cluster" -- the concrete, observable proof that this design produces a genuinely deployable app, not just a syntactically-plausible-looking generator.
 
 STEPS (run by a human operator, one at a time; assumes AF-o0rw and AF-pfbv are both complete):
 
