@@ -7,8 +7,8 @@ type: task
 parent: AF-j5rz
 created_at: 2026-08-18T18:54:12Z
 created_by: ada
-updated_at: 2026-08-18T18:54:12Z
-content_hash: "sha256:29a535b6ccce14e782cb20de4914daf9326783ea80acdc6f1db65c7b76ad9e15"
+updated_at: 2026-08-18T19:06:08Z
+content_hash: "sha256:b8fb965ec9144eb613af52841c87deb11bd88912a799613e845b527f2b5dce67"
 blocked_by: [AF-q5yh]
 blocks: [AF-6jta, AF-vm0q]
 ---
@@ -23,7 +23,7 @@ Per the design spec's `env/<app>/<stage>/release.yaml` contract, this is the one
 These files must exist as real files in git BEFORE `appset-workloads.yaml`'s `git files` generator (`path: "apps/arr-stack/env/{{.name}}/*/release.yaml"`) can discover anything -- an ApplicationSet git-files generator only picks up paths that exist at the revision it reads, so Story 4 is `blocked_by` this story regardless of the spike's (Story 3) outcome.
 
 USER INTENT:
-A developer or reviewer opening any one of these 18 files needs to see, at a glance, exactly what Kargo has most recently promoted for that app/stage -- no ambiguity about whether the file represents "not yet promoted" vs "promoted to X" (both cases render identically here: `imageTag: release`, since promotions to a Digest-strategy subscription track a fixed tag's underlying content, not a changing tag string -- see AF-q5yh's note on `.Tag` vs `.Digest` still needing confirmation for what the promotion task actually writes back).
+A developer or reviewer opening any one of these 18 files needs to see, at a glance, exactly what Kargo has most recently promoted for that app/stage -- no ambiguity about whether the file represents "not yet promoted" vs "promoted to X" (both cases render identically here: `imageTag: release`, since promotions to a Digest-strategy subscription track a fixed tag's underlying content, not a changing tag string -- see AF-q5yh's note on `.Tag` vs `.Digest` still needing confirmation for what the promotion task actually writes back). Each file stores exactly the state its app/stage's next Application render will read; the user can trust that this file's content IS the promoted state, not a cached or derived copy of it.
 
 IMPLEMENTATION:
 Create all 18 files with identical content:
@@ -86,7 +86,7 @@ Acceptance Criteria:
 4. [Unwanted] No file shall contain a real/placeholder secret value, a hand-picked non-`release` tag, or any stage-specific override -- every file is byte-identical to every other.
 
 MANDATORY SKILLS TO REVIEW:
-devops-toolkit:akp-platform (mandatory -- confirms the release.yaml contract shape against `references/kargo-promotion-patterns.md` before seeding)
+devops-toolkit:akp-platform (mandatory -- confirms the release.yaml contract shape against its Kargo promotion-patterns reference material before seeding)
 
 ## Acceptance Criteria
 
