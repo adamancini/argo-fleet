@@ -1,16 +1,17 @@
 ---
 id: AF-iv8x
 title: "Spike: confirm ApplicationSet matrix generator interpolates sibling list params into git files path"
-status: open
+status: in_progress
 priority: 0
 type: task
 labels: [spike]
 parent: AF-j5rz
 created_at: 2026-08-18T18:55:02Z
 created_by: ada
-updated_at: 2026-08-18T19:06:09Z
-content_hash: "sha256:bf3c5fc0248916d9e05c8c4c62b08872a0f2382832b7bd59ffb1d1597d572b5d"
+updated_at: 2026-08-18T19:36:09Z
+content_hash: "sha256:f75aad6c4a80edeb7dba7557a1ab9ad96bdb4fc978d0c066eb5b61fe0ceab2c4"
 blocks: [AF-6jta, AF-vm0q]
+assignee: dev-AF-iv8x
 ---
 
 ## Description
@@ -73,6 +74,8 @@ devops-toolkit:akp-platform (mandatory -- check before guessing at generator beh
 ## History
 - 2026-08-18T18:56:07Z dep_added: blocks AF-6jta
 - 2026-08-18T18:57:53Z dep_added: blocks AF-vm0q
+- 2026-08-18T19:36:09Z status: open -> in_progress
+- 2026-08-18T19:36:09Z claimed by dev-AF-iv8x
 
 ## Links
 - Parent: [[AF-j5rz]]
