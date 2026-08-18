@@ -9,8 +9,9 @@ parent: AF-j5rz
 created_at: 2026-08-18T18:59:18Z
 created_by: ada
 updated_at: 2026-08-18T18:59:25Z
-content_hash: "sha256:02ccbe4428c91ba4b1b178c44de839fbc255ff25037a04f312bef94ce70785c6"
+content_hash: "sha256:3795d0e2ccc0e37c4ad807e4c80dce468c7052eaf56f4588efb763de55ad3efa"
 blocked_by: [AF-o0rw, AF-pfbv]
+blocks: [AF-4wkn]
 ---
 
 ## Description
@@ -94,9 +95,11 @@ devops-toolkit:akp-platform (mandatory)
 - 2026-08-18T18:59:24Z dep_added: blocked_by AF-o0rw
 - 2026-08-18T18:59:25Z dep_added: blocked_by AF-pfbv
 - 2026-08-18T18:59:25Z status: open -> deferred
+- 2026-08-18T19:00:17Z dep_added: blocks AF-4wkn
 
 ## Links
 - Parent: [[AF-j5rz]]
+- Blocks: [[AF-4wkn]]
 - Blocked by: [[AF-o0rw]], [[AF-pfbv]]
 
 ## Comments
