@@ -9,7 +9,8 @@ parent: AF-j5rz
 created_at: 2026-08-18T18:53:28Z
 created_by: ada
 updated_at: 2026-08-18T18:53:28Z
-content_hash: "sha256:7d3d177ceddd1babc28a5f4a93e422c6ec282f998d166351e797e465c1940fb2"
+content_hash: "sha256:04164875ffcb860eb0f9f0145070c4a7c6b132c84073efb0aff1a52df3f10581"
+blocks: [AF-8r8l]
 ---
 
 ## Description
@@ -303,9 +304,10 @@ devops-toolkit:akp-platform (mandatory -- `references/gitops-app-patterns.md` fo
 
 
 ## History
-
+- 2026-08-18T18:54:17Z dep_added: blocks AF-8r8l
 
 ## Links
 - Parent: [[AF-j5rz]]
+- Blocks: [[AF-8r8l]]
 
 ## Comments
