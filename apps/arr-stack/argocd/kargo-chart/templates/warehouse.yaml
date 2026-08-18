@@ -1,0 +1,24 @@
+# +argocd:skip-file-rendering
+#
+# hotio publishes all six *arr images under a single MUTABLE channel tag
+# (`release`) rather than semver-versioned tags, so the SemVer/Lexical/NewestBuild
+# strategies have nothing to order. `Digest` is the strategy built for exactly
+# this case: its selector stores `constraint` as the mutable tag to watch and
+# mints new Freight whenever the content digest behind that tag changes
+# (pkg/image/digest_selector.go: mutableTag = sub.Constraint).
+#
+# Consequence for tasks.yaml: `imageFrom(...).Tag` is invariantly the literal
+# string "release" for every Freight this Warehouse ever produces
+# (pkg/image/repository_client.go: `img.Tag = tag`), so the promotion writes
+# `.Digest` -- the only field that actually changes. See tasks.yaml.
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Warehouse
+metadata:
+  name: {{ .Values.appName }}
+  namespace: {{ .Values.appName }}
+spec:
+  subscriptions:
+  - image:
+      repoURL: {{ .Values.image }}
+      imageSelectionStrategy: Digest
+      constraint: release

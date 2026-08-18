@@ -1,0 +1,48 @@
+# One Kargo pipeline per *arr app, all six rendered from the single reviewable
+# chart in kargo-chart/. Adding a seventh app is one list element here -- the
+# Project/Warehouse/3xStage/PromotionTask set comes for free. Legacy (non-goTemplate)
+# parameter syntax: Argo CD's renderer explicitly unmarshals valuesObject's
+# RawExtension, substitutes into its string leaves, and re-marshals
+# (applicationset/utils/utils.go), so templating individual quoted leaves is safe.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: arr-stack-kargo
+  namespace: argocd
+spec:
+  generators:
+  - list:
+      elements:
+      - name: sonarr
+        image: ghcr.io/hotio/sonarr
+      - name: radarr
+        image: ghcr.io/hotio/radarr
+      - name: lidarr
+        image: ghcr.io/hotio/lidarr
+      - name: bazarr
+        image: ghcr.io/hotio/bazarr
+      - name: prowlarr
+        image: ghcr.io/hotio/prowlarr
+      - name: overseerr
+        image: ghcr.io/hotio/overseerr
+  template:
+    metadata:
+      name: "kargo-arr-{{name}}"
+    spec:
+      project: arr-stack
+      source:
+        repoURL: https://github.com/adamancini/argo-fleet.git
+        targetRevision: HEAD
+        path: apps/arr-stack/argocd/kargo-chart
+        helm:
+          valuesObject:
+            appName: "{{name}}"
+            image: "{{image}}"
+      destination:
+        name: kargo
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
