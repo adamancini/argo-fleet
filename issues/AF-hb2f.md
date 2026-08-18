@@ -1,16 +1,17 @@
 ---
 id: AF-hb2f
 title: "Scaffold arr-stack AppProject + vendored Kargo chart + per-app Kargo pipeline ApplicationSet"
-status: open
+status: in_progress
 priority: 1
 type: task
 labels: [walking-skeleton]
 parent: AF-j5rz
 created_at: 2026-08-18T19:11:30Z
 created_by: ada
-updated_at: 2026-08-18T19:11:30Z
-content_hash: "sha256:476b1612d32b1b369f1308c5814aa1ac7f661878adf4f9b80cbffd854b63f97d"
+updated_at: 2026-08-18T19:36:15Z
+content_hash: "sha256:94dd7ee6f572775d6ec4575a94101812b649b327e650d9285042da4cfdca7599"
 blocks: [AF-8r8l, AF-vm0q]
+assignee: dev-AF-hb2f
 ---
 
 ## Description
@@ -306,6 +307,8 @@ devops-toolkit:akp-platform (mandatory -- its GitOps app-patterns reference mate
 ## History
 - 2026-08-18T19:11:43Z dep_added: blocks AF-8r8l
 - 2026-08-18T19:11:43Z dep_added: blocks AF-vm0q
+- 2026-08-18T19:36:16Z status: open -> in_progress
+- 2026-08-18T19:36:16Z claimed by dev-AF-hb2f
 
 ## Links
 - Parent: [[AF-j5rz]]
