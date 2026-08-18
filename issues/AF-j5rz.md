@@ -1,0 +1,92 @@
+---
+id: AF-j5rz
+title: "arr-stack DRY ApplicationSet + generated Kargo pipelines PoC"
+status: open
+priority: 2
+type: epic
+created_at: 2026-08-18T18:50:52Z
+created_by: ada
+updated_at: 2026-08-18T18:50:52Z
+content_hash: "sha256:e9e174200add65c570409330496b5bf8b9eb9d80c411128be5d354e17c659726"
+---
+
+## Description
+Description:
+Prove, as a proof of concept on the shared Akuity-hosted `demo1`/`demo2`/`kargo` staging instance, that a family of near-identical apps can be onboarded to `argo-fleet` without copy-pasting one Argo CD Application set and one Kargo `Project`/`Warehouse`/`Stage` set per app. Two Argo CD `ApplicationSet` generators fan out both the workload deployments (Sonarr, Radarr, Lidarr, Bazarr, Prowlarr, Overseerr -- all bjw-s `app-template` chart, hotio images) and the Kargo promotion pipelines from one shared template each plus a small per-app parameter list. This answers "is it possible?" -- it is explicitly NOT the real `fleet-infra` `htpc` migration off Flux.
+
+BUSINESS CONTEXT:
+`fleet-infra`'s `apps/base/htpc/` namespace runs six apps as six hand-copied Flux `HelmRelease` files (~80 lines each) against the same upstream chart. The only real variance across them: app name, image repo, container port, whether a `downloads` volume mount exists, and (currently, inconsistently) whether `PUID`/`PGID` use substitution variables or hardcoded literals. This epic proves the DRY generator pattern works before committing to the real migration -- the eventual `htpc` cutover is a separate, later epic, not this one. `htpc`'s Plex/qBittorrent/rflood/SABnzbd are deliberately excluded from the family: each has genuine per-app customization (GPU passthrough, VPN sidecars, custom `rtorrent.rc`) that a shared generator would fight, not help.
+
+PROBLEM BEING SOLVED:
+Current state: `argo-fleet` has no precedent for fanning out *apps* via a generator (only `akkoma`/`soju`'s `argocd/appset.yaml` fanning out *stages* within one already-existing app) -- onboarding a family of similar apps today means N hand-copied ApplicationSets + N hand-copied Kargo pipelines. Target state: one matrix-generator ApplicationSet fans out 6 apps x 3 stages = 18 workload Applications from one template, and one list-generator ApplicationSet fans out 6 apps -> 6 Applications that each render one shared vendored Kargo chart (Project+Warehouse+3xStage+Tasks), proving the pattern before it's applied to any other app family in this repo.
+
+TARGET STATE:
+- `apps/arr-stack/argocd/appproject.yaml` -- new AppProject `arr-stack`, discovered automatically by the existing `bootstrap/fleet-argocd-apps.yaml` (git `directories` generator over `apps/*/argocd`). No `bootstrap/*.yaml` edit, ever, for any story in this epic -- that is the whole point of the design and a standing negative-assertion AC across every story below.
+- `apps/arr-stack/argocd/kargo-chart/` -- a vendored Helm chart (`Chart.yaml`, `templates/{project,warehouse,stages,tasks}.yaml`) rendered once per app by `appset-kargo.yaml` (list generator, 6 apps -> 6 Applications, `destination.name: kargo`).
+- `apps/arr-stack/argocd/appset-workloads.yaml` -- matrix generator (list of 6 apps x stage-axis generator) rendering the bjw-s `app-template` OCI chart per app/stage via `helm.values` (a raw multi-line string, NOT `helm.valuesObject` -- see DESIGN REQUIREMENTS).
+- `apps/arr-stack/env/<app>/<stage>/release.yaml` (18 files: 6 apps x dev/staging/prod) -- the per-instance state Kargo promotions write to (`imageTag: release`, `values: {}`).
+- One shared namespace per stage across all six apps (`arr-stack-{dev,staging,prod}`), NOT one namespace per app -- a deliberate, spec-documented deviation from `docs/onboarding.md`'s one-namespace-per-app convention (see DESIGN REQUIREMENTS). The Kargo side is unaffected: each app still gets its own `Project` namespace (`sonarr`, `radarr`, ...) on the `kargo` cluster, so promotion pipelines stay fully independent per app regardless of workload namespace sharing.
+- End-to-end proof (human-verified, on the real shared instance): merging to `main` produces a healthy `argocd-arr-stack` wrapper Application, both ApplicationSets generate the expected child counts (18 and 6), at least Sonarr reaches `Synced`/`Healthy` in `arr-stack-dev` with its Kargo trio healthy on `kargo`, and one real promotion updates `env/sonarr/dev/release.yaml` and is picked up by the workload Application with zero manual `appset-workloads.yaml` edits -- the actual proof of the DRY claim.
+
+ARCHITECTURE INTEGRATION (source: `docs/superpowers/specs/2026-08-18-arr-stack-appset-design.md`, this repo's `AGENTS.md`, `docs/onboarding.md`, and direct verification against `~/src/github.com/argoproj/argo-cd` source -- this brownfield repo has no formal ARCHITECTURE.md; these three plus the Argo CD source itself are the architecture source of truth):
+- Bootstrap layer (`bootstrap/fleet-argocd-apps.yaml`): a git `directories` generator over `apps/*/argocd`, one wrapper Application per matched directory, `destination.name: in-cluster`, source type `directory` with `recurse: true` -- it walks EVERY file under the matched path and tries to parse each as a literal Kubernetes manifest. `bootstrap/fleet-kargo-apps.yaml` does the same over `apps/*/kargo` targeting `destination.name: kargo`; `arr-stack` has no `apps/arr-stack/kargo/` directory (its Kargo CRDs are *generated* by `appset-kargo.yaml`, not synced statically), so `fleet-kargo-apps.yaml` simply won't match anything for it -- expected, not a gap.
+- **Verified architecture risk, confirmed against Argo CD source, not guessed** (`~/src/github.com/argoproj/argo-cd/reposerver/repository/repository.go`, `getPotentiallyValidManifests`/`getPotentiallyValidManifestFile`, lines ~2143-2261): the `directory`-type manifest generator used by `fleet-argocd-apps.yaml`'s wrapper Application has NO Helm-chart-boundary awareness -- `filepath.Walk` with `recurse: true` descends into every subdirectory, including a vendored chart's `templates/`, and attempts to parse every `*.yaml`/`*.yml`/`*.json` file it finds as a literal manifest. A raw Helm template value like `name: {{ .Values.appName }}` is NOT valid standalone YAML (a plain scalar cannot start with `{`, the flow-mapping-start indicator) -- if `apps/arr-stack/argocd/kargo-chart/` is left unprotected, the wrapper Application `argocd-arr-stack`'s manifest generation breaks entirely, taking down BOTH the workload and Kargo halves of this design, not just the chart. Argo CD ships a documented escape hatch for exactly this: any file whose raw bytes contain the literal string `+argocd:skip-file-rendering` (confirmed constant: `skipFileRenderingMarker = "+argocd:skip-file-rendering"`, `repository.go:84`) is skipped entirely by directory-type manifest generation, regardless of extension or glob. Story 1 below makes adding `# +argocd:skip-file-rendering` to every file under `kargo-chart/` (as a YAML comment, harmless to real Helm rendering) a first-class, mandatory implementation step -- not a "verify live and hope" step, since this is confirmed from source, not empirical guesswork. This mirrors the same underlying class of problem this repo's own vault knowledge (`.vault/knowledge/patterns/Infra appset directory boundary for bootstrap wholesale sync.md`) already documents for `bootstrap/infra-apps.yaml` and non-raw-manifest content living under a wholesale-synced `*/argocd` tree -- same root cause, different concrete mechanism (a skip marker here, a sibling-directory-plus-second-source there), because the offending content here is a legitimately-rendered-elsewhere Helm chart, not a plain-data file.
+- `appset-workloads.yaml` and `appset-kargo.yaml` themselves are real `ApplicationSet` CRD manifests with their own Go-template `{{ }}` syntax, but every such value in the design's literal YAML is either inside a quoted string (`name: "arr-{{.name}}-{{.path.basename}}"`) or a block-scalar (`values: |` followed by indented content) -- both parse as valid plain YAML when the wrapper walks them, unlike the bare/unquoted Helm-chart-template values inside `kargo-chart/`. No skip marker is needed on `appproject.yaml`, `appset-workloads.yaml`, or `appset-kargo.yaml` themselves.
+- An `ApplicationSet` object must be reconciled by an Argo CD control plane, so it can only live under a path whose wrapper Application targets `destination.name: in-cluster` (as `fleet-argocd-apps.yaml`'s wrapper does) -- not under `apps/*/kargo`, whose wrapper targets `destination.name: kargo`. A second, nested `ApplicationSet` cannot fan out Kargo CRDs; `appset-kargo.yaml` fans them out by having ordinary per-app Applications (created directly on the control plane) render the shared chart with `destination.name: kargo` -- the same shape `akuity/sedemo-platform`'s `templated-teams/` uses.
+- Every Kargo pipeline in this repo follows the same task chain (`git-clone -> yaml-update -> git-commit -> git-push -> argocd-update`, `AGENTS.md`) -- `kargo-chart/templates/{stages,tasks}.yaml` reuse it verbatim (parameterized by `{{ .Values.appName }}`), copying `apps/akkoma/kargo/{stages,tasks}.yaml`'s already-working shape rather than inventing a new one. `kargo-chart/templates/project.yaml` carries `argocd.argoproj.io/sync-wave: "-1"` per `AGENTS.md`'s and `apps/akkoma/kargo/project.yaml`'s existing convention.
+- `helm.values` (a raw multi-line string), not `helm.valuesObject`, is required for `appset-workloads.yaml`'s per-app rendering: `valuesObject` is a structured/object field (backed by `RawExtension`), so Argo CD's Go-template substitution only lands on string leaves and cannot build the conditional `hasDownloads` persistence block -- `apps/akkoma/argocd/appset.yaml`'s own header comment already documents this exact restriction. `values` is a plain multi-line string re-parsed as YAML by Helm after Go-template substitution, which is what makes `{{- if eq .hasDownloads "true"}}...{{- end}}` possible at all -- a deliberate departure from `akkoma`'s `valuesObject` pattern, for that reason, not an inconsistency to "fix."
+- **Open validation item, must be settled by spike, not guessed** (see Story 3): the inner `git files` generator's `path: "apps/arr-stack/env/{{.name}}/*/release.yaml"` interpolates `{{.name}}` from the outer `matrix` generator's sibling `list` element. Whether this specific matrix-generator-references-sibling-params shape is supported on whatever Argo CD version the shared `demo1`/`demo2`/`kargo` instance runs must be confirmed empirically or against the pinned source/changelog before `appset-workloads.yaml` is implemented for real.
+- Precedent from this repo's own prior epic (`AF-d66a`, `.vault/knowledge/decisions/Argo CD clusters generator selector convention on Akuity-hosted instances.md`): a bare `clusters: {}` generator on this exact shared instance was confirmed to return FOUR clusters (`demo1`, `demo2`, the Akuity control plane `in-cluster`, and `kargo`), not the two intended -- `arr-stack` does not use a `clusters: {}` generator (it uses a static per-app `list` with an inline `destination.name` conditional, `demo2` for prod, `demo1` otherwise), so this over-match risk does not apply here, but flag it as a standing caution in Story 4 in case a future iteration of this design ever switches to cluster-discovery-based targeting.
+
+DESIGN REQUIREMENTS (source: the design spec's own Design section):
+- Namespace decision, deliberate and spec-documented: all six apps share `arr-stack-{dev,staging,prod}`, NOT one namespace per app -- this explicitly and knowingly deviates from `docs/onboarding.md`'s load-bearing naming convention (directory/AppProject/Kargo-Project/namespace all sharing one name). Rationale: these six apps conceptually share a media library and, in the real `htpc` migration, shared PVCs -- splitting them into six namespaces would fight that reality and gain nothing for this family specifically (unlike `akkoma`/`soju`, which are unrelated to each other). Every story below must treat this as intentional, not something to "fix" toward per-app namespaces.
+- Per-app parameter table (the single source of truth both generators read from, currently expressed as two independently-maintained inline lists -- one in `appset-workloads.yaml`, one in `appset-kargo.yaml` -- drift between them is exactly the class of bug the static verification story exists to catch):
+
+  | app | image | port | has downloads mount |
+  |---|---|---|---|
+  | sonarr | `ghcr.io/hotio/sonarr` | 8989 | yes |
+  | radarr | `ghcr.io/hotio/radarr` | 7878 | yes |
+  | lidarr | `ghcr.io/hotio/lidarr` | 8686 | yes |
+  | bazarr | `ghcr.io/hotio/bazarr` | 6767 | yes |
+  | prowlarr | `ghcr.io/hotio/prowlarr` | 9696 | no |
+  | overseerr | `ghcr.io/hotio/overseerr` | 5055 | no |
+
+- `PUID`/`PGID` are fixed at generation time to literal values (`1000`/`1000`) -- no Flux-style `${app_puid}` substitution exists in Argo CD/Kargo, and this incidentally also resolves the hardcoded-vs-substituted inconsistency `fleet-infra`'s real Prowlarr/nzbhydra/SABnzbd manifests currently have, for free, since every app renders from the one template.
+- Persistence: no explicit `storageClass` on `config`/`downloads` PVCs -- relies on the cluster's default `StorageClass`, small (1Gi) PVCs. This repo has a real, previously-hit failure mode where an unset `storageClassName` leaves a PVC `Pending` forever if the cluster's provisioner isn't actually marked default (`.vault/knowledge/debug/Non-default StorageClass leaves PVCs permanently unbound...`). `infrastructure/openebs-localpv/argocd/appset.yaml`'s CURRENT committed state (verified by reading it directly during this epic's authoring) sets `hostpathClass.isDefaultClass: true` -- a positive signal, but Story 5 below verifies this is actually true on the live instance rather than trusting the git file.
+
+Acceptance Criteria:
+1. `apps/arr-stack/argocd/appproject.yaml`, `kargo-chart/`, and `appset-kargo.yaml` exist and generate 6 independent Kargo `Project`/`Warehouse`/`Stage` trios (Story 1).
+2. All 18 `apps/arr-stack/env/<app>/<stage>/release.yaml` contract files exist with the `imageTag: release` / `values: {}` shape (Story 2).
+3. The matrix-generator/git-files-generator interpolation question is confirmed (supported or not) and documented before `appset-workloads.yaml` is implemented for real (Story 3).
+4. `apps/arr-stack/argocd/appset-workloads.yaml` exists and generates 18 workload Applications (6 apps x 3 stages) rendering the bjw-s `app-template` chart via `helm.values` with the `hasDownloads` conditional working in both branches (Story 4).
+5. `demo1`/`demo2`'s actual live default-StorageClass state is confirmed before any live Sonarr deploy trusts the unset-`storageClassName` assumption (Story 5).
+6. A static verification suite proves the whole manifest set is coherent end-to-end (cross-file contracts, negative assertions for every Out of scope item, mutation-tested) without touching the live cluster (Story 6).
+7. On the real shared instance: the wrapper Application and both ApplicationSets come up healthy with the expected child counts, at least Sonarr reaches `Synced`/`Healthy` with its Kargo trio healthy, and one real promotion is picked up by the workload Application with zero manual `appset-workloads.yaml` edits -- human-verified, not agent-asserted (Stories 7-9).
+8. `bootstrap/*.yaml` is never edited by any story in this epic (standing negative assertion, verified per-story and again in the capstone).
+
+OUT OF SCOPE (epic-wide, applies to every story below unless a story explicitly says otherwise):
+- Migrating `fleet-infra`'s real `htpc` namespace off Flux -- this is a PoC on the `demo1`/`demo2`/`kargo` staging instance, not a cutover. No real NFS-backed shared media volumes, no real hotio image history, no Gateway API `HTTPRoute`/ingress wiring.
+- Plex, qBittorrent, rflood, SABnzbd -- excluded by design; each has real per-app customization the shared chart would fight.
+- Adopting `sedemo-platform`'s `kargo-shared` `CustomPromotionStep` library -- none of these six apps need custom promotion logic beyond a tag bump.
+- Any edit to `bootstrap/*.yaml`.
+- `hard-tdd` labeling: this repo's own prior-epic retrospective (`.vault/knowledge/decisions/AF-d66a hard-TDD label scope observation.md`) explicitly recommends against mechanically applying `hard-tdd` to GitOps-manifest-only stories -- none of this epic's stories carry it; rigor instead comes from render-diff proofs, negative controls, and independent re-verification, matching this repo's established (and, per that retro, already-working) discipline.
+
+MANDATORY SKILLS TO REVIEW:
+devops-toolkit:akp-platform (mandatory for every story in this epic -- `references/gitops-app-patterns.md` for ApplicationSet conventions, `references/kargo-promotion-patterns.md` for Stage/Task syntax), devops-toolkit:helm-chart-developer, devops-toolkit:yaml-kubernetes-validator
+
+## Acceptance Criteria
+
+
+## Design
+
+
+## Notes
+
+
+## History
+
+
+## Links
+
+
+## Comments
