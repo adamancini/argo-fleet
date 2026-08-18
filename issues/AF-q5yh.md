@@ -8,51 +8,14 @@ labels: [walking-skeleton]
 parent: AF-j5rz
 created_at: 2026-08-18T18:53:28Z
 created_by: ada
-updated_at: 2026-08-18T19:07:31Z
-content_hash: "sha256:2067cdf7dc724acd8f646de269e7a0bdb12564a8d949155bab27541e8d542675"
+updated_at: 2026-08-18T19:10:30Z
+content_hash: "sha256:9b9049f16423d799f1dce4b97ef80b2e6c632bfa5336c66f3bfed929078db0d2"
 blocks: [AF-8r8l, AF-vm0q]
 ---
 
 ## Description
-Description:
-Stand up the Kargo-pipeline-generation half of the arr-stack PoC end to end: a new `arr-stack` AppProject, a vendored Helm chart that renders a Project/Warehouse/3xStage/Tasks set per app, and the list-generator ApplicationSet that renders that chart once per app -> 6 independent Kargo pipelines from one shared template. This is the epic's walking skeleton: it is the first slice that proves the whole generation mechanism end to end (bootstrap directory discovery -> AppProject -> ApplicationSet(list) -> per-app Application -> Helm chart render -> Project/Warehouse/Stage), for all 6 apps, statically verifiable without a live cluster.
+PLACEHOLDER - being replaced
 
-Context:
-`apps/arr-stack/` is a brand-new directory under `apps/`, discovered automatically by the existing `bootstrap/fleet-argocd-apps.yaml` (git `directories` generator over `apps/*/argocd`, wrapper Application `argocd-arr-stack`, `destination.name: in-cluster`, source type `directory` with `recurse: true`). No `bootstrap/*.yaml` file is ever edited by this story or any other story in this epic -- `AGENTS.md` is explicit that adding app-specific config there should never be needed, and this design's entire premise depends on it.
-
-**Load-bearing architecture finding, confirmed against Argo CD source, not guessed -- read before writing any file in `kargo-chart/`:** `fleet-argocd-apps.yaml`'s wrapper Application uses a `directory`-type source with `recurse: true`. Per `~/src/github.com/argoproj/argo-cd/reposerver/repository/repository.go` (`getPotentiallyValidManifests`, `filepath.Walk` with `recurse=true`, ~line 2221), this walks EVERY subdirectory under `apps/arr-stack/argocd/` with no Helm-chart-boundary awareness, and attempts to parse every `*.yaml`/`*.yml`/`*.json` file it finds as a literal Kubernetes manifest. A raw (unrendered) Helm chart template value like `name: {{ .Values.appName }}` is NOT valid standalone YAML -- a plain scalar cannot start with `{` (the flow-mapping-start indicator) -- so if `kargo-chart/` is left unprotected, `argocd-arr-stack`'s manifest generation breaks for the WHOLE wrapper Application (both the workloads and Kargo halves of this design), not just the chart. Argo CD ships a documented per-file escape hatch for exactly this: any file whose raw bytes contain the literal string `+argocd:skip-file-rendering` is skipped entirely by directory-type manifest generation, regardless of extension or glob (confirmed constant `skipFileRenderingMarker = "+argocd:skip-file-rendering"`, `repository.go:84`). Every file under `apps/arr-stack/argocd/kargo-chart/` (including `Chart.yaml`) MUST include `# +argocd:skip-file-rendering` as a YAML comment -- harmless to real Helm rendering (Helm ignores `#` comments), and it is the only in-scope fix (adding a `directory.exclude` to `bootstrap/fleet-argocd-apps.yaml` itself would violate the epic's no-bootstrap-edit rule). This mirrors the same underlying class of problem this repo's own vault knowledge already documents for `bootstrap/infra-apps.yaml` and non-raw-manifest content living under a wholesale-synced `*/argocd` tree (`.vault/knowledge/patterns/Infra appset directory boundary for bootstrap wholesale sync.md`) -- same root cause (a directory-type source with no awareness of "this subtree means something different"), different concrete fix (a skip marker here, since the offending content is a legitimately-rendered-elsewhere Helm chart, not a plain-data file that needs a sibling directory).
-
-The task chain (`git-clone -> yaml-update -> git-commit -> git-push -> argocd-update`) and the `sync-wave: "-1"` annotation on `project.yaml` are this repo's existing, already-working convention -- `apps/akkoma/kargo/{project,stages,tasks}.yaml` is the reference implementation to copy the SHAPE of (not the values); do not invent a new task chain shape.
-
-**Warehouse image subscription -- confirmed strategy, one detail to verify against the skill/CRD reference before finalizing:** hotio images (all six apps' image source) publish under a mutable channel tag (`release`) rather than semver-versioned tags -- this is why the `env/<app>/<stage>/release.yaml` contract's seed value is literally `imageTag: release`, not a version string. Kargo's `ImageSubscription.ImageSelectionStrategy: Digest` with `Constraint: <mutable tag name>` is built exactly for this case -- confirmed by reading `~/src/github.com/akuity/kargo/pkg/image/digest_selector.go`: the `Digest` strategy's selector stores `Constraint` as `mutableTag` and matches on that exact tag, tracking digest changes underneath it rather than tag changes. Use `imageSelectionStrategy: Digest` / `constraint: release` on each app's `Warehouse`. One thing this story must still confirm via the mandatory skill (`devops-toolkit:akp-platform`, its Kargo promotion-patterns reference material) and the Kargo CRD reference (https://doc.crds.dev/github.com/akuity/kargo) before finalizing `kargo-chart/templates/tasks.yaml`: whether the promotion task's `imageFrom(vars.image)` expression should write `.Tag` or `.Digest` into `release.yaml`'s `imageTag` field for a `Digest`-strategy subscription -- do not guess between the two without checking the actual `DiscoveredImageReference`/Freight image field names Kargo exposes to promotion-step expressions.
-
-USER INTENT:
-Anyone reading `apps/arr-stack/argocd/` needs to see, in one glance, that six independent Kargo promotion pipelines exist as six generated instances of ONE reviewable template -- not six near-identical hand-copied files that will drift the moment someone edits one and forgets the other five. The chart's per-app scalar substitution (`appName`, `image`) is the whole DRY claim for the Kargo half of this design; this story is what makes that claim real and inspectable, not just asserted.
-
-IMPLEMENTATION:
-1. Create `apps/arr-stack/argocd/appproject.yaml`:
-   ```yaml
-   apiVersion: argoproj.io/v1alpha1
-   kind: AppProject
-   metadata:
-     name: arr-stack
-     namespace: argocd
-   spec:
-     description: DRY *arr family workloads + generated Kargo pipelines (PoC) -- Sonarr, Radarr, Lidarr, Bazarr, Prowlarr, Overseerr
-     sourceRepos:
-       - '*'
-     destinations:
-       - server: '*'
-         name: '*'
-         namespace: '*'
-     clusterResourceWhitelist:
-       - group: '*'
-         kind: '*'
-   ```
-   (Mirrors `apps/akkoma/argocd/appproject.yaml`'s existing shape exactly -- do not invent a narrower one.)
-
-2. Create `apps/arr-stack/argocd/kargo-chart/Chart.yaml`:
-   ```yaml
    # +argocd:skip-file-rendering
    apiVersion: v2
    name: arr-stack-kargo
