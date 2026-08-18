@@ -8,17 +8,17 @@ labels: [human-execution-required, external-integration, release-gate]
 parent: AF-j5rz
 created_at: 2026-08-18T19:00:10Z
 created_by: ada
-updated_at: 2026-08-18T19:00:18Z
-content_hash: "sha256:33245280096eab8284b29c9fcfe6495968ee2686348d3a76a8e44b716f695971"
+updated_at: 2026-08-18T19:06:11Z
+content_hash: "sha256:d116f1a7e8a4525dea9e76cf6882587d607f7071a2c4fe491c2673c36565816e"
 blocked_by: [AF-vm0q, AF-c17x]
 ---
 
 ## Description
 STOP -- READ BEFORE DOING ANYTHING ELSE WITH THIS STORY.
 
-This story is NOT developer-claimable. It is NOT PM-Acceptor-closeable by evidence review alone. It is a human-executed, human-verified operational runbook that touches the shared, live Argo CD/Kargo instance that already serves the running `akp-platform` demo. If you are an autonomous Developer agent, PM-Acceptor agent, or any other ephemeral agent that has been handed this story to "implement" or "review for acceptance" -- STOP NOW. Do not run any command in this story. Do not claim it. Do not close it. Report back to whoever dispatched you that this story requires a human operator, citing this paragraph and the precedent at `AF-s8l0`/`AF-tqmb` in this repo's own history. This story carries the labels `human-execution-required`, `external-integration`, and `release-gate`, and it is deferred on creation specifically so it will not appear in `nd ready`/`pvg loop next` output -- a human operator must explicitly run `nd undefer <id>` before this story is even visible as candidate work, and even then, only a human runs its commands.
+This story is NOT developer-claimable. It is NOT PM-Acceptor-closeable by evidence review alone. It is a human-executed, human-verified operational runbook that touches the shared, live Argo CD/Kargo instance that already serves the running `akp-platform` demo. If you are an autonomous Developer agent, PM-Acceptor agent, or any other ephemeral agent that has been handed this story to "implement" or "review for acceptance" -- STOP NOW. Do not run any command in this story. Do not claim it. Do not close it. Report back to whoever dispatched you that this story requires a human operator, citing this paragraph and the precedent at `AF-s8l0`/`AF-tqmb` in this repo's own history. This story carries the labels `human-execution-required` and `external-integration`, and it is deferred on creation specifically so it will not appear in `nd ready`/`pvg loop next` output -- a human operator must explicitly run `nd undefer <id>` before this story is even visible as candidate work, and even then, only a human runs its commands.
 
-This is the epic's release gate: closing it is what actually delivers the epic's TARGET STATE. It is `blocked_by` AF-vm0q (the epic's capstone -- the static verification suite must be clean) and AF-c17x (Sonarr's live health must already be confirmed) -- every developer-claimable and prior human-gated story in this epic must be complete before this story is even eligible to run.
+This is the epic's final live proof: closing it is what actually delivers the epic's TARGET STATE. It is `blocked_by` AF-c17x (Sonarr's live health must already be confirmed) -- every developer-claimable and prior human-gated story in this epic must be complete before this story is even eligible to run. (The epic's capstone, AF-vm0q, is in turn `blocked_by` this story -- the capstone closes LAST, re-confirming the static suite still holds after this story's live promotion, which is why this story is not itself blocked_by the capstone: that dependency direction would deadlock the two ledger entries against each other.)
 
 Description:
 Trigger one real promotion for Sonarr (bump `apps/arr-stack/env/sonarr/dev/release.yaml` by hand, or let the `Warehouse` discover a real tag change under the `release` channel) and confirm the workload Application `arr-sonarr-dev` picks up the new tag automatically -- with ZERO manual edit to `appset-workloads.yaml` -- as the actual, concrete proof of this epic's central DRY claim: that Kargo promoting to a shared `release.yaml` file is enough for the generator to re-render on its own, the same auto-pickup mechanism `akkoma`/`soju` already rely on, now proven to also work for a generated (not hand-written) ApplicationSet.
