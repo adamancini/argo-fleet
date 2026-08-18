@@ -9,7 +9,8 @@ parent: AF-j5rz
 created_at: 2026-08-18T18:56:41Z
 created_by: ada
 updated_at: 2026-08-18T18:56:46Z
-content_hash: "sha256:0daedcb9ce3212d15c39e246b6642a852b03ef2734176f10c63cedc810e8f9f0"
+content_hash: "sha256:789972efc6ab9652b845d531626a9a9d7fdff6b8ffa552a35a3379bfd948abc2"
+blocks: [AF-c17x]
 ---
 
 ## Description
@@ -78,8 +79,10 @@ devops-toolkit:akp-platform (mandatory -- confirms StorageClass/PVC binding conv
 
 ## History
 - 2026-08-18T18:56:46Z status: open -> deferred
+- 2026-08-18T18:59:25Z dep_added: blocks AF-c17x
 
 ## Links
 - Parent: [[AF-j5rz]]
+- Blocks: [[AF-c17x]]
 
 ## Comments
