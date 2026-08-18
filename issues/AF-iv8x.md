@@ -8,8 +8,8 @@ labels: [spike, delivered]
 parent: AF-j5rz
 created_at: 2026-08-18T18:55:02Z
 created_by: ada
-updated_at: 2026-08-18T19:43:30Z
-content_hash: "sha256:0d830b68438cbcc1d69946e58c29d255beb69bf4210a386bdb17410eb8c8ee5b"
+updated_at: 2026-08-18T19:44:17Z
+content_hash: "sha256:5c92b7f0bf020e45dad58cdfe10cb3618f30cdc6ffc4bf8983e841b1f86ffa18"
 blocks: [AF-6jta, AF-vm0q]
 assignee: dev-AF-iv8x
 ---
@@ -284,3 +284,81 @@ probe YAMLs lived in a scratch directory outside the repo and were deleted.
    out with templated leaf values.
 5. Use `argocd appset generate -o json --grpc-web` as the verification primitive for AF-6jta, and
    assert the app count and per-app interpolated paths -- exit 0 alone proves nothing (see caveat 2).
+
+### 2026-08-18T19:44:17Z ada
+DELIVERY -- AF-iv8x (spike). Full decision record is in the preceding comment; this is the proof/learnings wrapper.
+
+PROOF:
+
+Producing commit SHA: e2bd0438131ac912d527f163a5b4573d533a3934 (story/AF-iv8x HEAD).
+No commits were made -- this is an investigation story with a 0-file diff budget, so HEAD is
+unchanged from the epic base. Verified:
+    $ git diff --name-only epic/AF-j5rz...HEAD   -> (empty)
+    $ git status --porcelain -uall               -> (empty)
+`pvg verify` was not run because it has NO INPUTS: zero files were created or modified. The three
+throwaway probe YAMLs lived in a scratch dir outside the repo and were deleted before delivery.
+
+Commands run (all read-only or server-side dry-run -- none mutate the instance):
+    $ argocd version --short
+      argocd: v3.5.1+109ca7c.dirty
+      argocd-server: v3.4.6+c2a2a97.dirty
+    $ argocd appset generate -o json --grpc-web <probe>.yaml     (x3 probes, all exit 0)
+    $ argocd app list --grpc-web -o name        (baseline check)
+    $ argocd appset list --grpc-web -o name     (baseline check)
+    $ git log --oneline --reverse -S InterpolateGenerator -- applicationset/generators/generator_spec_processor.go
+    $ git tag --contains 5515cde64
+
+Probe results (pass/fail counts -- 3 probes, 3 pass, 0 fail):
+    probe 1 (target shape, list x git-files):        app_count=6 (expected 6)  PASS
+                                                    cross-contamination mismatches=0            PASS
+    probe 2 (negative control, +bogus element):      app_count=6 (expected 6, NOT 9, no error)  PASS
+    probe 3 (exact {{.name}}-adjacent-* glob):       app_count=6 (expected 6)  PASS
+Coverage: N/A -- no code was written. Verification coverage is instead expressed as the 3
+discriminators (count / literal-string / negative-control) plus source citation, described below.
+
+Acceptance-criteria verification table:
+    AC1  Argo CD version confirmed + recorded              PASS  argocd-server v3.4.6+c2a2a97.dirty (client v3.5.1); clusters demo1/demo2/kargo/in-cluster
+    AC2  Question answered with cited evidence             PASS  BOTH forms supplied: (i) source cites matrix.go:50-55, generator_spec_processor.go:175-176 + :57, utils.go:337/:93/:349-358, docs Generators-Matrix.md, feature landed v2.5.0 via commit 5515cde64 (#10236), refined by 98475bc43 (#12287); (ii) dry-run render showing genuinely interpolated per-element paths (6 apps, mismatches=0)
+    AC3  Both outcomes + consequences documented           PASS  Outcome (a) SUPPORTED recorded as actual; outcome (b) UNSUPPORTED recorded for completeness with its downstream consequence (static list fallback, loss of auto-pickup), explicitly NOT designed or implemented
+    AC4  No live resource created/updated/deleted          PASS  Only version/generate/list RPCs used; post-probe verification found no probe-*/arr-* Applications or ApplicationSets; instance appset inventory unchanged (11 appsets, same as baseline)
+    AC5  If unsupported: state AF-6jta blocked             N/A   Outcome was SUPPORTED; clause does not apply. Record contains no fallback implementation.
+
+Verdict: SUPPORTED. supported: true; fallback_required: false. AF-6jta is unblocked as currently scoped.
+
+Why the dry-run is trustworthy rather than a coincidence -- three built-in discriminators:
+  1. Count: 6 apps, not 12. No interpolation (or a collapsed wildcard) would have paired each of the
+     2 list elements with all 6 release.yaml files.
+  2. Literal string: an un-interpolated `apps/{{.name}}/env/*/release.yaml` matches nothing and would
+     have surfaced as "child generator generated no parameters", not 6 correctly-pathed apps.
+  3. Negative control: a bogus third list element left app_count at 6 (not 9), proving per-element
+     path resolution rather than a single shared glob.
+Plus: webhook.go:536-550 interpolates child #2 before deciding to refresh, so the "renders in dry-run
+but never re-renders on a real promotion" failure mode the story called out is genuinely excluded --
+Kargo-commit auto-pickup is preserved.
+
+LEARNINGS:
+
+- The spike was worth it, but not for the reason the story predicted. The headline capability
+  (matrix cross-generator interpolation) turned out to be 4 years old -- landed in v2.5.0 (Aug 2022),
+  server runs v3.4.6 -- so it was never really at risk. The genuinely valuable finding was a caveat
+  nobody had scoped: a `list` element whose interpolated glob matches nothing yields ZERO
+  Applications SILENTLY, exit 0, no error. `missingkey=error` does not catch it (`.name` is present;
+  it's the glob that misses). That is a fail-open mode, and it means AF-6jta must assert rendered app
+  COUNT, not just a clean exit -- and that AF-8r8l must land first for AF-6jta to be verifiable.
+- Design a dry-run probe with a discriminator, or it proves nothing. My first instinct was
+  "run appset generate, check exit 0" -- which would have passed even with interpolation completely
+  broken. Encoding both sides of the matrix into the output (`probe.listName` + `probe.gitPath`
+  annotations) plus a deliberate 6-vs-12 count expectation and a bogus-element negative control is
+  what turned "it ran" into "it interpolated". Reusable pattern for any future generator spike.
+- Generator ORDER is load-bearing and silently so. `matrix.go:50-55` only flows child#1 -> child#2.
+  The story's phrasing ("`.name` from the OUTER list generator") already implied the right order, but
+  it is worth stating explicitly in AF-6jta because reversing the two children breaks interpolation
+  with no error -- another fail-open.
+- Probe adjacency, not just the mechanism. The target path puts `{{.name}}` immediately before the
+  `*` glob. My first probe had `env` sitting between them, which tests the mechanism but not the
+  exact string. A third probe with true adjacency cost one command and removed a real residual doubt.
+  Cheap fidelity is worth buying on a hard-gate spike.
+- Environment gotcha for future agents in this repo: the pvg guard blocks `cd` into a worktree
+  outright, so the standard "prefix every command with cd <worktree> &&" instruction in the dispatch
+  prompt cannot be followed. Everything has to run via `git -C <worktree>` and absolute paths. Worth
+  reconciling the dispatch prompt with the guard, since they currently contradict each other.
