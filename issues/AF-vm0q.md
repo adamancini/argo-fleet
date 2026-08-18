@@ -8,15 +8,17 @@ labels: [capstone]
 parent: AF-j5rz
 created_at: 2026-08-18T18:57:46Z
 created_by: ada
-updated_at: 2026-08-18T18:57:46Z
-content_hash: "sha256:860449112bc9cb43e9a3ab3a3d1fe193d91356360b4c6e29516d4150d0fa45e8"
+updated_at: 2026-08-18T19:06:10Z
+content_hash: "sha256:c74164c2f19bdb2fb7f737d05470997842151cced66b84f39cc994b13c639d73"
 blocked_by: [AF-q5yh, AF-8r8l, AF-iv8x, AF-6jta]
 blocks: [AF-o0rw, AF-4wkn]
 ---
 
 ## Description
 Description:
-Static verification capstone for the whole `arr-stack` manifest set: prove the committed manifests describe a coherent, deployable system end to end -- including every cross-file contract that would otherwise only break at runtime -- without requiring a live cluster on the critical path. This is the epic's capstone: it introduces no new deploy-facing code, it proves everything the other 4 developer-claimable stories (AF-q5yh, AF-8r8l, AF-iv8x, AF-6jta) built actually fits together as one system, catching anything that passed its own story's narrower verification but breaks when everything is combined.
+Static verification capstone for the whole `arr-stack` manifest set: prove the committed manifests describe a coherent, deployable system end to end -- including every cross-file contract that would otherwise only break at runtime -- without requiring a live cluster on the critical path. This is the epic's capstone: it introduces no new deploy-facing code, it proves everything the other developer-claimable and human-gated stories (AF-q5yh, AF-8r8l, AF-iv8x, AF-6jta, AF-pfbv, AF-o0rw, AF-c17x, AF-4wkn) built actually fits together as one system end to end, catching anything that passed its own story's narrower verification but breaks when everything -- including the live evidence -- is combined.
+
+**Sequencing note (mechanical, not narrative):** this story's `e2e/observability_test.rb` extension is written and run to completion BEFORE the live merge (AF-o0rw) is attempted -- writing and passing the static suite first is the whole point of a two-tier verification design, and AF-o0rw's own Step 0 requires confirming this suite is clean before merging. This story's nd ticket, however, is `blocked_by` every other sibling in the epic (including the human-gated live stories) and therefore CLOSES last: closing it is the final act of the epic, re-confirming that the static suite still passes and every negative assertion still holds after the live merge and promotion, not just before it. Author and run the suite early; close the ticket last.
 
 Context:
 This repo already has an established, reusable pattern for exactly this kind of test: `e2e/observability_test.rb` (`.vault/knowledge/patterns/Static-only Ruby e2e testing for a GitOps-manifest-only repo.md`), built for the prior `AF-d66a` epic's completion gate. Two hard constraints drove that choice, both apply identically here:
@@ -87,7 +89,7 @@ TESTING:
 This story IS the testing infrastructure -- its own bar for "done" is: `ruby e2e/observability_test.rb` runs clean (0 failures) against the real committed state, AND the mutation-testing self-check (item 7 above) is recorded as delivery evidence, not asserted without evidence.
 
 Acceptance Criteria:
-1. [Ubiquitous] `ruby e2e/observability_test.rb` passes with 0 failures against the real committed `apps/arr-stack/` tree.
+1. [Ubiquitous] `ruby e2e/observability_test.rb` passes with 0 failures against the real committed `apps/arr-stack/` tree, both before the live merge (AF-o0rw) and again after the live promotion (AF-4wkn) closes -- the suite's output is what this story's own closure evidence shows the user, not an agent's paraphrase of it.
 2. [Ubiquitous] The app-name/image/port/hasDownloads sets in `appset-workloads.yaml`, `appset-kargo.yaml`, and the glob-discovered `env/` directory tree are cross-checked and found to agree exactly.
 3. [Event] `helm template` renders succeed for both `kargo-chart` and the `app-template` chart, for one `hasDownloads: true` and one `hasDownloads: false` app each.
 4. [Unwanted] Every negative assertion in IMPLEMENTATION item 4 passes (no Plex/qBittorrent/rflood/SABnzbd reference, no `kargo-shared`/`CustomPromotionStep` reference, zero bootstrap diff, no verification block, no hard-coded storageClassName).
