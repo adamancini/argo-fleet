@@ -4,7 +4,7 @@ title: "Spike: confirm ApplicationSet matrix generator interpolates sibling list
 status: in_progress
 priority: 0
 type: task
-labels: [spike]
+labels: [spike, delivered]
 parent: AF-j5rz
 created_at: 2026-08-18T18:55:02Z
 created_by: ada
