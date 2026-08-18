@@ -9,8 +9,8 @@ parent: AF-j5rz
 created_at: 2026-08-18T18:55:02Z
 created_by: ada
 updated_at: 2026-08-18T18:55:02Z
-content_hash: "sha256:bb41fd1b192edaf6657ec2999b08951575a8aeb212baa1061ce0ad27478d8fff"
-blocks: [AF-6jta]
+content_hash: "sha256:8b4bbfa195ad34cbca4e4282253951a9ffe0eea54e70ef4e72e3718359f50733"
+blocks: [AF-6jta, AF-vm0q]
 ---
 
 ## Description
@@ -72,9 +72,10 @@ devops-toolkit:akp-platform (mandatory -- check before guessing at generator beh
 
 ## History
 - 2026-08-18T18:56:07Z dep_added: blocks AF-6jta
+- 2026-08-18T18:57:53Z dep_added: blocks AF-vm0q
 
 ## Links
 - Parent: [[AF-j5rz]]
-- Blocks: [[AF-6jta]]
+- Blocks: [[AF-6jta]], [[AF-vm0q]]
 
 ## Comments
