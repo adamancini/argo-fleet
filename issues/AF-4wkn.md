@@ -1,15 +1,15 @@
 ---
 id: AF-4wkn
 title: "Human-gated release proof: trigger arr-stack promotion, confirm DRY auto-pickup"
-status: open
+status: deferred
 priority: 0
 type: task
 labels: [human-execution-required, external-integration, release-gate]
 parent: AF-j5rz
 created_at: 2026-08-18T19:00:10Z
 created_by: ada
-updated_at: 2026-08-18T19:00:10Z
-content_hash: "sha256:3633f83ee0fdd9e76207b4e705baf315c7ae424ac5104585f82d1ccb34ecae3a"
+updated_at: 2026-08-18T19:00:18Z
+content_hash: "sha256:33245280096eab8284b29c9fcfe6495968ee2686348d3a76a8e44b716f695971"
 blocked_by: [AF-vm0q, AF-c17x]
 ---
 
@@ -104,6 +104,7 @@ devops-toolkit:akp-platform (mandatory)
 ## History
 - 2026-08-18T19:00:17Z dep_added: blocked_by AF-vm0q
 - 2026-08-18T19:00:17Z dep_added: blocked_by AF-c17x
+- 2026-08-18T19:00:18Z status: open -> deferred
 
 ## Links
 - Parent: [[AF-j5rz]]
