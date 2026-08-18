@@ -8,8 +8,9 @@ parent: AF-j5rz
 created_at: 2026-08-18T18:54:12Z
 created_by: ada
 updated_at: 2026-08-18T18:54:12Z
-content_hash: "sha256:67ab386a4aa2084441edc2e90e4cdb62cda0e36b00ebd438469471eb6d4eafc2"
+content_hash: "sha256:200b1c24870b436f9fce5fb60adbd3b2499457600b056a06760f27fdb614db0b"
 blocked_by: [AF-q5yh]
+blocks: [AF-6jta]
 ---
 
 ## Description
@@ -98,9 +99,11 @@ devops-toolkit:akp-platform (mandatory -- confirms the release.yaml contract sha
 
 ## History
 - 2026-08-18T18:54:17Z dep_added: blocked_by AF-q5yh
+- 2026-08-18T18:56:06Z dep_added: blocks AF-6jta
 
 ## Links
 - Parent: [[AF-j5rz]]
+- Blocks: [[AF-6jta]]
 - Blocked by: [[AF-q5yh]]
 
 ## Comments
