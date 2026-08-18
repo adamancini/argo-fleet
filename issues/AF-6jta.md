@@ -7,8 +7,8 @@ type: task
 parent: AF-j5rz
 created_at: 2026-08-18T18:56:00Z
 created_by: ada
-updated_at: 2026-08-18T18:56:00Z
-content_hash: "sha256:5930b9c3be8fdb79c40a849e603936056c8e0b19173d186d0fb40e729af9f38f"
+updated_at: 2026-08-18T19:06:09Z
+content_hash: "sha256:71fa28600ae5f3022b6e8950d357ea90231bb0ca78f8ff584591c424007ff701"
 blocked_by: [AF-8r8l, AF-iv8x]
 blocks: [AF-vm0q]
 ---
@@ -186,7 +186,7 @@ Acceptance Criteria:
 8. [Unwanted] This ApplicationSet's generator shall not use `clusters: {}`.
 
 MANDATORY SKILLS TO REVIEW:
-devops-toolkit:akp-platform (mandatory -- `references/gitops-app-patterns.md` for the matrix/git-files generator shape), devops-toolkit:helm-chart-developer (mandatory -- bjw-s app-template values shape), devops-toolkit:yaml-kubernetes-validator (mandatory)
+devops-toolkit:akp-platform (mandatory -- its GitOps app-patterns reference material for the matrix/git-files generator shape), devops-toolkit:helm-chart-developer (mandatory -- bjw-s app-template values shape), devops-toolkit:yaml-kubernetes-validator (mandatory)
 
 ## Acceptance Criteria
 
