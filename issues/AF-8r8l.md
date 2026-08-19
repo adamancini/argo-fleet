@@ -1,16 +1,18 @@
 ---
 id: AF-8r8l
 title: "Seed arr-stack release.yaml promotion-target files for all six apps"
-status: open
+status: in_progress
 priority: 1
 type: task
 parent: AF-j5rz
 created_at: 2026-08-18T18:54:12Z
 created_by: ada
-updated_at: 2026-08-19T15:02:49Z
-content_hash: "sha256:bcbac5da37bbc62a14287350b872993f3d9bad28f2387ffa29842c7988340557"
+updated_at: 2026-08-19T15:09:40Z
+content_hash: "sha256:65dc4ff6f6693ff9ef9f3c8ea57d0b38f72ae7e27f10fe47530cdabc6351529a"
 blocks: [AF-6jta, AF-vm0q]
 was_blocked_by: [AF-q5yh, AF-hb2f]
+assignee: dev-AF-8r8l
+follows: [AF-hb2f]
 ---
 
 ## Description
@@ -117,11 +119,15 @@ devops-toolkit:akp-platform (mandatory -- confirms the release.yaml contract sha
 - 2026-08-18T19:11:20Z dep_removed: was_blocked_by AF-q5yh
 - 2026-08-18T19:11:43Z dep_added: blocked_by AF-hb2f
 - 2026-08-19T15:09:39Z dep_removed: was_blocked_by AF-hb2f
+- 2026-08-19T15:09:40Z status: open -> in_progress
+- 2026-08-19T15:09:40Z auto-follows: linked to predecessor AF-hb2f
+- 2026-08-19T15:09:40Z claimed by dev-AF-8r8l
 
 ## Links
 - Parent: [[AF-j5rz]]
 - Blocks: [[AF-6jta]], [[AF-vm0q]]
 - Was blocked by: [[AF-q5yh]], [[AF-hb2f]]
+- Follows: [[AF-hb2f]]
 
 ## Comments
 

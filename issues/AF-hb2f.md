@@ -9,11 +9,12 @@ parent: AF-j5rz
 created_at: 2026-08-18T19:11:30Z
 created_by: ada
 updated_at: 2026-08-19T15:09:40Z
-content_hash: "sha256:17f56b33dad75d97ad939cf44cd2e8625071f8584210e0cf480fe0beda2b8235"
+content_hash: "sha256:c454aad032451639250e0c8bc334dd46178b90fa84dc256dced229039a9d38fe"
 assignee: dev-AF-hb2f
 follows: [AF-iv8x]
 closed_at: 2026-08-19T15:09:39Z
 close_reason: "Accepted: all 9 ACs independently re-verified against delivered files (helm template renders for sonarr+prowlarr well-formed with zero unresolved placeholders, normalized diff identical proving pure scalar substitution; skip-file-rendering marker present on all 5 chart files; sync-wave -1 present; Warehouse Digest/release strategy and the .Digest-over-.Tag determination spot-checked against akuity/kargo source (digest_selector.go mutableTag, repository_client.go img.Tag=tag, git_commiter.go hasDiffs guard) -- all match; appset-kargo renders 6 elements, destination.name kargo, project arr-stack; no Plex/qBittorrent/rflood/SABnzbd refs; bootstrap/*.yaml untouched (git diff stat empty); no repo-wide name collisions against akkoma/soju and their generated children incl. fleet-kargo-apps' apps/*/kargo glob which arr-stack does not match). pvg gates PASS, pvg verify PASSED. Diff budget 7 files added/0 modified exactly as budgeted; 260 total/181 substantive LOC vs 120-180 estimate is explained entirely by rationale comments the story's own Context section requested -- accepted as judgment call, not scope creep. stages.yaml 3-Stage-per-file shape confirmed as explicitly specified by the story's own IMPLEMENTATION section (not a helm-chart-developer skill violation). git-commit message arr-stack/ prefix fix confirmed present in tasks.yaml and in rendered output. DISCOVERED_BUG on tag-vs-digest downstream wiring confirmed already triaged and resolved in AF-8r8l's own story body -- not re-filed."
+led_to: [AF-8r8l]
 ---
 
 ## Description
@@ -340,6 +341,7 @@ status: delivered
 ## Links
 - Parent: [[AF-j5rz]]
 - Follows: [[AF-iv8x]]
+- Led to: [[AF-8r8l]]
 
 ## Comments
 
