@@ -8,7 +8,8 @@ parent: AF-j5rz
 created_at: 2026-08-19T15:40:11Z
 created_by: ada
 updated_at: 2026-08-19T15:40:11Z
-content_hash: "sha256:2892e16c611230b9bd9f3a1ef64e09e5e58cd91463c3178d478c578b68c90727"
+content_hash: "sha256:dbcac6ab754cd198dae3fd77b9e766acd1330e8cc3b750764516a8054db52057"
+blocks: [AF-6jta]
 ---
 
 ## Description
@@ -64,9 +65,10 @@ devops-toolkit:akp-platform (mandatory -- ApplicationSet list-generator conventi
 
 
 ## History
-
+- 2026-08-19T15:40:15Z dep_added: blocks AF-6jta
 
 ## Links
 - Parent: [[AF-j5rz]]
+- Blocks: [[AF-6jta]]
 
 ## Comments
