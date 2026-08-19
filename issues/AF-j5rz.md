@@ -6,13 +6,15 @@ priority: 2
 type: epic
 created_at: 2026-08-18T18:50:52Z
 created_by: ada
-updated_at: 2026-08-19T15:03:02Z
-content_hash: "sha256:adf8d3d6dafd251adbe3fc12e0139f36101722cb32b2e61b5793eeff2c6076ef"
+updated_at: 2026-08-19T15:39:10Z
+content_hash: "sha256:feb5101574d91881651a612a56b0d01b52f105140801b1b0fa0830fc3f7e5b8a"
 ---
 
 ## Description
 Description:
-Prove, as a proof of concept on the shared Akuity-hosted `demo1`/`demo2`/`kargo` staging instance, that a family of near-identical apps can be onboarded to `argo-fleet` without copy-pasting one Argo CD Application set and one Kargo `Project`/`Warehouse`/`Stage` set per app. Two Argo CD `ApplicationSet` generators fan out both the workload deployments (Sonarr, Radarr, Lidarr, Bazarr, Prowlarr, Overseerr -- all bjw-s `app-template` chart, hotio images) and the Kargo promotion pipelines from one shared template each plus a small per-app parameter list. This answers "is it possible?" -- it is explicitly NOT the real `fleet-infra` `htpc` migration off Flux.
+Prove, as a proof of concept on the shared Akuity-hosted `demo1`/`demo2`/`kargo` staging instance, that a family of near-identical apps can be onboarded to `argo-fleet` without copy-pasting one Argo CD Application set and one Kargo `Project`/`Warehouse`/`Stage` set per app. Two Argo CD `ApplicationSet` generators fan out both the workload deployments (Sonarr, Radarr, Lidarr, Bazarr, Prowlarr, Seerr -- all bjw-s `app-template` chart, hotio images) and the Kargo promotion pipelines from one shared template each plus a small per-app parameter list. This answers "is it possible?" -- it is explicitly NOT the real `fleet-infra` `htpc` migration off Flux.
+
+BUG-TRIAGE RENAME NOTE (applied here, epic's own per-app parameter table is the source of truth every story checks against): the sixth app was originally `overseerr`/`ghcr.io/hotio/overseerr`. hotio retired that image in favour of `hotio/seerr` (Seerr v3) -- `ghcr.io/hotio/overseerr` is no longer a resolvable public image (confirmed: 3 consecutive DENIED responses from the ghcr.io anonymous-pull token endpoint, and hotio's own docs at https://hotio.dev/containers/overseerr/ instruct migrating to `hotio/seerr`). The app is renamed `seerr` / `ghcr.io/hotio/seerr` throughout this epic and its stories. `ghcr.io/hotio/seerr:release` is confirmed live (resolves to `sha256:6ce42c9cdf64802f93639119009c1f24390bf17497775655698acd970e9920f7` at triage time). Port 5055 in the table below is CARRIED OVER from overseerr's hotio docs and is NOT yet independently reconfirmed for the seerr image -- the story that implements the workloads ApplicationSet must reconfirm it against hotio's seerr container docs/labels before hard-coding it live.
 
 BUSINESS CONTEXT:
 `fleet-infra`'s `apps/base/htpc/` namespace runs six apps as six hand-copied Flux `HelmRelease` files (~80 lines each) against the same upstream chart. The only real variance across them: app name, image repo, container port, whether a `downloads` volume mount exists, and (currently, inconsistently) whether `PUID`/`PGID` use substitution variables or hardcoded literals. This epic proves the DRY generator pattern works before committing to the real migration -- the eventual `htpc` cutover is a separate, later epic, not this one. `htpc`'s Plex/qBittorrent/rflood/SABnzbd are deliberately excluded from the family: each has genuine per-app customization (GPU passthrough, VPN sidecars, custom `rtorrent.rc`) that a shared generator would fight, not help.
@@ -49,7 +51,7 @@ DESIGN REQUIREMENTS (source: the design spec's own Design section):
   | lidarr | `ghcr.io/hotio/lidarr` | 8686 | yes |
   | bazarr | `ghcr.io/hotio/bazarr` | 6767 | yes |
   | prowlarr | `ghcr.io/hotio/prowlarr` | 9696 | no |
-  | overseerr | `ghcr.io/hotio/overseerr` | 5055 | no |
+  | seerr | `ghcr.io/hotio/seerr` | 5055 (carried over from retired overseerr; NOT independently reconfirmed for seerr -- reconfirm against hotio's seerr container docs/labels before hard-coding live) | no |
 
 - `PUID`/`PGID` are fixed at generation time to literal values (`1000`/`1000`) -- no Flux-style `${app_puid}` substitution exists in Argo CD/Kargo, and this incidentally also resolves the hardcoded-vs-substituted inconsistency `fleet-infra`'s real Prowlarr/nzbhydra/SABnzbd manifests currently have, for free, since every app renders from the one template.
 - Persistence: no explicit `storageClass` on `config`/`downloads` PVCs -- relies on the cluster's default `StorageClass`, small (1Gi) PVCs. This repo has a real, previously-hit failure mode where an unset `storageClassName` leaves a PVC `Pending` forever if the cluster's provisioner isn't actually marked default (`.vault/knowledge/debug/Non-default StorageClass leaves PVCs permanently unbound...`). `infrastructure/openebs-localpv/argocd/appset.yaml`'s CURRENT committed state (verified by reading it directly during this epic's authoring) sets `hostpathClass.isDefaultClass: true` -- a positive signal, but Story 5 below verifies this is actually true on the live instance rather than trusting the git file.
