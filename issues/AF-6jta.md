@@ -1,19 +1,20 @@
 ---
 id: AF-6jta
 title: "Implement arr-stack workloads ApplicationSet matrix generator"
-status: in_progress
+status: closed
 priority: 1
 type: task
 parent: AF-j5rz
 created_at: 2026-08-18T18:56:00Z
 created_by: ada
-updated_at: 2026-08-19T19:56:42Z
-content_hash: "sha256:6dbc736c050555312474d2b392f073741d4ec98f5c21ea1fdf5df9d12d59be62"
-blocks: [AF-vm0q, AF-o0rw]
+updated_at: 2026-08-19T20:07:16Z
+content_hash: "sha256:5d8cc4b7ff0eaf8c34c50eeded85cf0a99d2197c062ef80c380eb597a21d4b21"
 was_blocked_by: [AF-iv8x, AF-8r8l, AF-yse2]
 assignee: dev-AF-6jta
 follows: [AF-iv8x, AF-8r8l, AF-yse2, AF-hb2f]
 labels: [delivered]
+closed_at: 2026-08-19T20:07:16Z
+close_reason: "Accepted: matrix-generator ApplicationSet verified independently -- digest binding to imageTag confirmed correct via grep + real helm render (bjw-s app-template 4.6.2); hasDownloads true/false rendering confirmed (2 PVCs plus /data vs 1 PVC, no /data); image refs render as valid at-sha256 OCI references; cross-file app/image list matches appset-kargo.yaml and all 18 seeded release.yaml dirs exactly; no overseerr, clusters generator, storageClassName, or tag-binding literals; destination demo2/demo1 plus arr-stack-stage namespace logic correct; port 5055 reconfirmed for hotio/seerr with credible dual-source evidence; diff is exactly 1 file added (173 lines, explained by repo heavily-commented-manifest convention); pvg verify PASSED; pvg gates PASS; e2e SHA matches proof (3f0fd80)."
 ---
 
 ## Description
@@ -253,10 +254,12 @@ status: delivered
 - 2026-08-19T16:06:59Z auto-follows: linked to predecessor AF-hb2f
 - 2026-08-19T16:06:59Z claimed by dev-AF-6jta
 - 2026-08-19T19:49:26Z status: in_progress -> in_progress
+- 2026-08-19T20:07:16Z status: in_progress -> closed
+- 2026-08-19T20:07:16Z dep_removed: no_longer_blocks AF-vm0q
+- 2026-08-19T20:07:16Z dep_removed: no_longer_blocks AF-o0rw
 
 ## Links
 - Parent: [[AF-j5rz]]
-- Blocks: [[AF-vm0q]], [[AF-o0rw]]
 - Was blocked by: [[AF-iv8x]], [[AF-8r8l]], [[AF-yse2]]
 - Follows: [[AF-iv8x]], [[AF-8r8l]], [[AF-yse2]], [[AF-hb2f]]
 

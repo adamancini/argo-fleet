@@ -9,10 +9,9 @@ parent: AF-j5rz
 created_at: 2026-08-18T18:58:35Z
 created_by: ada
 updated_at: 2026-08-19T15:44:11Z
-content_hash: "sha256:f398ef9d8fb126ec58a9dcf17e79a13b21effb087442305fb0393c6a70e82ecc"
+content_hash: "sha256:f6b8318957ad064eec0c97e0979dba4e99835ee321fc870fab6c35c5d25c5411"
 blocks: [AF-c17x, AF-vm0q]
-was_blocked_by: [AF-vm0q]
-blocked_by: [AF-6jta]
+was_blocked_by: [AF-vm0q, AF-6jta]
 ---
 
 ## Description
@@ -110,11 +109,11 @@ devops-toolkit:akp-platform (mandatory)
 - 2026-08-18T19:06:18Z dep_removed: was_blocked_by AF-vm0q
 - 2026-08-18T19:06:18Z dep_added: blocked_by AF-6jta
 - 2026-08-18T19:06:20Z dep_added: blocks AF-vm0q
+- 2026-08-19T20:07:16Z dep_removed: was_blocked_by AF-6jta
 
 ## Links
 - Parent: [[AF-j5rz]]
 - Blocks: [[AF-c17x]], [[AF-vm0q]]
-- Blocked by: [[AF-6jta]]
-- Was blocked by: [[AF-vm0q]]
+- Was blocked by: [[AF-vm0q]], [[AF-6jta]]
 
 ## Comments
