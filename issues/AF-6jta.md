@@ -7,8 +7,8 @@ type: task
 parent: AF-j5rz
 created_at: 2026-08-18T18:56:00Z
 created_by: ada
-updated_at: 2026-08-19T16:06:59Z
-content_hash: "sha256:fe36d9b2ee6db14db65683e784a4bf72a12e61a8196c10d8e164730c93256624"
+updated_at: 2026-08-19T19:49:19Z
+content_hash: "sha256:10c7517f62bbf1b5327c9316a314dc8e164f3fefa6c9f02ddf26783d67b7a16e"
 blocks: [AF-vm0q, AF-o0rw]
 was_blocked_by: [AF-iv8x, AF-8r8l, AF-yse2]
 assignee: dev-AF-6jta
@@ -253,3 +253,209 @@ BUG TRIAGE (Sr PM): discovered by AF-hb2f's deliver-only follow-up developer -- 
 
 ### 2026-08-19T16:06:32Z ada
 loop: reset orphaned in_progress to open (no developer worktree found; prior session presumed dead)
+
+### 2026-08-19T19:49:19Z ada
+DELIVERED: `apps/arr-stack/argocd/appset-workloads.yaml` (1 new file, 0 modified, 173 lines: 108 YAML + 65 header/inline comment lines, consistent with this repo's heavily-commented manifest convention — cf. `appset-kargo.yaml`, `apps/akkoma/argocd/appset.yaml`, `kargo-chart/templates/tasks.yaml`).
+
+Commit SHA producing every result below: **3f0fd80** (`story/AF-6jta`, parent `04b0158` = `origin/epic/AF-j5rz` tip; pushed fast-forward, 0 ahead / 0 behind, working tree clean).
+
+## ⚠️ ONE DELIBERATE DEVIATION FROM AC #3's LITERAL TEXT — NEEDS PM RATIFICATION
+
+**Shipped `digest: "{{.imageTag}}"`, not `digest: "{{.values.imageTag}}"`.**
+
+The `digest:`-not-`tag:` half of AC #3 (the entire point of this story's bug-triage pass) is implemented exactly as specified. The *parameter path* is corrected: `.imageTag`, not `.values.imageTag`. Evidence, three independent confirmations:
+
+1. **Argo CD's own Git generator docs** — the git *files* generator exposes a discovered file's **top-level keys directly, with no prefix**. Their example file has top-level `aws_account` / `cluster`, referenced as `{{.aws_account}}` / `{{.cluster.name}}`.
+2. **This repo's own merged, live-verified precedent** — `apps/akkoma/argocd/appset.yaml` reads its release.yaml's top-level `chartVersion` as `{{.chartVersion}}`. It uses `{{.values.image.tag}}` only because akkoma's `release.yaml` *genuinely nests* that under a populated top-level `values:` key.
+3. **The producer side** — `kargo-chart/templates/tasks.yaml`'s `yaml-update` step writes `key: imageTag` — top level.
+
+Machine-checked across all 18 seeded files (AF-8r8l):
+
+```
+files checked: 18
+all have a valid top-level `imageTag` digest?  true   []
+any file has `values.imageTag`?                false  []
+==> `.imageTag`        resolves in 18/18 files
+==> `.values.imageTag` resolves in 0/18 files (values is an empty map everywhere)
+```
+
+Every seeded `release.yaml` is `imageTag: "sha256:<64 hex>"` + `values: {}`. Under this ApplicationSet's own `goTemplateOptions: ["missingkey=error"]`, `.values.imageTag` indexes an absent key on an empty map → **template execution aborts and all 18 Applications fail to generate**. Without `missingkey=error` it would render `digest: "<no value>"` — an unpullable reference. Either way the story's literal path yields zero working Applications, defeating the story's own stated USER INTENT ("a promotion writing a new digest to a `release.yaml` file is picked up automatically").
+
+Correcting it inside *this* file was the only in-scope fix: changing `release.yaml`'s shape (AF-8r8l) or `tasks.yaml`'s write key (AF-hb2f) is explicitly OUT OF SCOPE per this story's own OUT OF SCOPE section.
+
+Note the substring ACs are unaffected: AC #11's forbidden `tag: "{{.values.imageTag}}"` is absent, and no `tag:` binding of the digest exists under either path. **AC #3's and AC #11's literal quoted strings, and AF-vm0q's regression check (which this story's body says was amended to assert `{{.values.imageTag}}`), should be amended to `{{.imageTag}}`.** Filed as a DISCOVERED_BUG for Sr PM triage.
+
+## PROOF
+
+### Commands run (all static, no live cluster touch)
+
+```
+ruby -ryaml -e "YAML.load_stream(File.read('apps/arr-stack/argocd/appset-workloads.yaml'))" && echo OK
+  -> OK
+
+helm pull oci://ghcr.io/bjw-s-labs/helm/app-template --version 4.x --untar
+  -> Pulled: ghcr.io/bjw-s-labs/helm/app-template:4.6.2 (targetRevision 4.x resolves here)
+
+helm template arr-sonarr-dev <chart> -f values-sonarr.yaml --namespace arr-stack-dev   -> exit 0
+helm template arr-seerr-dev  <chart> -f values-seerr.yaml  --namespace arr-stack-dev   -> exit 0
+helm template arr-sonarr-dev <chart> -f values-COUNTERFACTUAL-tag.yaml                 -> exit 0
+
+ruby e2e/observability_test.rb   -> RESULT: PASS -- 150 assertions, 0 failures
+pvg verify apps/arr-stack/argocd/appset-workloads.yaml --format text
+  -> VERIFY: PASSED (0 files scanned, 0 issues); exit=0
+```
+
+**Pass/fail counts: 150/150 repo e2e assertions passed, 0 failed, 0 skipped. 3/3 helm renders exited 0. 13/13 ACs verified. 0 errors, 0 warnings across every command above.**
+
+`pvg verify` reports "0 files scanned" because its substance scanner skips `.yaml`; it is not a silent pass on a scanned file. Coverage percentage: **not applicable** — this repo has no unit-test suite and no instrumented code (GitOps manifests only); verification is static/render-level, exactly as the story's TESTING section prescribes. Live sync health is deferred to AF-o0rw/AF-c17x (human-gated).
+
+Blast radius: 1 new file, referenced by nothing yet (the bootstrap app-of-apps discovers `apps/*/argocd` wholesale, so it is picked up by directory convention, not by an edit elsewhere). Ran the full repo suite (the sole `e2e/observability_test.rb`, 150 assertions) — nothing skipped.
+
+### Render proof — `hasDownloads: true` (sonarr) vs `false` (seerr)
+
+Values payloads hand-rendered from the shipped `helm.values` string with faithful Go-template `{{-` chomping semantics, substituting the **real seeded digests** from `apps/arr-stack/env/<app>/dev/release.yaml`.
+
+| | sonarr (`hasDownloads: "true"`) | seerr (`hasDownloads: "false"`) |
+|---|---|---|
+| helm template exit | 0 | 0 |
+| kinds rendered | Deployment, **2x** PersistentVolumeClaim, Service | Deployment, **1x** PersistentVolumeClaim, Service |
+| `persistence` keys | `["config", "downloads"]` | `["config"]` |
+| PVCs | `arr-sonarr-dev-config`, `arr-sonarr-dev-downloads` | `arr-seerr-dev-config` only |
+| `/data` mount | present (`mountPath: /data`) | **absent** |
+| `storageClassName` occurrences | **0** | **0** |
+| service targetPort | 8989 | 5055 |
+| rendered image ref | `ghcr.io/hotio/sonarr@sha256:e029ce19…d551a` | `ghcr.io/hotio/seerr@sha256:6ce42c9c…20f7` |
+
+Both image references use `@`, never `:`. AC #4, #5, #8 satisfied in both branches.
+
+### Counterfactual proof — why `digest:` is required (bonus, not an AC)
+
+Same digest, same chart, only the bound field changed:
+
+```
+tag:    -> image: ghcr.io/hotio/sonarr:sha256:e029ce19…d551a
+           docker buildx imagetools inspect  =>  ERROR: invalid reference format
+
+digest: -> image: ghcr.io/hotio/sonarr@sha256:e029ce19…d551a
+           docker buildx imagetools inspect  =>  application/vnd.oci.image.index.v1+json
+                                                 digest=sha256:e029ce19…d551a  (resolves)
+```
+
+Root cause confirmed in the chart source, `charts/common/templates/lib/common/_imageSpecificationToImage.tpl`: `tag` → `printf "%s:%s"`, `digest` → `printf "%s@%s"`. `values.schema.json` accepts `repository`/`tag`/`digest` with none required, so `digest`-without-`tag` is schema-valid. Side benefit: this also proves AF-8r8l's seeded digests are real, resolvable images.
+
+### AC #13 — seerr port reconfirmed (NOT inherited): **5055 confirmed, no correction needed**
+
+Two independent sources for `ghcr.io/hotio/seerr` itself, not the retired predecessor:
+
+1. **hotio's live docs** (https://hotio.dev/containers/seerr/) — docker run example shows `-p 5055:5055`; env shows `WEBUI_PORTS=5055/tcp`.
+2. **The image's own OCI config** (`docker buildx imagetools inspect ghcr.io/hotio/seerr:release`) — `"ExposedPorts": {"5055/tcp": {}}` and `WEBUI_PORTS=5055/tcp`. Image is Seerr v3.4.1, built 2026-08-18.
+
+The carried-over `5055` is correct. Kept it, and recorded the confirmation in an inline comment on the list element so the next reader knows it was verified for this image rather than inherited.
+
+### AC #9 — cross-file contract, three-way check
+
+`appset-workloads.yaml` name/image pairs vs `appset-kargo.yaml` (AF-hb2f + AF-yse2) vs `env/` directories (AF-8r8l):
+
+```
+name/image pair set equality (workloads vs kargo):
+  identical (order-insensitive)? true
+  identical (order-SENSITIVE)?   true
+  only in workloads: []     only in kargo: []
+
+app-name set vs env/ dirs: ["bazarr","lidarr","prowlarr","radarr","seerr","sonarr"] == identical? true
+
+release.yaml per app: bazarr 3/3, lidarr 3/3, prowlarr 3/3, radarr 3/3, seerr 3/3, sonarr 3/3
+  TOTAL = 18  (=> 18 generated Applications)
+
+seerr in workloads list? true | in kargo list? true | env/ dir exists? true
+retired predecessor name in either appset? false | in any env path? false
+```
+
+Zero drift introduced. All six ports/hasDownloads values taken from the epic's corrected parameter table (AF-j5rz), not from memory.
+
+### AC verification table
+
+| AC | Verdict | Evidence |
+|----|---------|----------|
+| 1 — matrix generator (outer list of 6, inner git-files over `env/{{.name}}/*/release.yaml`) | PASS | Parsed: 1 top-level generator (`matrix`); inner = `list, git`; 6 list elements; git path `apps/arr-stack/env/{{.name}}/*/release.yaml` @ `HEAD` |
+| 2 — `helm.values` raw string, never `valuesObject` | PASS | `helm` keys = `["values"]`; `values` is a String = true; `valuesObject` present = **false** (the token appears only in the rationale comment, never as a field) |
+| 3 — binds `digest:`, never `tag:` | PASS *(with corrected param path — see deviation above)* | `digest: "{{.imageTag}}"` present exactly once (line 132); no `tag:` binding of the digest under any path |
+| 4 — true renders `downloads` + `advancedMounts.main.main[0].path: /data`; false omits entirely | PASS | sonarr: 2 PVCs, `/data` mounted; seerr: 1 PVC, no `/data`. Both `helm template` exit 0 |
+| 5 — real digest → valid `<repo>@sha256:<hex>` | PASS | `ghcr.io/hotio/sonarr@sha256:e029…`, `ghcr.io/hotio/seerr@sha256:6ce4…`; both resolve via `imagetools inspect`; counterfactual `tag:` form rejected as `invalid reference format` |
+| 6 — exactly 18 Apps, named `arr-{{.name}}-{{.path.basename}}`, annotated `kargo.akuity.io/authorized-stage` | PASS | 6 apps x 3 stages, 18/18 `release.yaml` present. Name template `arr-{{.name}}-{{.path.basename}}`; annotation `{{.name}}:{{.path.basename}}`. Matches the `<kargo-project>:<stage>` contract: `kargo-chart` names the Project `{{ .Values.appName }}` with Stages `dev`/`staging`/`prod` |
+| 7 — `destination.name` demo2 for prod / demo1 for dev+staging; ns `arr-stack-<stage>` | PASS | Hand-resolved: `dev→demo1 / arr-stack-dev`, `staging→demo1 / arr-stack-staging`, `prod→demo2 / arr-stack-prod` |
+| 8 — no `storageClassName` on either PVC | PASS | `grep -c storageClassName` = **0** in both rendered outputs. Not silently omitted: acknowledged in the header comment, with the AF-pfbv deferral named |
+| 9 — no divergence from `appset-kargo.yaml`'s list | PASS | Three-way set equality, order-sensitive AND order-insensitive; empty symmetric difference |
+| 10 — no `clusters: {}` generator | PASS | Parsed generators = `matrix{list, git}`. Literal `clusters:` substring also absent from the file (comment reworded so a grep-based verifier can't false-positive) |
+| 11 — no `tag: "{{.values.imageTag}}"` substring | PASS | `grep` → no match. Extended check `^\s*tag: *"\{\{\.(values\.)?imageTag\}\}"` → no match |
+| 12 — no `overseerr` substring, case-insensitive | PASS | `grep -i` → no match (the `seerr` comment describes the predecessor without naming it, matching `appset-kargo.yaml`'s approach) |
+| 13 — seerr port confirmed, result recorded | PASS | 5055 confirmed by hotio docs *and* the image's own `ExposedPorts`/`WEBUI_PORTS`; recorded above and in an inline comment |
+
+### YAML hygiene / skills
+
+`tabs: 0`, `trailing whitespace: 0`, `CRLF: 0`, ends with newline: YES, parse→emit→parse round-trip stable: true, single document, `apiVersion: argoproj.io/v1alpha1`, `kind: ApplicationSet`, `metadata: {name: arr-stack-workloads, namespace: argocd}`, 2-space indent throughout.
+
+Mandatory skills reviewed before finalizing: `devops-toolkit:akp-platform` (incl. `references/gitops-app-patterns.md` — confirmed the `<project>:<stage>` authorized-stage contract and the app-of-apps discovery convention), `devops-toolkit:helm-chart-developer` (drove reading `_imageSpecificationToImage.tpl` and `values.schema.json` directly rather than trusting the field names), `devops-toolkit:yaml-kubernetes-validator` (drove the hygiene/round-trip pass). Also read `AGENTS.md` per repo convention.
+
+### Second spec defect found and fixed (formatting, zero semantic change)
+
+The story's IMPLEMENTATION snippet places `{{- if eq .hasDownloads "true"}}` and `{{- end}}` at **file column 0**, inside a `values: |` block scalar whose content indent is 12. Transcribed literally that is **invalid YAML** — a line less-indented than the block scalar terminates it. Proven both ways:
+
+```
+variantA (story literal, col 0):  YAML PARSE: FAILED -- Psych::SyntaxError:
+                                  could not find expected ':' while scanning a simple key at line 15 column 1
+variantB (indented to col 12):    YAML PARSE: OK
+```
+
+and the extracted string from variantB is exactly the intended payload, with the actions at **column 0 of the string** (which is what `{{-` chomping needs):
+
+```
+|    size: 1Gi
+|{{- if eq .hasDownloads "true"}}
+|  downloads:
+```
+
+So indenting to the block-scalar margin is the faithful rendition, not a design change: the rendered string is byte-identical to the snippet's intent. Documented in the file's header so nobody "tidies" it back to column 0. This is a doc-only defect in the spec snippet, same class as the two the story already tracks.
+
+## DISCOVERED_BUG
+
+```
+DISCOVERED_BUG:
+  title: appset-workloads git-files param path is .imageTag, not .values.imageTag -- AC #3/#11 literal text and AF-vm0q's regression check need amending
+  context: AF-6jta's body (and AF-vm0q's amended regression check) specify binding the promotion
+    digest as `digest: "{{.values.imageTag}}"`. That path cannot resolve. Argo CD's git *files*
+    generator exposes a discovered file's top-level keys directly with no prefix (official Git
+    generator docs: top-level `aws_account` -> `{{.aws_account}}`), and AF-hb2f's tasks.yaml
+    yaml-update step writes `key: imageTag` at the top level. Machine-checked across all 18 files
+    seeded by AF-8r8l: 18/18 have a valid top-level `imageTag` sha256 digest and 0/18 have
+    `values.imageTag` (`values` is `{}` everywhere). Under this ApplicationSet's own
+    `goTemplateOptions: ["missingkey=error"]`, `.values.imageTag` aborts template execution and
+    ZERO of the 18 Applications generate; without that option it renders `digest: "<no value>"`.
+    This repo's merged, live-verified `apps/akkoma/argocd/appset.yaml` demonstrates both halves of
+    the rule: top-level `chartVersion` is `{{.chartVersion}}`, while `{{.values.image.tag}}` works
+    there only because akkoma's release.yaml genuinely nests it under a populated `values:` key.
+    AF-6jta shipped the corrected `.imageTag` because the alternatives (reshaping release.yaml or
+    tasks.yaml's write key) are explicitly out of scope for it. The digest-vs-tag correction that
+    AF-6jta's bug-triage pass exists to enforce is unaffected and fully implemented.
+    Needed: amend AC #3's and AC #11's literal quoted strings to `{{.imageTag}}`, and amend
+    AF-vm0q's regression check to assert `digest: "{{.imageTag}}"` (and to forbid a `tag:` binding
+    under BOTH the `.imageTag` and `.values.imageTag` paths).
+    Second, separate, doc-only item: AF-6jta's IMPLEMENTATION snippet (and the design spec at
+    docs/superpowers/specs/2026-08-18-arr-stack-appset-design.md) places the `{{- if}}`/`{{- end}}`
+    lines at file column 0 inside a `values: |` block scalar with content indent 12 -- invalid YAML
+    as literally written (Psych::SyntaxError, verified). Indenting them to the block margin yields a
+    byte-identical rendered string; AF-6jta ships the indented form and documents why.
+  affected_files: .vault issue bodies AF-6jta (AC #3, #11) and AF-vm0q (regression check);
+    docs/superpowers/specs/2026-08-18-arr-stack-appset-design.md (snippet, doc-only).
+    NOT a code defect in any merged file -- apps/arr-stack/argocd/appset-workloads.yaml ships correct.
+  discovered_during: AF-6jta
+```
+
+## LEARNINGS
+
+- **A cross-story "schema" contract stated in prose is not a param path.** This story's CONSUMES block correctly described release.yaml as `imageTag (string)` + `values (object)` and *still* specified `{{.values.imageTag}}` — the prose and the binding contradicted each other in the same paragraph. When a story hands you a template expression that reaches into a consumed file, resolve it against the real file plus the generator's documented param shape before writing it down. Cheapest possible check (`ruby -ryaml` over all 18 files), caught a defect that would have generated zero Applications while every substring-based AC passed green.
+- **The in-repo precedent was worth more than the docs.** `apps/akkoma/argocd/appset.yaml` settled the git-files param question faster and more convincingly than the upstream docs did, because it shows *both* cases side by side (`{{.chartVersion}}` top-level vs `{{.values.image.tag}}` nested) and is already live-verified. On a repo with an established sibling pattern, read the sibling first.
+- **Counterfactual rendering is disproportionately strong evidence.** Rendering the *buggy* binding alongside the correct one and letting `docker buildx imagetools inspect` return `ERROR: invalid reference format` converts "the spec says bind digest" into a demonstrated fact in about two minutes. Worth doing routinely for any story whose whole purpose is preventing one specific regression.
+- **Watch for forbidden tokens leaking into your own explanatory comments.** My first draft's rationale comments contained `clusters:` and `storageClassName` — both are semantic ACs here (#10, #8) so structural checks pass, but AF-vm0q is a *static/grep* verification story and would plausibly false-positive. Reworded where it cost no clarity; deliberately kept `valuesObject` (the token is load-bearing documentation) and flagged it explicitly so AF-vm0q strips comments before substring checks. Future authors of heavily-commented manifests in this repo should assume grep-based verification and keep forbidden literals out of prose.
+- **Block scalars silently swallow Go-template control flow.** Templating inside `values: |` only works if the `{{- if}}`/`{{- end}}` lines are indented to the block's content margin; at column 0 they are a YAML *syntax error*, not a style nit. Both this story's snippet and the committed design spec get it wrong, which suggests it will be transcribed wrong again — hence the header comment in the file pinning the reason.
+- Process note: the pvg guard blocks `cd` into the dispatcher-managed worktree, and `git push --force-with-lease` was (correctly) denied as an unrequested history rewrite. `git -C <worktree>` + absolute paths covered everything, and a plain fast-forward `git push` was the right call once I checked 1-ahead/0-behind — the lease flag was never needed.
