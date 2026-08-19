@@ -7,8 +7,8 @@ type: task
 parent: AF-j5rz
 created_at: 2026-08-18T18:56:00Z
 created_by: ada
-updated_at: 2026-08-19T16:06:31Z
-content_hash: "sha256:88214ce489426f14ccf3f4d9714895343392f6d5842605821395f73791879b90"
+updated_at: 2026-08-19T16:06:32Z
+content_hash: "sha256:b5bd90b907a61bec53f9bb4f4bf952aff824c94845df9802edb23c90c5b72149"
 blocks: [AF-vm0q, AF-o0rw]
 was_blocked_by: [AF-iv8x, AF-8r8l, AF-yse2]
 assignee: dev-AF-6jta
@@ -247,3 +247,6 @@ devops-toolkit:akp-platform (mandatory -- its GitOps app-patterns reference mate
 
 ### 2026-08-19T15:02:53Z ada
 BUG TRIAGE (Sr PM): discovered by AF-hb2f's deliver-only follow-up developer -- this story's original draft bound release.yaml's imageTag value into bjw-s app-template's tag: field (tag: "{{.values.imageTag}}"), but imageTag always holds a sha256 digest (per AF-hb2f's delivered tasks.yaml/warehouse.yaml, Digest selection strategy). A digest in a tag field renders repository:sha256:..., which is not a valid OCI reference (tags cannot contain a colon); app-template's own _imageSpecificationToImage.tpl exposes a separate digest: field that renders the correct repository@sha256:... form. Resolution applied directly to this story's body: bind digest: "{{.values.imageTag}}" instead of tag:. AF-8r8l (this story's blocker) amended in lockstep to seed release.yaml with a real per-app digest rather than the literal string release. AF-vm0q (capstone) amended to verify the corrected binding and add a regression check. AF-hb2f itself is NOT reopened -- the imageTag key name is unchanged.
+
+### 2026-08-19T16:06:32Z ada
+loop: reset orphaned in_progress to open (no developer worktree found; prior session presumed dead)
