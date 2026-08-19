@@ -23,8 +23,12 @@ spec:
         image: ghcr.io/hotio/bazarr
       - name: prowlarr
         image: ghcr.io/hotio/prowlarr
-      - name: overseerr
-        image: ghcr.io/hotio/overseerr
+      # `seerr` is hotio's current name for this app -- the pre-v3 repo it replaced
+      # was retired upstream and now returns DENIED from ghcr.io's anonymous-pull
+      # token endpoint, so a Digest-strategy Warehouse against it never mints
+      # Freight. See https://hotio.dev/containers/seerr/.
+      - name: seerr
+        image: ghcr.io/hotio/seerr
   template:
     metadata:
       name: "kargo-arr-{{name}}"
