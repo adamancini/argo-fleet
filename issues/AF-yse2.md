@@ -1,15 +1,17 @@
 ---
 id: AF-yse2
 title: "Bug: ghcr.io/hotio/overseerr retired -- rename merged appset-kargo.yaml/appproject.yaml entries to seerr"
-status: open
+status: in_progress
 priority: 0
 type: bug
 parent: AF-j5rz
 created_at: 2026-08-19T15:40:11Z
 created_by: ada
-updated_at: 2026-08-19T15:45:55Z
-content_hash: "sha256:386ddd0da14692a50b722d35fa6fc715c5080ae68da9d6744eb0edc6b4d28dcd"
+updated_at: 2026-08-19T15:47:37Z
+content_hash: "sha256:b94c70106e2bc21a8c4a75f66b53c9d57792652211f02365d84a7061e2480807"
 blocks: [AF-6jta, AF-vm0q]
+assignee: dev-AF-yse2
+follows: [AF-hb2f]
 ---
 
 ## Description
@@ -78,9 +80,13 @@ devops-toolkit:akp-platform (mandatory -- ApplicationSet list-generator conventi
 ## History
 - 2026-08-19T15:40:15Z dep_added: blocks AF-6jta
 - 2026-08-19T15:45:38Z dep_added: blocks AF-vm0q
+- 2026-08-19T15:47:37Z status: open -> in_progress
+- 2026-08-19T15:47:37Z auto-follows: linked to predecessor AF-hb2f
+- 2026-08-19T15:47:37Z claimed by dev-AF-yse2
 
 ## Links
 - Parent: [[AF-j5rz]]
 - Blocks: [[AF-6jta]], [[AF-vm0q]]
+- Follows: [[AF-hb2f]]
 
 ## Comments
