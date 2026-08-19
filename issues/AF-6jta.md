@@ -8,7 +8,7 @@ parent: AF-j5rz
 created_at: 2026-08-18T18:56:00Z
 created_by: ada
 updated_at: 2026-08-19T20:07:17Z
-content_hash: "sha256:5d8cc4b7ff0eaf8c34c50eeded85cf0a99d2197c062ef80c380eb597a21d4b21"
+content_hash: "sha256:08e9c369e5bcc190301cae7aadfe84ca6b7f762f21aba970f4914f243eca19cb"
 was_blocked_by: [AF-iv8x, AF-8r8l, AF-yse2]
 assignee: dev-AF-6jta
 follows: [AF-iv8x, AF-8r8l, AF-yse2, AF-hb2f]
@@ -223,6 +223,16 @@ devops-toolkit:akp-platform (mandatory -- its GitOps app-patterns reference mate
 
 
 ## Notes
+
+
+## nd_contract
+status: accepted
+
+### evidence
+- PM closeout applied via pvg story accept on 2026-08-19.
+
+### proof
+- [x] Story closed after accepted label was applied.
 
 
 ## nd_contract
