@@ -8,8 +8,8 @@ labels: [capstone]
 parent: AF-j5rz
 created_at: 2026-08-18T18:57:46Z
 created_by: ada
-updated_at: 2026-08-19T19:56:16Z
-content_hash: "sha256:2a5c2ffb54e4d6419a43182e6aa1a7804b1a6eb56ee721bc2bda185ac77b8ed3"
+updated_at: 2026-08-19T19:56:52Z
+content_hash: "sha256:113046890d4953fdb6ebd638ae08595aee4430a721ebd9d4f45b05de25bfa18a"
 blocked_by: [AF-6jta, AF-pfbv, AF-o0rw, AF-c17x, AF-4wkn]
 was_blocked_by: [AF-q5yh, AF-iv8x, AF-hb2f, AF-8r8l, AF-yse2]
 ---
@@ -152,3 +152,6 @@ devops-toolkit:akp-platform (mandatory), devops-toolkit:yaml-kubernetes-validato
 
 ### 2026-08-19T15:02:56Z ada
 BUG TRIAGE (Sr PM): amended this capstone's static verification IMPLEMENTATION/ACs in lockstep with AF-8r8l and AF-6jta to match the corrected release.yaml/appset-workloads.yaml contract (imageTag holds a sha256 digest, seeded per-app with a real resolvable value; appset-workloads.yaml binds digest: not tag:). Also added a dedicated regression check (item 4 negative assertion + item 7 self-validation regression #6) so a future revert of the digest: binding back to tag: is caught by the static suite before it ever reaches a live cluster. See AF-8r8l/AF-6jta comments for the full discovered-bug context (originally surfaced by AF-hb2f's deliver-only follow-up developer).
+
+### 2026-08-19T19:56:52Z ada
+BUG TRIAGE (Sr PM), param-path correction: amended this capstone's IMPLEMENTATION/ACs/CONSUMES in lockstep with AF-6jta's own deliver-only follow-up discovery -- the digest binds to .imageTag (top-level key in release.yaml), NOT .values.imageTag (values is an empty map in all 18 seeded files; that path aborts rendering under this ApplicationSet's own goTemplateOptions missingkey=error). Item 2's render check, item 3's cross-file contract check, item 4's negative assertion, item 7's self-validation regression list, and AC #3/#4/#6 are all amended to assert digest: "{{.imageTag}}" and to forbid tag: under BOTH the .imageTag and .values.imageTag paths (either wrong-field variant, under either path, is the same class of regression this suite must catch). Self-validation regression count raised from 7 to 8 to add the wrong-param-path-right-field variant (digest: "{{.values.imageTag}}") as its own distinct regression, since a suite that only catches the tag:-vs-digest field swap could still miss a path regression. AF-6jta's actual delivered appset-workloads.yaml already ships the corrected .imageTag path; this amendment only brings this capstone's own regression check into agreement with that delivered file (previously it was written to assert the now-superseded .values.imageTag literal, which would have caused this capstone's own suite to fail against the correct, already-delivered file). See AF-6jta's comments for full discovered-bug evidence.
