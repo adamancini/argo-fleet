@@ -8,10 +8,11 @@ labels: [walking-skeleton]
 parent: AF-j5rz
 created_at: 2026-08-18T19:11:30Z
 created_by: ada
-updated_at: 2026-08-19T14:52:30Z
-content_hash: "sha256:7fa98b7cb954eeaac40b560f9a573333daba3086b7d996e21c8e50855fbe3759"
+updated_at: 2026-08-19T14:52:36Z
+content_hash: "sha256:0b26ae398469cd998cf3b9e765dc16ebdb352523beb3536a9a774ed44ca0aad3"
 blocks: [AF-8r8l, AF-vm0q]
 assignee: dev-AF-hb2f
+follows: [AF-iv8x]
 ---
 
 ## Description
@@ -309,10 +310,13 @@ devops-toolkit:akp-platform (mandatory -- its GitOps app-patterns reference mate
 - 2026-08-18T19:11:43Z dep_added: blocks AF-vm0q
 - 2026-08-18T19:36:16Z status: open -> in_progress
 - 2026-08-18T19:36:16Z claimed by dev-AF-hb2f
+- 2026-08-19T14:52:36Z status: in_progress -> in_progress
+- 2026-08-19T14:52:36Z auto-follows: linked to predecessor AF-iv8x
 
 ## Links
 - Parent: [[AF-j5rz]]
 - Blocks: [[AF-8r8l]], [[AF-vm0q]]
+- Follows: [[AF-iv8x]]
 
 ## Comments
 

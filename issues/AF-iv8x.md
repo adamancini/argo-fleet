@@ -9,10 +9,11 @@ parent: AF-j5rz
 created_at: 2026-08-18T18:55:02Z
 created_by: ada
 updated_at: 2026-08-19T14:44:39Z
-content_hash: "sha256:a7cac5fa7672a9d69a4301d2b27b24159bdb7929270a40fa49fe742c22a64739"
+content_hash: "sha256:8d63c94ac8a6593bf66925ea9fdc3769c50bf53d4d0a6d494edd7079e3e8b662"
 assignee: dev-AF-iv8x
 closed_at: 2026-08-19T14:44:32Z
 close_reason: "Accepted: SPIKE resolution independently verified -- all Argo CD source citations (matrix.go:50-55, generator_spec_processor.go:175-176/:57, utils.go:337/:93/:349-361, webhook.go:536-550) confirmed byte-for-byte accurate against local clone @ 21804a2ac; commit history (5515cde64, 98475bc43, v2.5.0 tag) confirmed; diff budget (0 files vs epic/AF-j5rz) confirmed empty via independent git diff/status; live instance spot-check found zero probe-*/arr-* residue among 29 live Applications. Both outcomes and caveats for AF-6jta are persisted in the story's own Notes/Comments, not just chat. AC5 vacuously satisfied (outcome supported)."
+led_to: [AF-hb2f]
 ---
 
 ## Description
@@ -95,6 +96,7 @@ status: delivered
 
 ## Links
 - Parent: [[AF-j5rz]]
+- Led to: [[AF-hb2f]]
 
 ## Comments
 
