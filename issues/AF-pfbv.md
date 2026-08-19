@@ -1,16 +1,17 @@
 ---
 id: AF-pfbv
 title: "Confirm demo1/demo2 default StorageClass before relying on arr-stack's unset storageClassName"
-status: deferred
+status: closed
 priority: 1
 type: task
 labels: [human-execution-required]
 parent: AF-j5rz
 created_at: 2026-08-18T18:56:41Z
 created_by: ada
-updated_at: 2026-08-19T20:26:18Z
-content_hash: "sha256:2ea6e9e48e14a0ce5d890e415ef2dec2c80d286526a1cb40d794e417807f0ebe"
-blocks: [AF-c17x, AF-vm0q]
+updated_at: 2026-08-19T20:26:27Z
+content_hash: "sha256:6b6a1a94fdd61ec3a1128171e8fa5c52c5f37ae008dcb7f487ccdd8a3eead890"
+closed_at: 2026-08-19T20:26:27Z
+close_reason: "Human-verified: both demo1/demo2 confirm local-path (default) StorageClass"
 ---
 
 ## Description
@@ -81,10 +82,12 @@ devops-toolkit:akp-platform (mandatory -- confirms StorageClass/PVC binding conv
 - 2026-08-18T18:56:46Z status: open -> deferred
 - 2026-08-18T18:59:25Z dep_added: blocks AF-c17x
 - 2026-08-18T19:06:19Z dep_added: blocks AF-vm0q
+- 2026-08-19T20:26:27Z status: deferred -> closed
+- 2026-08-19T20:26:27Z dep_removed: no_longer_blocks AF-c17x
+- 2026-08-19T20:26:27Z dep_removed: no_longer_blocks AF-vm0q
 
 ## Links
 - Parent: [[AF-j5rz]]
-- Blocks: [[AF-c17x]], [[AF-vm0q]]
 
 ## Comments
 
