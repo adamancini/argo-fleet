@@ -7,8 +7,8 @@ type: task
 parent: AF-j5rz
 created_at: 2026-08-18T18:54:12Z
 created_by: ada
-updated_at: 2026-08-19T15:53:39Z
-content_hash: "sha256:19acdc99b026df73b135d1974ed8c503dc7db9a91208dc97548ef0b5b8847716"
+updated_at: 2026-08-19T15:55:11Z
+content_hash: "sha256:a984aebb4bf6ac67fa2c8484af135d5ebffafe159d663439e48ed88aefc6d8f4"
 blocks: [AF-6jta, AF-vm0q]
 was_blocked_by: [AF-q5yh, AF-hb2f]
 follows: [AF-hb2f, AF-iv8x]
@@ -253,3 +253,111 @@ RESOLUTION (Sr PM bug triage, applied 2026-08-19):
 - AF-o0rw (human-gated live-merge story): amended -- example ApplicationSet child names corrected from arr-overseerr-prod/kargo-arr-overseerr to arr-seerr-prod/kargo-arr-seerr.
 - AF-pfbv/AF-c17x/AF-4wkn: checked, no overseerr references found, no changes needed.
 - Design spec doc (docs/superpowers/specs/2026-08-18-arr-stack-appset-design.md): left as-is, NOT corrected in place. Sr PM judgment call: the epic's own embedded per-app parameter table (which every story's AC actually checks against, per this repo's self-contained-story discipline) is now corrected and is the operative source of truth; the physical doc is background/historical context no story reads directly, consistent with how the earlier tag-vs-digest doc defect was handled (flagged non-blocking, not edited). Flagged via a comment on the epic rather than a story-driven edit.
+
+### 2026-08-19T15:55:11Z ada
+DELIVERED (resumed session -- completed the remaining seerr trio only; the 15 files from `f3ede07` were left untouched).
+
+Commit: `fbba550` on `story/AF-8r8l`, pushed to `origin/story/AF-8r8l` (`f3ede07..fbba550`). Worktree clean (`git status --short -uno` = 0 lines), so all verification output below corresponds byte-for-byte to `fbba550`'s tree.
+
+Files added (3, ~6 LOC, 0 modified -- matches DIFF BUDGET exactly):
+- `apps/arr-stack/env/seerr/dev/release.yaml`
+- `apps/arr-stack/env/seerr/staging/release.yaml`
+- `apps/arr-stack/env/seerr/prod/release.yaml`
+
+## PROOF
+
+### Digest resolution (resolved fresh at implementation time, captured programmatically -- never hand-transcribed)
+Command: `docker buildx imagetools inspect ghcr.io/hotio/seerr:release --format '{{.Manifest.Digest}}'`
+(`crane`/`skopeo` are not installed in this environment.)
+Result: `sha256:6ce42c9cdf64802f93639119009c1f24390bf17497775655698acd970e9920f7`
+
+The seeding script fails closed: it aborts unless the resolved value matches `^sha256:[0-9a-f]{64}$` before any file is written.
+
+This fresh value coincidentally equals the triage-time digest recorded in the story body. It was independently re-resolved, not copied -- `seerr:release` simply has not been re-pushed since triage (the five `*arr` images all have; see the drift note below).
+
+### Index-vs-platform digest determination (a real trap, resolved before writing)
+A second method initially appeared to disagree:
+`docker manifest inspect --verbose ghcr.io/hotio/seerr:release | jq -r '.[0].Descriptor.digest'` -> `sha256:5347b4f6...`
+
+This was NOT registry disagreement. `seerr:release` is a multi-arch OCI image index (`application/vnd.oci.image.index.v1+json`) with 2 children (`linux/amd64=sha256:5347b4f6...`, `linux/arm64=sha256:2628f8ac...`). `--verbose` returns the array of *child* manifests, so `[0]` yields the amd64 child, while `imagetools --format '{{.Manifest.Digest}}'` yields the **index** digest.
+
+The index digest is the correct seed: it is what `crane digest` returns and what a `imageSelectionStrategy: Digest` Warehouse resolves for the tag. Seeding a per-platform child digest would have (a) pinned every node to one architecture and (b) never byte-matched what Kargo writes back on the first promotion -- a silent, latent defect. Seeded value is the index digest.
+
+### Consistency check on the 5 pre-existing apps (their content was NOT modified)
+Confirmed the prior session also used index digests, so the 18-file set is internally consistent. Because all five images have since been re-pushed, comparing against the *current* index digest was inconclusive; digests are immutable, so I resolved each committed digest directly:
+`docker buildx imagetools inspect ghcr.io/hotio/<app>@<committed-digest> --format '{{.Manifest.MediaType}}'`
+
+| app | committed digest (prefix) | mediaType verdict |
+|---|---|---|
+| sonarr | sha256:e029ce1988241 | index/manifest-list -- correct kind |
+| radarr | sha256:739be019afd7e | index/manifest-list -- correct kind |
+| lidarr | sha256:300003fd3a77c | index/manifest-list -- correct kind |
+| bazarr | sha256:295216749352e | index/manifest-list -- correct kind |
+| prowlarr | sha256:fd65c1cbf25b4 | index/manifest-list -- correct kind |
+
+All 5 are real, still-resolvable index digests. No defect.
+
+### Story's literal TESTING one-liner (run verbatim)
+`ruby -ryaml -e "Dir.glob('apps/arr-stack/env/*/*/release.yaml').each { |f| d = YAML.load(File.read(f)); raise \"#{f}: bad shape\" unless d['imageTag'] =~ /\Asha256:[0-9a-f]{64}\z/ && d['values'] == {} }; puts 'OK'"`
+Output: `OK` (exit 0). Glob length: `18`.
+
+### Full AC verification: 8/8 assertions passed, 0 failed
+```
+PASS: AC1 exactly 18 release.yaml files discovered by glob (found 18)
+PASS: AC4 app-name set == corrected 6-app roster (found: bazarr,lidarr,prowlarr,radarr,seerr,sonarr)
+PASS: AC4 no 'overseerr' app directory present
+PASS: AC4 no overseerr path anywhere under apps/arr-stack/env/
+PASS: AC1 every app has exactly {dev,staging,prod}
+PASS: AC2 all 18 files: imageTag matches /sha256:[0-9a-f]{64}/ and values == {}
+PASS: AC5 all 18 files: exactly 2 contract keys, no secret/tag-literal/empty/override
+PASS: AC3 per app, all 3 stage imageTag values byte-identical
+ALL CHECKS PASS (OK) -- 8/8 assertions passed
+```
+Sets were discovered by glob, not hard-coded. Per-app seed digests (cross-app equality intentionally NOT asserted, per TESTING; 6 distinct digests across 6 apps):
+```
+bazarr    sha256:295216749352ee1dc91f39c0e555229eef2232efd243e1d4629866c787411f09
+lidarr    sha256:300003fd3a77c49da9ecf3d699aef1bb5d83f2575e35c40cfe3b3f4af1cd5779
+prowlarr  sha256:fd65c1cbf25b4c579ba0326658412cb4a443cff9d787b06a405f170fb59675fc
+radarr    sha256:739be019afd7e59388bd94e1bf08db5661e794f7e04d2da2788e91f17a26cb8c
+seerr     sha256:6ce42c9cdf64802f93639119009c1f24390bf17497775655698acd970e9920f7
+sonarr    sha256:e029ce1988241f9d213ebafbc73012c4684d3c698523f18b597bb014b88d551a
+```
+
+### AC-to-evidence table
+| AC | Requirement | Evidence | Result |
+|---|---|---|---|
+| 1 | Exactly 18 files, 6 apps x 3 stages | glob = 18; `git ls-tree -r fbba550` = 18; every app's stage set == {dev,staging,prod} | PASS |
+| 2 | `values` exactly `{}`; `imageTag` = `sha256:<64 lc hex>` | parsed all 18 via YAML; regex + `== {}` assertions | PASS |
+| 3 | Per app, 3 stage files byte-identical | per-app `uniq.length == 1` for all 6 apps | PASS |
+| 4 | App set == corrected roster, no `overseerr` | Set equality + negative glob `**/*overseerr*` empty | PASS |
+| 5 | No secret / tag-literal (incl. `release`) / empty / stage override | keys exactly `[imageTag, values]`; no `release` substring; non-empty; full-file byte equality to the 2-line contract | PASS |
+
+### Committed content verification (from git, not the worktree)
+`git ls-tree -r --name-only fbba550 -- apps/arr-stack/env | grep -c 'release.yaml$'` -> `18`
+App dirs at `fbba550`: `bazarr lidarr prowlarr radarr seerr sonarr`
+`git show fbba550:apps/arr-stack/env/seerr/{dev,staging,prod}/release.yaml` -> all three identical:
+```yaml
+imageTag: "sha256:6ce42c9cdf64802f93639119009c1f24390bf17497775655698acd970e9920f7"
+values: {}
+```
+Byte format matches the 5 pre-existing apps exactly (quoted digest, `values: {}`, trailing newline, no trailing whitespace).
+
+### pvg verify
+`pvg verify <3 seerr paths> --format text` -> `VERIFY: PASSED (0 files scanned, 0 issues)`, exit 0.
+Honest caveat: `pvg verify` scanned 0 files because it does not treat `.yaml` as source. It is therefore a vacuous pass here and provides no real signal -- the substantive verification is the ruby AC suite above. Consistent with this being a manifest-only repo with no unit-test suite (static verification only, per TESTING).
+
+### Errors/warnings
+Zero. No test failures, no warnings, no skipped/gated checks. Nothing was backgrounded; every command ran synchronously.
+
+### Scope discipline
+The 15 pre-existing files were read only (format precedent + the read-only index-digest audit above); none was modified. No `apps/arr-stack/env/overseerr/` path was created. Only the 3 named files were staged -- no `git add .`, nothing under `.vault/` staged.
+
+Note for the reader (not a defect): the five `*arr` seed digests no longer match those images' current `release` tags, because hotio re-pushed them after the prior session seeded them. The story anticipates this explicitly -- the `Digest`-strategy Warehouse will discover the newer digest as the next Freight when its `dev` Stage first reconciles, which is the mechanism the epic exists to prove. All five committed digests remain real and pullable, so the pre-promotion render is valid for all six apps, satisfying USER INTENT.
+
+## LEARNINGS
+
+- **`docker manifest inspect --verbose` and `crane digest` answer different questions.** The former returns an array of per-platform child manifests (so `.[0].Descriptor.digest` is the amd64 child), while `imagetools inspect --format '{{.Manifest.Digest}}'` returns the manifest-list/index digest. For seeding anything a `imageSelectionStrategy: Digest` Warehouse will later overwrite, only the index digest is correct -- a child digest silently pins one architecture and can never byte-match the first promotion. Any future story resolving digests without `crane` should use `imagetools` and verify `MediaType` is `...image.index...`.
+- **Immutability makes digests auditable after drift.** Comparing a committed digest against a tag's *current* digest is inconclusive once the image is re-pushed, but resolving the committed digest directly (`inspect repo@sha256:...`) still works and reveals its kind. This is the cheap way to audit a prior session's digest choices without re-doing its work.
+- **`pvg verify` is vacuous on manifest-only changes** (0 files scanned for `.yaml`). Passing it proves nothing here; it should not be mistaken for verification on GitOps-manifest stories, where the real gate is a static YAML/shape assertion suite. Worth stating plainly in proof so a reviewer is not misled by a green line.
+- **The story body carried a stale duplicate section** (a superseded `overseerr` copy of IMPLEMENTATION/TESTING/ACs below the corrected one, still listing all 18 files as if starting from scratch). The dispatcher's disambiguation rule (`seerr` + acknowledges 15/18 = authoritative) resolved it, but a body-level editing artifact like this is a live risk of following the wrong roster and re-creating retired `overseerr` paths. Deduplicating the body during a triage amendment would remove the hazard.
+- **Resuming beat restarting.** Verifying `f3ede07` was an ancestor and the tree was clean took one command and made the remaining work a 3-file increment. The `cd`-into-worktree pvg guard is real; `git -C <worktree>` plus absolute paths (including `Dir.chdir` inside the ruby scripts) sidesteps it without fighting the harness.
