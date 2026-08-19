@@ -4,7 +4,7 @@ title: "Scaffold arr-stack AppProject + vendored Kargo chart + per-app Kargo pip
 status: in_progress
 priority: 1
 type: task
-labels: [walking-skeleton]
+labels: [walking-skeleton, delivered]
 parent: AF-j5rz
 created_at: 2026-08-18T19:11:30Z
 created_by: ada
