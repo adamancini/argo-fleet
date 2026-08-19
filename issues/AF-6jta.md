@@ -1,16 +1,18 @@
 ---
 id: AF-6jta
 title: "Implement arr-stack workloads ApplicationSet matrix generator"
-status: open
+status: in_progress
 priority: 1
 type: task
 parent: AF-j5rz
 created_at: 2026-08-18T18:56:00Z
 created_by: ada
-updated_at: 2026-08-19T15:42:24Z
-content_hash: "sha256:96c836ab84700d5b2db8cc80adf1f6260b116a20e5317b408662de4ab7d56202"
+updated_at: 2026-08-19T16:03:26Z
+content_hash: "sha256:6a9bc0c9b43c4534cc917158ab1522c17ddcf8b205e7707aa09d49bd7f37e408"
 blocks: [AF-vm0q, AF-o0rw]
 was_blocked_by: [AF-iv8x, AF-8r8l, AF-yse2]
+assignee: dev-AF-6jta
+follows: [AF-iv8x, AF-8r8l, AF-yse2]
 ---
 
 ## Description
@@ -228,11 +230,17 @@ devops-toolkit:akp-platform (mandatory -- its GitOps app-patterns reference mate
 - 2026-08-19T15:40:15Z dep_added: blocked_by AF-yse2
 - 2026-08-19T15:59:15Z dep_removed: was_blocked_by AF-8r8l
 - 2026-08-19T16:03:25Z dep_removed: was_blocked_by AF-yse2
+- 2026-08-19T16:03:26Z status: open -> in_progress
+- 2026-08-19T16:03:26Z auto-follows: linked to predecessor AF-iv8x
+- 2026-08-19T16:03:26Z auto-follows: linked to predecessor AF-8r8l
+- 2026-08-19T16:03:26Z auto-follows: linked to predecessor AF-yse2
+- 2026-08-19T16:03:26Z claimed by dev-AF-6jta
 
 ## Links
 - Parent: [[AF-j5rz]]
 - Blocks: [[AF-vm0q]], [[AF-o0rw]]
 - Was blocked by: [[AF-iv8x]], [[AF-8r8l]], [[AF-yse2]]
+- Follows: [[AF-iv8x]], [[AF-8r8l]], [[AF-yse2]]
 
 ## Comments
 
