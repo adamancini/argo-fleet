@@ -8,8 +8,8 @@ labels: [capstone]
 parent: AF-j5rz
 created_at: 2026-08-18T18:57:46Z
 created_by: ada
-updated_at: 2026-08-19T15:02:40Z
-content_hash: "sha256:efae1cd69d4cae5f9e81a9612b374e252625be01703143e21c9c35e0c36af36e"
+updated_at: 2026-08-19T15:02:56Z
+content_hash: "sha256:54f24d035858d9aada40289f0f2a486a7bc08575344fc22f24b4b840a558a91e"
 blocked_by: [AF-8r8l, AF-6jta, AF-pfbv, AF-o0rw, AF-c17x, AF-4wkn, AF-hb2f]
 was_blocked_by: [AF-q5yh, AF-iv8x]
 ---
@@ -137,3 +137,6 @@ devops-toolkit:akp-platform (mandatory), devops-toolkit:yaml-kubernetes-validato
 - Was blocked by: [[AF-q5yh]], [[AF-iv8x]]
 
 ## Comments
+
+### 2026-08-19T15:02:56Z ada
+BUG TRIAGE (Sr PM): amended this capstone's static verification IMPLEMENTATION/ACs in lockstep with AF-8r8l and AF-6jta to match the corrected release.yaml/appset-workloads.yaml contract (imageTag holds a sha256 digest, seeded per-app with a real resolvable value; appset-workloads.yaml binds digest: not tag:). Also added a dedicated regression check (item 4 negative assertion + item 7 self-validation regression #6) so a future revert of the digest: binding back to tag: is caught by the static suite before it ever reaches a live cluster. See AF-8r8l/AF-6jta comments for the full discovered-bug context (originally surfaced by AF-hb2f's deliver-only follow-up developer).
