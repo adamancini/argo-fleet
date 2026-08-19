@@ -8,7 +8,7 @@ parent: AF-j5rz
 created_at: 2026-08-19T15:40:11Z
 created_by: ada
 updated_at: 2026-08-19T16:03:26Z
-content_hash: "sha256:ad817d911f36a6dc2c34ea2c1c9e1ef6c10dfe5d0c97f62a6e758a0141d7352a"
+content_hash: "sha256:5bea53f41159ccd44c19c6f8e0b67b451b0e938e317a583474a523b369d84acd"
 assignee: dev-AF-yse2
 follows: [AF-hb2f, AF-iv8x]
 labels: [accepted]
@@ -77,6 +77,16 @@ devops-toolkit:akp-platform (mandatory -- ApplicationSet list-generator conventi
 
 
 ## Notes
+
+
+## nd_contract
+status: accepted
+
+### evidence
+- PM closeout applied via pvg story accept on 2026-08-19.
+
+### proof
+- [x] Story closed after accepted label was applied.
 
 
 ## nd_contract
