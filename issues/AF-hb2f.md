@@ -9,7 +9,7 @@ parent: AF-j5rz
 created_at: 2026-08-18T19:11:30Z
 created_by: ada
 updated_at: 2026-08-19T14:52:36Z
-content_hash: "sha256:0b26ae398469cd998cf3b9e765dc16ebdb352523beb3536a9a774ed44ca0aad3"
+content_hash: "sha256:796399d2410141257532ea9107d48365f9c4ca78a4aded5815c43d1f3746c570"
 blocks: [AF-8r8l, AF-vm0q]
 assignee: dev-AF-hb2f
 follows: [AF-iv8x]
@@ -303,6 +303,16 @@ devops-toolkit:akp-platform (mandatory -- its GitOps app-patterns reference mate
 
 
 ## Notes
+
+
+## nd_contract
+status: delivered
+
+### evidence
+- Transitioned via pvg story deliver on 2026-08-19.
+
+### proof
+- [ ] Developer evidence block must remain authoritative above this contract.
 
 
 ## History
