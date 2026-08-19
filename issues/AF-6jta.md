@@ -7,8 +7,8 @@ type: task
 parent: AF-j5rz
 created_at: 2026-08-18T18:56:00Z
 created_by: ada
-updated_at: 2026-08-18T19:13:11Z
-content_hash: "sha256:7d2373f98a1510894a8b516138c01ff67a13e6d42cc92856f3009c8f0ba0c4cb"
+updated_at: 2026-08-19T15:02:39Z
+content_hash: "sha256:6f93d9df9f050b0ae004e1f3c6fb58577a2263301ee404491e02091cc9ea8eb1"
 blocked_by: [AF-8r8l]
 blocks: [AF-vm0q, AF-o0rw]
 was_blocked_by: [AF-iv8x]
@@ -18,20 +18,23 @@ was_blocked_by: [AF-iv8x]
 Description:
 Implement `apps/arr-stack/argocd/appset-workloads.yaml` -- the matrix-generator ApplicationSet that fans out 6 apps x 3 stages = 18 workload Applications, each rendering the bjw-s `app-template` OCI chart via `helm.values` (a raw multi-line string) with the `hasDownloads` conditional persistence block working in both branches.
 
-**This story is written for the confirmed-supported outcome of the spike (AF-iv8x).** If AF-iv8x's resolution concludes the matrix generator's inner `git files` generator does NOT support interpolating `{{.name}}` from the outer `list` generator's sibling element, do NOT implement this story as written -- stop, report back to the dispatcher/Sr PM, and wait for a replacement story covering the fallback design (a static `dev`/`staging`/`prod` list generator as the matrix's second generator, per AF-iv8x's own resolution notes) before any developer claims this issue. This story's AC and IMPLEMENTATION below assume AF-iv8x confirmed support.
+**This story is written for the confirmed-supported outcome of the spike (AF-iv8x, already resolved -- matrix/git-files sibling-param interpolation is supported).**
+
+BUG RESOLUTION (AF-hb2f discovered-bug follow-up, applied here before this story is claimed):
+AF-hb2f's delivered `tasks.yaml` writes `${{ imageFrom(vars.image).Digest }}` (a `sha256:<hex>` string) into `release.yaml`'s `imageTag` key -- confirmed by AF-hb2f's own verified PROOF, because its `warehouse.yaml` uses `imageSelectionStrategy: Digest`, under which `.Tag` is invariantly the constant string `release` and only `.Digest` carries promotion signal. `imageTag` therefore holds a digest for the entire lifetime of this design, never a tag. This story's original draft bound that value into bjw-s app-template's `tag:` field (`tag: "{{.values.imageTag}}"`), which renders `repository:sha256:...` -- not a valid OCI reference, since a tag cannot contain a colon. Fixed here: bind it to app-template's `digest:` field instead (`digest: "{{.values.imageTag}}"`), which app-template's `_imageSpecificationToImage.tpl` renders as `repository@sha256:...` -- the correct, parseable form. The `imageTag` KEY NAME is unchanged (fixed by AF-hb2f's already-merged, out-of-scope-to-reopen `yaml-update` step); only the binding on this story's side changes, from `tag:` to `digest:`. AF-8r8l (this story's blocker) is amended in lockstep to seed `release.yaml`'s `imageTag` with a real, resolvable digest per app rather than the literal string `release`, so this story's very first render (before any Kargo promotion has run) also resolves to a genuinely pullable image reference.
 
 Context:
-`apps/arr-stack/env/<app>/<stage>/release.yaml` (AF-8r8l, blocking this story) must already exist for the inner `git files` generator to discover anything -- an ApplicationSet git-files generator only picks up paths present at the revision it reads. `apps/arr-stack/argocd/appset-kargo.yaml` (AF-hb2f) already exists and independently maintains its own copy of the same 6-app parameter subset (name + image only, no port/hasDownghosts) -- this story's `appset-workloads.yaml` maintains a second, richer copy (name + image + port + hasDownloads) of overlapping app metadata. Drift between the two lists (an app added to one and not the other, a typo'd image repo) is exactly the class of bug the static verification story (Story 6) exists to catch -- this story must not introduce that drift at authoring time by copying the per-app parameter table from the epic body exactly, not from memory or from `appset-kargo.yaml`'s narrower list.
+`apps/arr-stack/env/<app>/<stage>/release.yaml` (AF-8r8l, blocking this story) must already exist for the inner `git files` generator to discover anything -- an ApplicationSet git-files generator only picks up paths present at the revision it reads. `apps/arr-stack/argocd/appset-kargo.yaml` (AF-hb2f) already exists and independently maintains its own copy of the same 6-app parameter subset (name + image only, no port/hasDownloads) -- this story's `appset-workloads.yaml` maintains a second, richer copy (name + image + port + hasDownloads) of overlapping app metadata. Drift between the two lists (an app added to one and not the other, a typo'd image repo) is exactly the class of bug the static verification story (AF-vm0q) exists to catch -- this story must not introduce that drift at authoring time by copying the per-app parameter table from the epic body exactly, not from memory or from `appset-kargo.yaml`'s narrower list.
 
 `helm.values` (a raw multi-line string), not `helm.valuesObject`, is required here: `valuesObject` is a structured/object field (backed by `RawExtension`), so Argo CD's Go-template substitution only lands on string leaves and cannot build the conditional `hasDownloads` persistence block -- `apps/akkoma/argocd/appset.yaml`'s own header comment documents this exact restriction for a different reason (stage-varying leaf values), and this design needs the SAME underlying mechanism (`values` as a plain string, re-parsed as YAML by Helm after Go-template substitution) to make `{{- if eq .hasDownloads "true"}}...{{- end}}` possible at all. This is a deliberate departure from `akkoma`'s pattern, not an inconsistency.
 
 This ApplicationSet uses a static per-app `list` generator with an inline `destination.name` conditional (`demo2` for `prod`, `demo1` otherwise) -- NOT a `clusters: {}` generator. This repo's own prior-epic finding (`.vault/knowledge/decisions/Argo CD clusters generator selector convention on Akuity-hosted instances.md`) confirmed a bare `clusters: {}` generator on this exact shared instance returns FOUR clusters (`demo1`, `demo2`, the control plane `in-cluster`, and `kargo`), not the two intended -- this design's static list sidesteps that risk entirely by construction, but if a FUTURE iteration of this design ever switches to cluster-discovery-based targeting, it MUST copy the `NotIn: [in-cluster, kargo]` selector convention already established fleet-wide (`docs/infra-dependencies.md`), not a bare `clusters: {}`. This story does not make that switch; it's a standing caution for future work, not an action item here.
 
 USER INTENT:
-A developer reading `appset-workloads.yaml` needs to see, in one file, the complete DRY claim for the workload half of this design: one template, 18 generated instances, differing only in the four leaf values (`name`, `image`, `port`, `hasDownloads`) the per-app parameter table declares -- and needs to trust that a promotion writing a new `imageTag` to a `release.yaml` file is picked up automatically, without ever touching this file again.
+A developer reading `appset-workloads.yaml` needs to see, in one file, the complete DRY claim for the workload half of this design: one template, 18 generated instances, differing only in the four leaf values (`name`, `image`, `port`, `hasDownloads`) the per-app parameter table declares -- and needs to trust that a promotion writing a new digest to a `release.yaml` file is picked up automatically, without ever touching this file again, AND that the resulting image reference is always parseable (never a colon-separated tag string built from a digest).
 
 IMPLEMENTATION:
-Create `apps/arr-stack/argocd/appset-workloads.yaml` verbatim per the design spec (matrix generator: outer `list` of 6 apps, inner `git files` generator over `apps/arr-stack/env/{{.name}}/*/release.yaml`):
+Create `apps/arr-stack/argocd/appset-workloads.yaml` verbatim per the design spec, WITH THE CORRECTED BINDING (matrix generator: outer `list` of 6 apps, inner `git files` generator over `apps/arr-stack/env/{{.name}}/*/release.yaml`):
 ```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
@@ -99,7 +102,7 @@ spec:
                   main:
                     image:
                       repository: {{.image}}
-                      tag: "{{.values.imageTag}}"
+                      digest: "{{.values.imageTag}}"
                     env:
                       - name: PUID
                         value: "1000"
@@ -142,52 +145,60 @@ spec:
         syncOptions:
           - CreateNamespace=true
 ```
-No explicit `storageClassName` is set on the `config`/`downloads` PVCs (relies on the cluster's default StorageClass, per the design spec) -- Story 5 (human-gated, `AF-<storageclass>`) independently verifies this assumption holds on the real instance before any live deploy trusts it; this story does not add `storageClassName` itself (that would silently diverge from the committed spec without the epic's own explicit verification gate having run).
+Note the ONE deviation from the design spec's own literal snippet (`docs/superpowers/specs/2026-08-18-arr-stack-appset-design.md` lines ~203-205): `image.digest: "{{.values.imageTag}}"` replaces the spec's `image.tag: "{{.values.imageTag}}"`. This is a deliberate, verified correction (see BUG RESOLUTION above), not a transcription error -- the spec's own snippet is tracked separately as a documentation-only fix, non-blocking for this story.
+
+No explicit `storageClassName` is set on the `config`/`downloads` PVCs (relies on the cluster's default StorageClass, per the design spec) -- AF-pfbv (human-gated) independently verifies this assumption holds on the real instance before any live deploy trusts it; this story does not add `storageClassName` itself (that would silently diverge from the committed spec without the epic's own explicit verification gate having run).
 
 KEY FILES:
 Create: `apps/arr-stack/argocd/appset-workloads.yaml`. Reference-only (not modified): `apps/arr-stack/argocd/appset-kargo.yaml` (AF-hb2f, cross-check the per-app parameter table matches), `apps/akkoma/argocd/appset.yaml` (reference for the `valuesObject` vs `values` restriction), `apps/arr-stack/env/*/*/release.yaml` (AF-8r8l, the files this ApplicationSet's `git files` generator discovers).
 
 OUT OF SCOPE:
-- `storageClassName` on the PVCs -- deliberately left unset per the committed spec; Story 5 verifies the underlying assumption, this story does not pre-empt that verification by adding it speculatively.
+- `storageClassName` on the PVCs -- deliberately left unset per the committed spec; AF-pfbv verifies the underlying assumption, this story does not pre-empt that verification by adding it speculatively.
 - Any change to `appset-kargo.yaml`'s own per-app list -- if a drift is found between the two lists during authoring, fix THIS file to match the epic's parameter table (the source of truth), do not "fix" `appset-kargo.yaml` as a side effect of this story (that would be an undeclared change to AF-hb2f's already-delivered scope).
+- Renaming the `imageTag` key or touching AF-hb2f's `tasks.yaml` -- fixed by AF-hb2f's already-delivered `yaml-update` step; this story only changes which app-template field consumes that value (`digest:` instead of `tag:`), never the upstream key name.
 - Switching to a `clusters: {}` generator -- explicitly out of scope; this story uses the static per-app `list` + inline `destination.name` conditional exactly as specified.
 - Real NFS-backed shared media volumes, ingress/HTTPRoute wiring -- both explicitly out of scope for this PoC per the epic body.
+- Correcting the design spec doc's own snippet -- tracked as a documentation-only follow-up outside the execution path, not this story's concern.
 
 DIFF BUDGET:
 1 new file, 0 modified. ~75-90 LOC (matches the design spec's literal YAML length).
 
 CONSUMES:
 - AF-8r8l: apps/arr-stack/env/<app>/<stage>/release.yaml (18 files) -> promotion-target contract file
-    schema: imageTag (string), values (object)
-    source: AF-8r8l's own PRODUCES block
+    schema: imageTag (string, "sha256:<64 lowercase hex chars>" -- always a digest, seeded per-app with a real resolvable value, never the literal tag name), values (object)
+    source: AF-8r8l's own PRODUCES block (as amended by this same bug-triage pass)
 - AF-iv8x: this issue's own Notes/Comments -> decision record
-    spec: supported: true (required for this story to proceed as written) | false (this story must not be implemented as written -- see Description)
-    source: the spike's empirical finding
+    spec: supported: true (confirmed -- this story proceeds as written)
+    source: the spike's empirical finding (already resolved, dependency removed)
 
 PRODUCES:
 - `apps/arr-stack/argocd/appset-workloads.yaml` -> ApplicationSet `arr-stack-workloads`
-    spec: generators: [matrix: [list (6 apps: name/image/port/hasDownloads), git files (path: apps/arr-stack/env/{{.name}}/*/release.yaml)]]; template.spec.source: oci://ghcr.io/bjw-s-labs/helm/app-template@4.x, helm.values (raw string, NOT valuesObject); template.spec.destination.name: demo2 if stage==prod else demo1; template.spec.destination.namespace: arr-stack-{{.path.basename}}
-    source: docs/superpowers/specs/2026-08-18-arr-stack-appset-design.md, verbatim
+    spec: generators: [matrix: [list (6 apps: name/image/port/hasDownloads), git files (path: apps/arr-stack/env/{{.name}}/*/release.yaml)]]; template.spec.source: oci://ghcr.io/bjw-s-labs/helm/app-template@4.x, helm.values (raw string, NOT valuesObject); template.spec.source's rendered image block binds `digest: "{{.values.imageTag}}"` (NOT `tag:`); template.spec.destination.name: demo2 if stage==prod else demo1; template.spec.destination.namespace: arr-stack-{{.path.basename}}
+    source: docs/superpowers/specs/2026-08-18-arr-stack-appset-design.md, WITH the digest-binding correction from this bug-triage pass (spec's own literal snippet is a tracked doc-only defect, see BUG RESOLUTION)
 
 TESTING:
-No unit-test suite exists for this repo's GitOps manifests -- verification is static/render-level only for this story (no live cluster touch; the first live confirmation of actual sync health happens in Story 7/8, human-gated):
+No unit-test suite exists for this repo's GitOps manifests -- verification is static/render-level only for this story (no live cluster touch; the first live confirmation of actual sync health happens in AF-o0rw/AF-c17x, human-gated):
 - `ruby -ryaml -e "YAML.load_stream(File.read('apps/arr-stack/argocd/appset-workloads.yaml'))" && echo OK`.
-- Manually render the `helm.values` block for both a `hasDownloads: true` app (e.g. sonarr) and a `hasDownloads: false` app (e.g. prowlarr) by hand-substituting the Go-template fields, then run each through `helm template <local copy or OCI pull of ghcr.io/bjw-s-labs/helm/app-template:4.x>` -- confirm the `downloads` persistence block is present for the `true` case and absent for the `false` case, and that the chart accepts the rendered values without error in both branches.
-- Cross-file contract check (also re-verified independently in Story 6): the app-name/image set in this file's `list` generator exactly matches `appset-kargo.yaml`'s (AF-hb2f) `list` generator's name/image pairs, and exactly matches the 6-app, 18-directory set `AF-8r8l` seeded.
+- Manually render the `helm.values` block for both a `hasDownloads: true` app (e.g. sonarr) and a `hasDownloads: false` app (e.g. prowlarr) by hand-substituting the Go-template fields (using a real `sha256:<hex>` value for `{{.values.imageTag}}`, matching AF-8r8l's seed shape), then run each through `helm template <local copy or OCI pull of ghcr.io/bjw-s-labs/helm/app-template:4.x>` -- confirm the `downloads` persistence block is present for the `true` case and absent for the `false` case, and confirm the rendered container image reference is `<repository>@sha256:<hex>` (never `<repository>:sha256:<hex>`) in both branches.
+- Cross-file contract check (also re-verified independently in AF-vm0q): the app-name/image set in this file's `list` generator exactly matches `appset-kargo.yaml`'s (AF-hb2f) `list` generator's name/image pairs, and exactly matches the 6-app, 18-directory set AF-8r8l seeded.
+- Grep this file for `tag: "{{.values.imageTag}}"` and confirm NO match (the bug this story exists to avoid reintroducing); confirm `digest: "{{.values.imageTag}}"` IS present exactly once.
 - `devops-toolkit:yaml-kubernetes-validator` and `devops-toolkit:helm-chart-developer` consulted before finalizing.
 
 Acceptance Criteria:
-1. [Ubiquitous] `apps/arr-stack/argocd/appset-workloads.yaml` uses a `matrix` generator (outer `list` of 6 apps, inner `git files` generator over `apps/arr-stack/env/{{.name}}/*/release.yaml`), NOT two static list generators -- unless AF-iv8x's resolution required the fallback, in which case this story must not proceed as written (see Description).
+1. [Ubiquitous] `apps/arr-stack/argocd/appset-workloads.yaml` uses a `matrix` generator (outer `list` of 6 apps, inner `git files` generator over `apps/arr-stack/env/{{.name}}/*/release.yaml`).
 2. [Ubiquitous] The rendered template uses `helm.values` (raw string), never `helm.valuesObject`, for the `app-template` source.
-3. [Event] Rendering for a `hasDownloads: true` app includes the `downloads` persistence block with `advancedMounts.main.main[0].path: /data`; rendering for a `hasDownloads: false` app omits it entirely.
-4. [Ubiquitous] The generator produces exactly 18 Applications (6 apps x 3 stages), each named `arr-{{.name}}-{{.path.basename}}` and annotated `kargo.akuity.io/authorized-stage: "{{.name}}:{{.path.basename}}"`.
-5. [Ubiquitous] `destination.name` resolves to `demo2` for `prod` and `demo1` for `dev`/`staging`; `destination.namespace` resolves to `arr-stack-<stage>` (shared across all 6 apps, per the epic's namespace decision).
-6. [Ubiquitous] No `storageClassName` is set on either PVC (deliberately deferred to Story 5's verification, not silently added or silently omitted-without-acknowledgment).
-7. [Unwanted] The app-name/image list in this file shall not diverge from `appset-kargo.yaml`'s (AF-hb2f) app-name/image list.
-8. [Unwanted] This ApplicationSet's generator shall not use `clusters: {}`.
+3. [Ubiquitous] The container image block binds `digest: "{{.values.imageTag}}"` -- it shall never bind that value to `tag:`.
+4. [Event] Rendering for a `hasDownloads: true` app includes the `downloads` persistence block with `advancedMounts.main.main[0].path: /data`; rendering for a `hasDownloads: false` app omits it entirely.
+5. [Event] Rendering the container image block with a real `sha256:<hex>` value substituted for `{{.values.imageTag}}` produces `<repository>@sha256:<hex>` -- a syntactically valid OCI image reference.
+6. [Ubiquitous] The generator produces exactly 18 Applications (6 apps x 3 stages), each named `arr-{{.name}}-{{.path.basename}}` and annotated `kargo.akuity.io/authorized-stage: "{{.name}}:{{.path.basename}}"`.
+7. [Ubiquitous] `destination.name` resolves to `demo2` for `prod` and `demo1` for `dev`/`staging`; `destination.namespace` resolves to `arr-stack-<stage>` (shared across all 6 apps, per the epic's namespace decision).
+8. [Ubiquitous] No `storageClassName` is set on either PVC (deliberately deferred to AF-pfbv's verification, not silently added or silently omitted-without-acknowledgment).
+9. [Unwanted] The app-name/image list in this file shall not diverge from `appset-kargo.yaml`'s (AF-hb2f) app-name/image list.
+10. [Unwanted] This ApplicationSet's generator shall not use `clusters: {}`.
+11. [Unwanted] This file shall not contain the substring `tag: "{{.values.imageTag}}"` -- the exact regression this story's bug-triage pass exists to prevent.
 
 MANDATORY SKILLS TO REVIEW:
-devops-toolkit:akp-platform (mandatory -- its GitOps app-patterns reference material for the matrix/git-files generator shape), devops-toolkit:helm-chart-developer (mandatory -- bjw-s app-template values shape), devops-toolkit:yaml-kubernetes-validator (mandatory)
+devops-toolkit:akp-platform (mandatory -- its GitOps app-patterns reference material for the matrix/git-files generator shape), devops-toolkit:helm-chart-developer (mandatory -- bjw-s app-template values shape, specifically the `image.digest` vs `image.tag` fields in `_imageSpecificationToImage.tpl`), devops-toolkit:yaml-kubernetes-validator (mandatory)
 
 ## Acceptance Criteria
 
