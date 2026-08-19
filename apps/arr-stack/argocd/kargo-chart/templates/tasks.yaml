@@ -26,6 +26,15 @@
 # produces -- writing it would rewrite `release` over `release`, git-commit would
 # find nothing to commit, and every promotion would succeed while deploying
 # nothing. .Digest is the only field that moves when hotio republishes the tag.
+#
+# CONTRACT FOR THE WORKLOADS SIDE (Story 4), since this step decides the VALUE
+# but not how it is consumed: `imageTag` here holds a digest ("sha256:..."),
+# not a tag. app-template builds its image ref as repository + ":" + .image.tag
+# but repository + "@" + .image.digest (charts/common/templates/lib/common/
+# _imageSpecificationToImage.tpl). A digest routed into `.image.tag` yields
+# `ghcr.io/hotio/<app>:sha256:...`, which is not a parseable reference -- an OCI
+# tag cannot contain a colon. appset-workloads.yaml must bind this value to
+# app-template's `digest` field, NOT its `tag` field.
 apiVersion: kargo.akuity.io/v1alpha1
 kind: PromotionTask
 metadata:
@@ -55,7 +64,7 @@ spec:
     as: commit
     config:
       path: ./src
-      message: "{{ .Values.appName }}/{{ $stage }}: promote image {{ $imageDigest }}"
+      message: "arr-stack/{{ .Values.appName }}/{{ $stage }}: promote image {{ $imageDigest }}"
   - uses: git-push
     config:
       path: ./src
