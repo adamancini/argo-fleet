@@ -8,8 +8,8 @@ labels: [human-execution-required, external-integration]
 parent: AF-j5rz
 created_at: 2026-08-18T18:58:35Z
 created_by: ada
-updated_at: 2026-08-18T19:13:12Z
-content_hash: "sha256:de73f5fd67a40a715c9894ac63e0bea5a4a6277bc2ca5811a06bbd8637fd8ac2"
+updated_at: 2026-08-19T15:44:11Z
+content_hash: "sha256:f398ef9d8fb126ec58a9dcf17e79a13b21effb087442305fb0393c6a70e82ecc"
 blocks: [AF-c17x, AF-vm0q]
 was_blocked_by: [AF-vm0q]
 blocked_by: [AF-6jta]
@@ -24,12 +24,12 @@ Description:
 Merge the completed `arr-stack` epic branch to `main`, confirm it's actually pushed to `origin/main` (not just merged locally), and prove -- with literal command output a human has personally read -- that (a) no pre-existing resource on the shared instance is disturbed, (b) `fleet-argocd-apps.yaml` picks up `apps/arr-stack/argocd` and creates a healthy wrapper Application `argocd-arr-stack`, and (c) both `arr-stack-workloads` and `arr-stack-kargo` ApplicationSets generate exactly the expected child counts (18 and 6 respectively).
 
 DISCOVERED DURING / WHY THIS IS DIFFERENT IN KIND:
-This is the first time anything under `apps/arr-stack/` touches the real shared instance -- everything up to this point (AF-hb2f, AF-8r8l, AF-iv8x's spike, AF-6jta, AF-vm0q's static suite) was authored and verified statically, deliberately, per this epic's two-tier design. This repo's own vault knowledge (`.vault/knowledge/debug/Argo CD targetRevision: HEAD resolves against remote default branch.md`) documents a standing trap directly relevant here: `HEAD` on an Application/ApplicationSet source resolves against the git REMOTE's default branch, not local checkout state -- an unpushed local merge is invisible to a live `syncPolicy.automated` reconcile. Confirm the merge is actually on `origin/main` before expecting anything below to happen.
+This is the first time anything under `apps/arr-stack/` touches the real shared instance -- everything up to this point (AF-hb2f, AF-yse2, AF-8r8l, AF-iv8x's spike, AF-6jta, AF-vm0q's static suite) was authored and verified statically, deliberately, per this epic's two-tier design. This repo's own vault knowledge (`.vault/knowledge/debug/Argo CD targetRevision: HEAD resolves against remote default branch.md`) documents a standing trap directly relevant here: `HEAD` on an Application/ApplicationSet source resolves against the git REMOTE's default branch, not local checkout state -- an unpushed local merge is invisible to a live `syncPolicy.automated` reconcile. Confirm the merge is actually on `origin/main` before expecting anything below to happen.
 
 USER INTENT:
 The user needs certainty, verified by their own eyes against real `argocd app list`/`argocd appset list` output -- not an agent's summary -- that merging this epic's branch did not disturb anything already running on the shared instance, and that the new `arr-stack` tree comes up healthy with exactly the child counts the design predicts. The user can trust that story AF-c17x's Sonarr-specific health check rests on a correctly-sized foundation only once this story's recorded output confirms it. A wrong child count (17 instead of 18, 5 instead of 6) is the first observable sign of exactly the kind of cross-file drift Story AF-vm0q's static suite is meant to prevent -- but a live generator can still surprise even a clean static pass (e.g. if the spike's confirmed generator shape behaves differently against real live git-files discovery than a dry-run predicted).
 
-STEPS (run by a human operator, one at a time, from `/Users/ada/src/github.com/adamancini/argo-fleet`; every step assumes AF-6jta -- the last implementation story -- is complete and committed):
+STEPS (run by a human operator, one at a time, from `/Users/ada/src/github.com/adamancini/argo-fleet`; every step assumes AF-6jta -- the last implementation story -- is complete and committed, which itself required AF-yse2's `seerr` roster patch to land first):
 
 Step 0 -- Confirm the static suite is clean BEFORE merging (mechanical dependency note: this story's nd ticket is NOT `blocked_by` AF-vm0q, the capstone, because the capstone's own ticket is `blocked_by` every sibling including this one and would deadlock otherwise -- but the static suite's CONTENT must still be written and passing before this step, regardless of whether AF-vm0q's ticket has formally closed yet):
 ```bash
@@ -61,7 +61,7 @@ Step 4 -- Confirm both ApplicationSets generate the expected child counts:
 argocd appset get arr-stack-workloads
 argocd appset get arr-stack-kargo
 ```
-Expected: `arr-stack-workloads` shows exactly 18 generated Applications (`arr-sonarr-dev` ... `arr-overseerr-prod`); `arr-stack-kargo` shows exactly 6 (`kargo-arr-sonarr` ... `kargo-arr-overseerr`). A count that's off by even one is grounds to stop and investigate before proceeding to Story 8 -- do not assume "close enough."
+Expected: `arr-stack-workloads` shows exactly 18 generated Applications (`arr-sonarr-dev` ... `arr-seerr-prod` -- the sixth app is `seerr`, not `overseerr`, per this epic's rename bug-triage); `arr-stack-kargo` shows exactly 6 (`kargo-arr-sonarr` ... `kargo-arr-seerr`). A count that's off by even one, or any generated name still reading `overseerr`, is grounds to stop and investigate before proceeding to Story 8 -- do not assume "close enough."
 
 Step 5 -- Confirm pre-existing resources are undisturbed:
 ```bash
@@ -87,7 +87,7 @@ Not applicable in the usual sense -- every "test" in this story is a human perso
 Acceptance Criteria:
 1. [Event] The epic's final commit is confirmed present in `origin/main` (not merely a local merge) before any generator is expected to react to it.
 2. [Event] `argocd app get argocd-arr-stack` shows `Synced`/`Healthy`.
-3. [Event] `argocd appset get arr-stack-workloads` shows exactly 18 generated Applications; `argocd appset get arr-stack-kargo` shows exactly 6.
+3. [Event] `argocd appset get arr-stack-workloads` shows exactly 18 generated Applications (naming through `arr-seerr-prod`, never `arr-overseerr-*`); `argocd appset get arr-stack-kargo` shows exactly 6 (naming through `kargo-arr-seerr`, never `kargo-arr-overseerr`).
 4. [Unwanted] No pre-existing Application/ApplicationSet on the shared instance (including `akp-platform`'s own `platform-aoa`/`argocd-apps`/`kargo-apps`) changes status or child count as a side effect of this merge.
 5. All command output is recorded literally in this story's Comments, read and confirmed by a human operator -- not summarized by an agent.
 
