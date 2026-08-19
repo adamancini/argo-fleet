@@ -6,8 +6,8 @@ priority: 2
 type: epic
 created_at: 2026-08-18T18:50:52Z
 created_by: ada
-updated_at: 2026-08-18T18:50:52Z
-content_hash: "sha256:e9e174200add65c570409330496b5bf8b9eb9d80c411128be5d354e17c659726"
+updated_at: 2026-08-19T15:03:02Z
+content_hash: "sha256:adf8d3d6dafd251adbe3fc12e0139f36101722cb32b2e61b5793eeff2c6076ef"
 ---
 
 ## Description
@@ -90,3 +90,6 @@ devops-toolkit:akp-platform (mandatory for every story in this epic -- `referenc
 
 
 ## Comments
+
+### 2026-08-19T15:03:02Z ada
+DOC DEFECT FLAGGED, NON-BLOCKING (Sr PM bug triage): docs/superpowers/specs/2026-08-18-arr-stack-appset-design.md lines ~203-205 (as committed on main at cb8bf2e) show appset-workloads.yaml's image block as 'repository: {{.image}}' / 'tag: "{{.values.imageTag}}"'. This is the same tag/digest mismatch discovered during AF-hb2f's deliver-only follow-up: release.yaml's imageTag key holds a sha256 digest (per AF-hb2f's delivered tasks.yaml), so binding it to app-template's tag: field produces an unparseable repository:sha256:... reference; the correct binding is app-template's digest: field. The fix has been applied directly to AF-8r8l (seed shape) and AF-6jta (binding), and AF-vm0q (capstone verification) -- none of them faithfully implement the spec's buggy literal snippet. This comment only flags that the design spec DOCUMENT ITSELF still contains the uncorrected snippet at those lines and should eventually be corrected for documentation accuracy. Not blocking: no story in this epic reads that snippet as source-of-truth anymore (all three affected stories now carry the corrected shape directly in their own bodies), and no live cluster is touched until the human-gated stories, all of which are downstream of the corrected stories.
