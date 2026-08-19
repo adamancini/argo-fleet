@@ -8,8 +8,8 @@ labels: [human-execution-required]
 parent: AF-j5rz
 created_at: 2026-08-18T18:56:41Z
 created_by: ada
-updated_at: 2026-08-18T19:06:09Z
-content_hash: "sha256:bf53a5b5520f67db49393e0e8134efc21aa63d406eb0c620ecc40a97a0b60a5b"
+updated_at: 2026-08-19T20:26:18Z
+content_hash: "sha256:2ea6e9e48e14a0ce5d890e415ef2dec2c80d286526a1cb40d794e417807f0ebe"
 blocks: [AF-c17x, AF-vm0q]
 ---
 
@@ -87,3 +87,18 @@ devops-toolkit:akp-platform (mandatory -- confirms StorageClass/PVC binding conv
 - Blocks: [[AF-c17x]], [[AF-vm0q]]
 
 ## Comments
+
+### 2026-08-19T20:26:18Z ada
+HUMAN OPERATOR VERIFICATION (per this story's own required protocol):
+
+Step 1 -- demo1:
+$ kubectl --context k3d-demo1 get storageclass
+NAME                   PROVISIONER        RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+local-path (default)   openebs.io/local   Delete          WaitForFirstConsumer   false                  14d
+
+Step 2 -- demo2:
+$ kubectl --context k3d-demo2 get storageclass
+NAME                   PROVISIONER        RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+local-path (default)   openebs.io/local   Delete          WaitForFirstConsumer   false                  14d
+
+Both clusters confirm local-path marked (default). AC #2 satisfied -- arr-stack's unset storageClassName assumption holds on both live clusters. No live resource created/updated/deleted (AC #3) -- kubectl get was the only command run. Verified with the user directly supervising this session (docker/k3d demo2 needed a manual restart first, kubeconfig confirmed current via kubecm cluster-check before running the get).
