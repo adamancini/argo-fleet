@@ -1,14 +1,14 @@
 ---
 id: AF-6jta
 title: "Implement arr-stack workloads ApplicationSet matrix generator"
-status: in_progress
+status: open
 priority: 1
 type: task
 parent: AF-j5rz
 created_at: 2026-08-18T18:56:00Z
 created_by: ada
-updated_at: 2026-08-19T16:03:26Z
-content_hash: "sha256:6a9bc0c9b43c4534cc917158ab1522c17ddcf8b205e7707aa09d49bd7f37e408"
+updated_at: 2026-08-19T16:06:31Z
+content_hash: "sha256:88214ce489426f14ccf3f4d9714895343392f6d5842605821395f73791879b90"
 blocks: [AF-vm0q, AF-o0rw]
 was_blocked_by: [AF-iv8x, AF-8r8l, AF-yse2]
 assignee: dev-AF-6jta
@@ -235,6 +235,7 @@ devops-toolkit:akp-platform (mandatory -- its GitOps app-patterns reference mate
 - 2026-08-19T16:03:26Z auto-follows: linked to predecessor AF-8r8l
 - 2026-08-19T16:03:26Z auto-follows: linked to predecessor AF-yse2
 - 2026-08-19T16:03:26Z claimed by dev-AF-6jta
+- 2026-08-19T16:06:31Z status: in_progress -> open
 
 ## Links
 - Parent: [[AF-j5rz]]
