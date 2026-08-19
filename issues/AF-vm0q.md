@@ -8,8 +8,8 @@ labels: [capstone]
 parent: AF-j5rz
 created_at: 2026-08-18T18:57:46Z
 created_by: ada
-updated_at: 2026-08-19T15:43:26Z
-content_hash: "sha256:aa02ca673a7923414e823645283362809f18aa34309c62802c62e3c0192b66c7"
+updated_at: 2026-08-19T19:56:16Z
+content_hash: "sha256:2a5c2ffb54e4d6419a43182e6aa1a7804b1a6eb56ee721bc2bda185ac77b8ed3"
 blocked_by: [AF-6jta, AF-pfbv, AF-o0rw, AF-c17x, AF-4wkn]
 was_blocked_by: [AF-q5yh, AF-iv8x, AF-hb2f, AF-8r8l, AF-yse2]
 ---
@@ -20,6 +20,8 @@ Static verification capstone for the whole `arr-stack` manifest set: prove the c
 
 BUG RESOLUTION (AF-hb2f discovered-bug follow-up, applied here before this story is claimed):
 AF-8r8l and AF-6jta were both amended, ahead of this story, to fix a `tag:`-vs-`digest:` mismatch: `release.yaml`'s `imageTag` key holds a `sha256:<hex>` digest (per AF-hb2f's delivered `tasks.yaml`), and `appset-workloads.yaml` binds it to app-template's `digest:` field, not `tag:` (binding it to `tag:` would render an unparseable `repository:sha256:...` reference). This story's cross-file contract checks (item 3) and its self-validation regression list (item 7) below are written for the CORRECTED shape (`imageTag` is a digest, seeded per-app with a real resolvable value; the binding is `digest:`) -- do not write assertions against the original, buggy `imageTag: release` / `tag:` shape described in the design spec's own literal snippet (`docs/superpowers/specs/2026-08-18-arr-stack-appset-design.md` lines ~203-205, tracked separately as a documentation-only fix, non-blocking).
+
+PARAM PATH CORRECTION (second bug-triage pass, applied here before this story is claimed -- discovered by AF-6jta's own deliver-only follow-up developer): the digest binds to `{{.imageTag}}`, NOT `{{.values.imageTag}}`. Argo CD's git *files* generator exposes a discovered file's top-level keys directly, with no prefix -- `release.yaml`'s `imageTag` key is top-level (AF-hb2f's `tasks.yaml` `yaml-update` step writes `key: imageTag`, top level), and its sibling `values: {}` key is an empty map everywhere across all 18 seeded files, so `.values.imageTag` resolves nowhere and, under this ApplicationSet's own `goTemplateOptions: ["missingkey=error"]`, aborts rendering for all 18 Applications. AF-6jta's actual delivered `appset-workloads.yaml` ships the corrected `{{.imageTag}}` path; this story's cross-file contract checks (item 3) and self-validation regression list (item 7) below are written for that corrected path -- do not write assertions expecting `{{.values.imageTag}}` to appear in the delivered file, and treat EITHER `tag: "{{.imageTag}}"` OR `tag: "{{.values.imageTag}}"` as the forbidden regression substring (either path, bound to the wrong field, is the same class of bug).
 
 ROSTER CORRECTION (separate discovered-bug follow-up, applied here before this story is claimed): the sixth app in this epic's family was originally `overseerr`/`ghcr.io/hotio/overseerr`. hotio retired that image; it is renamed `seerr`/`ghcr.io/hotio/seerr` throughout the epic (AF-j5rz's own per-app parameter table, AF-8r8l, AF-6jta, and a dedicated patch bug, AF-yse2, for AF-hb2f's already-merged `appset-kargo.yaml`/`appproject.yaml`). Every reference to the sixth app below has been updated from `overseerr` to `seerr` accordingly -- this story's cross-file contract checks (item 3), negative assertions (item 4), and collision check (item 5) are all written for the CORRECTED roster. Do not write any assertion that expects or tolerates `overseerr` anywhere under `apps/arr-stack/`; a lingering `overseerr` reference at capstone time is itself a regression this story must catch (see item 4's added check below).
 
@@ -33,7 +35,7 @@ This repo already has an established, reusable pattern for exactly this kind of 
 Reuse `e2e/observability_test.rb`'s harness (assert helpers, `dig_path`, `doc`/`raw` caching) as the base -- extend it with a new section for `arr-stack`, do not fork it into a second test file. There is no installed skill for this methodology yet (it's a pending vault proposal, not yet promoted) -- every specific check below is spelled out explicitly rather than referenced by skill name.
 
 USER INTENT:
-Anyone reviewing this epic's delivery needs one command that either says "the whole arr-stack manifest set is internally coherent" or points at the exact cross-file contract that's broken -- not five separate spot-checks that each pass in isolation while the system as a whole is subtly wrong (a 7th app added to one list and not the other, a `hasDownloads` mismatch between the parameter table and the rendered template, a stray reference to an out-of-scope app, a stray reference to the retired `overseerr` image, or a digest silently bound into the wrong app-template field). Running the suite displays a clear pass/fail per section; the user can trust a clean run as the epic's actual coherence proof, not an agent's paraphrase of one.
+Anyone reviewing this epic's delivery needs one command that either says "the whole arr-stack manifest set is internally coherent" or points at the exact cross-file contract that's broken -- not five separate spot-checks that each pass in isolation while the system as a whole is subtly wrong (a 7th app added to one list and not the other, a `hasDownloads` mismatch between the parameter table and the rendered template, a stray reference to an out-of-scope app, a stray reference to the retired `overseerr` image, or a digest silently bound into the wrong app-template field or the wrong param path). Running the suite displays a clear pass/fail per section; the user can trust a clean run as the epic's actual coherence proof, not an agent's paraphrase of one.
 
 IMPLEMENTATION:
 Add a new section to `e2e/observability_test.rb` (or a clearly-delineated `arr_stack` method group within it) covering:
@@ -44,14 +46,14 @@ Add a new section to `e2e/observability_test.rb` (or a clearly-delineated `arr_s
 
 2. **`helm template` render checks:**
    - `helm template apps/arr-stack/argocd/kargo-chart --set appName=sonarr --set image=ghcr.io/hotio/sonarr` and again with `--set appName=prowlarr --set image=ghcr.io/hotio/prowlarr` (one `hasDownloads: true` app, one `false`, matching AF-hb2f's own verification) -- confirm both render a well-formed, app-name-scoped Project/Warehouse/3xStage/PromotionTask set.
-   - Manually render `appset-workloads.yaml`'s `helm.values` block for both a `hasDownloads: true` and `hasDownloads: false` app (hand-substituting the Go-template fields, matching AF-6jta's own verification, using a real `sha256:<hex>` value for `{{.values.imageTag}}`) and run through `helm template` against the `app-template` chart -- confirm the conditional persistence block parses in both branches AND confirm the rendered container image reference is `<repository>@sha256:<hex>` (never `<repository>:sha256:<hex>`).
+   - Manually render `appset-workloads.yaml`'s `helm.values` block for both a `hasDownloads: true` and `hasDownloads: false` app (hand-substituting the Go-template fields, matching AF-6jta's own verification, using a real `sha256:<hex>` value for `{{.imageTag}}`) and run through `helm template` against the `app-template` chart -- confirm the conditional persistence block parses in both branches AND confirm the rendered container image reference is `<repository>@sha256:<hex>` (never `<repository>:sha256:<hex>`).
 
 3. **Cross-file contract checks (highest-value section -- discover expected sets by glob, not hard-coded lists, per this repo's established methodology):**
    - The app-name set in `appset-workloads.yaml`'s `list` generator == the app-name set in `appset-kargo.yaml`'s `list` generator == the app-name set discovered by globbing `apps/arr-stack/env/*/` (AF-8r8l) == the epic's own per-app parameter table (`sonarr`, `radarr`, `lidarr`, `bazarr`, `prowlarr`, `seerr`) -- all four sources must agree exactly; a 7th app, a missing one, or a stale `overseerr` in any ONE source is a failure.
    - For every app, the `image` value in `appset-workloads.yaml`'s list == the `image` value in `appset-kargo.yaml`'s list (byte-identical `repoURL`, e.g. `ghcr.io/hotio/sonarr` in both; for the sixth app, `ghcr.io/hotio/seerr` in both, never `ghcr.io/hotio/overseerr`).
    - For every app, the `port`/`hasDownloads` values in `appset-workloads.yaml`'s list exactly match the epic's per-app parameter table (not just "some value present").
    - Glob-discover all 18 `apps/arr-stack/env/*/*/release.yaml` files; confirm exactly 18, confirm the (app, stage) pairs are the full cross-product of the 6-app set (including `seerr`, never `overseerr`) x `{dev,staging,prod}`, confirm every file's `values` key is exactly `{}` and every file's `imageTag` value matches `sha256:<64 lowercase hex chars>` (a well-formed digest -- NOT the literal string `release` or any other tag-shaped value, per this story's BUG RESOLUTION note above), and confirm that for each app, all three stage files share one byte-identical `imageTag` value (the shared pre-promotion seed) while different apps are NOT required to match each other.
-   - `apps/arr-stack/argocd/appset-workloads.yaml` binds `digest: "{{.values.imageTag}}"` in its container image block, and does NOT contain the substring `tag: "{{.values.imageTag}}"` anywhere -- the exact regression this epic's bug-triage pass exists to prevent, re-verified independently here rather than trusted from AF-6jta's own claim.
+   - `apps/arr-stack/argocd/appset-workloads.yaml` binds `digest: "{{.imageTag}}"` in its container image block (the corrected param path -- NOT `{{.values.imageTag}}`, which resolves nowhere against the seeded `release.yaml` shape), and does NOT contain the substring `tag: "{{.imageTag}}"` OR `tag: "{{.values.imageTag}}"` anywhere -- either is the exact regression this epic's bug-triage pass exists to prevent, re-verified independently here rather than trusted from AF-6jta's own claim.
    - Every file under `apps/arr-stack/argocd/kargo-chart/` contains the literal string `+argocd:skip-file-rendering` (re-verifies AF-hb2f's own AC independently -- do not just trust the developer's claim, re-derive it).
    - `kargo-chart/templates/project.yaml` carries `argocd.argoproj.io/sync-wave: "-1"` (re-verified, matching this repo's checklist convention).
    - Every workload Application name template (`arr-{{.name}}-{{.path.basename}}`) and its `kargo.akuity.io/authorized-stage` annotation value are structurally consistent with each other (same app name, same stage token) -- a mismatched annotation would silently break Kargo's Application-authorization check without erroring anywhere visible.
@@ -64,12 +66,13 @@ Add a new section to `e2e/observability_test.rb` (or a clearly-delineated `arr_s
    - No `Stage.spec.verification`/`AnalysisTemplate` block exists anywhere under `apps/arr-stack/argocd/kargo-chart/`.
    - No `storageClassName` is hard-coded in `appset-workloads.yaml`'s persistence block (confirms AF-pfbv's verification gate wasn't silently pre-empted).
    - No `release.yaml` file's `imageTag` value is the literal string `release`, empty, or otherwise non-digest-shaped (confirms this epic's bug-triage fix wasn't silently reverted).
+   - `appset-workloads.yaml`'s container image block does not contain `tag: "{{.imageTag}}"` or `tag: "{{.values.imageTag}}"` anywhere (confirms the digest/tag regression fix wasn't silently reverted under either param path).
 
 5. **Repo-wide collision check:** none of `arr-stack`, `kargo-arr-sonarr`, `kargo-arr-radarr`, `kargo-arr-lidarr`, `kargo-arr-bazarr`, `kargo-arr-prowlarr`, `kargo-arr-seerr`, or any `arr-{app}-{stage}` Application name collides with any existing Application/AppProject/Kargo-Project name already in this repo (`akkoma`, `soju`, and their generated children) -- repo-wide grep, not just a check within `apps/arr-stack/`.
 
 6. **Project hard-rule / quality-gate check:** confirm this epic's stories collectively satisfy the project's registered `lint.quality_gates` patterns (`CreateNamespace=true` present on both ApplicationSets' `syncOptions`, `storageClassName` explicitly discussed/deferred rather than silently absent, no secrets committed anywhere under `apps/arr-stack/` since this design has none, `never add app-specific config` -- confirmed via the bootstrap byte-identity check above).
 
-7. **Self-validation (required delivery evidence, not optional):** before trusting the new test section, deliberately introduce at least 6 single-field regressions against a scratch copy of the manifests (e.g., rename one app in `appset-workloads.yaml`'s list only, remove the skip-rendering marker from one `kargo-chart` file, delete one `release.yaml`, add a `storageClassName` to the persistence block, change one app's `image` in `appset-kargo.yaml` only, and change `appset-workloads.yaml`'s image block from `digest: "{{.values.imageTag}}"` back to `tag: "{{.values.imageTag}}"` -- this last one specifically re-introduces the bug this epic's triage pass fixed) and confirm each is caught by the SPECIFIC assertion meant to catch it (not just "some assertion failed") -- discard the scratch copy afterward. Record which regression was introduced and which assertion caught it as delivery evidence. Include a 7th regression reintroducing a stray `overseerr` reference (e.g. revert one `appset-kargo.yaml` list element back to `overseerr`/`ghcr.io/hotio/overseerr`) and confirm the item-4 negative assertion added above catches it.
+7. **Self-validation (required delivery evidence, not optional):** before trusting the new test section, deliberately introduce at least 6 single-field regressions against a scratch copy of the manifests (e.g., rename one app in `appset-workloads.yaml`'s list only, remove the skip-rendering marker from one `kargo-chart` file, delete one `release.yaml`, add a `storageClassName` to the persistence block, change one app's `image` in `appset-kargo.yaml` only, and change `appset-workloads.yaml`'s image block from `digest: "{{.imageTag}}"` back to `tag: "{{.imageTag}}"` -- this last one specifically re-introduces the bug this epic's triage pass fixed) and confirm each is caught by the SPECIFIC assertion meant to catch it (not just "some assertion failed") -- discard the scratch copy afterward. Record which regression was introduced and which assertion caught it as delivery evidence. Include a 7th regression reintroducing a stray `overseerr` reference (e.g. revert one `appset-kargo.yaml` list element back to `overseerr`/`ghcr.io/hotio/overseerr`) and confirm the item-4 negative assertion added above catches it. Include an 8th regression changing the image block to the WRONG param path with the RIGHT field (`digest: "{{.values.imageTag}}"`) and confirm the item-3/item-4 assertions above catch that variant too, distinct from the `tag:` regression.
 
 KEY FILES:
 Modify: `e2e/observability_test.rb` (extend with the `arr_stack` section; do not fork a second test file). Reference-only (read, not modified): every file under `apps/arr-stack/`, `bootstrap/*.yaml` (for the byte-identity check), the epic body's per-app parameter table.
@@ -80,7 +83,7 @@ OUT OF SCOPE:
 - Correcting the design spec doc's own snippet (`docs/superpowers/specs/2026-08-18-arr-stack-appset-design.md` lines ~120, ~170-171, ~203-205, ~296-297) -- tracked as a documentation-only follow-up outside the execution path.
 
 DIFF BUDGET:
-1 file modified (`e2e/observability_test.rb`), 0 new files. Expect roughly 150-260 added LOC (a new section comparable in size to the existing 150-assertion file's largest section; slightly larger than the original estimate to cover the digest/tag and overseerr/seerr regression checks added by this bug-triage pass).
+1 file modified (`e2e/observability_test.rb`), 0 new files. Expect roughly 150-260 added LOC (a new section comparable in size to the existing 150-assertion file's largest section; slightly larger than the original estimate to cover the digest/tag, param-path, and overseerr/seerr regression checks added by this bug-triage pass).
 
 CONSUMES:
 - AF-hb2f: apps/arr-stack/argocd/{appproject.yaml,kargo-chart/,appset-kargo.yaml} -> AppProject + vendored chart + list-generator ApplicationSet
@@ -88,11 +91,11 @@ CONSUMES:
 - AF-yse2: apps/arr-stack/argocd/{appset-kargo.yaml,appproject.yaml} -> corrected `seerr`/`ghcr.io/hotio/seerr` roster entry and AppProject description
     source: AF-yse2's own AC
 - AF-8r8l: apps/arr-stack/env/<app>/<stage>/release.yaml (18 files, roster: sonarr/radarr/lidarr/bazarr/prowlarr/seerr) -> promotion-target contract files
-    schema: imageTag (string, "sha256:<64 lowercase hex chars>"), values (object)
+    schema: imageTag (string, top-level key, "sha256:<64 lowercase hex chars>"), values (object, empty map)
     source: AF-8r8l's own PRODUCES block (as amended by this bug-triage pass)
 - AF-6jta: apps/arr-stack/argocd/appset-workloads.yaml -> matrix-generator ApplicationSet
-    spec: container image block binds digest: "{{.values.imageTag}}" (not tag:); sixth app is seerr/ghcr.io/hotio/seerr (not overseerr)
-    source: AF-6jta's own PRODUCES block (as amended by this bug-triage pass)
+    spec: container image block binds digest: "{{.imageTag}}" (not tag:, not .values.imageTag); sixth app is seerr/ghcr.io/hotio/seerr (not overseerr)
+    source: AF-6jta's own PRODUCES block (as amended by this bug-triage pass, param-path correction)
 
 PRODUCES:
 - `e2e/observability_test.rb` (extended) -> static, mutation-tested assertion suite covering all of `apps/arr-stack/`
@@ -101,10 +104,10 @@ PRODUCES:
 Acceptance Criteria:
 1. [Ubiquitous] `e2e/observability_test.rb` gains a new `arr_stack` section covering all seven implementation items above.
 2. [Ubiquitous] All structural/lint checks (item 1) and all `helm template` render checks (item 2) pass, including the corrected digest-reference assertion.
-3. [Ubiquitous] All cross-file contract checks (item 3) pass, including the `imageTag` digest-shape check, the `digest:` (not `tag:`) binding check, and the `seerr` (not `overseerr`) roster check.
-4. [Unwanted] All negative assertions (item 4) pass, including the new digest-regression check and the new overseerr-regression check.
+3. [Ubiquitous] All cross-file contract checks (item 3) pass, including the `imageTag` digest-shape check, the `digest: "{{.imageTag}}"` (not `tag:`, not `.values.imageTag`) binding check, and the `seerr` (not `overseerr`) roster check.
+4. [Unwanted] All negative assertions (item 4) pass, including the new digest/tag-and-param-path regression check and the new overseerr-regression check.
 5. [Ubiquitous] The repo-wide collision check (item 5) and quality-gate check (item 6) pass.
-6. [Ubiquitous] Self-validation (item 7) is performed with at least 7 deliberate regressions, one of which is the `digest:`-to-`tag:` reversion and one of which is an `overseerr` reintroduction, and each is caught by its specific assertion; this is recorded as delivery evidence, not asserted without detail.
+6. [Ubiquitous] Self-validation (item 7) is performed with at least 8 deliberate regressions, including the `digest:`-to-`tag:` reversion (under the corrected `.imageTag` path), the wrong-param-path variant (`digest: "{{.values.imageTag}}"`), and an `overseerr` reintroduction, and each is caught by its specific assertion; this is recorded as delivery evidence, not asserted without detail.
 7. Running the full extended `e2e/observability_test.rb` produces zero failures against the real, committed `apps/arr-stack/` manifests.
 
 MANDATORY SKILLS TO REVIEW:
