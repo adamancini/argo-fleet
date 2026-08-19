@@ -4,11 +4,11 @@ title: "Scaffold arr-stack AppProject + vendored Kargo chart + per-app Kargo pip
 status: closed
 priority: 1
 type: task
-labels: [walking-skeleton, delivered]
+labels: [walking-skeleton, delivered, accepted]
 parent: AF-j5rz
 created_at: 2026-08-18T19:11:30Z
 created_by: ada
-updated_at: 2026-08-19T15:09:39Z
+updated_at: 2026-08-19T15:09:40Z
 content_hash: "sha256:2ab147e1ce3d828075e823b2fa906079e8748bea2f78300258ae0a595f511789"
 assignee: dev-AF-hb2f
 follows: [AF-iv8x]
