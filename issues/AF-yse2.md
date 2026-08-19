@@ -7,8 +7,8 @@ type: bug
 parent: AF-j5rz
 created_at: 2026-08-19T15:40:11Z
 created_by: ada
-updated_at: 2026-08-19T16:03:26Z
-content_hash: "sha256:8f3a854a889924c6ad5ce0cd7dd19b22075be78aff9a03ca7f28666cc16e18b6"
+updated_at: 2026-08-19T16:04:19Z
+content_hash: "sha256:0d8f9e7edcbdcea3cb2882c8cb2377e7c44619fd5a1f35e64f279896531376f0"
 assignee: dev-AF-yse2
 follows: [AF-hb2f, AF-iv8x]
 labels: [accepted]
@@ -212,3 +212,6 @@ because the bootstrap directory sync parses each file literally, with no Helm-ch
   (`git -C <worktree>`); Python has no PyYAML on this box, so Ruby stdlib YAML is the only
   dependency-free parser (which is exactly why the existing e2e suite is Ruby); and zsh eats the
   colon in `git show "$SHA:path"` -- use `HEAD:path` or `"${SHA}":path`.
+
+### 2026-08-19T16:04:19Z ada
+PM-ACCEPTOR REVIEW: Independently re-verified all 6 required checks. (1) appset-kargo.yaml list element is exactly {name: seerr, image: ghcr.io/hotio/seerr}; diffed against parent commit c9d8095 (epic/AF-j5rz base) and confirmed the other 5 elements (sonarr/radarr/lidarr/bazarr/prowlarr) are byte-identical. (2) appproject.yaml spec.description ends '...Prowlarr, Seerr'. (3) Re-ran helm template apps/arr-stack/argocd/kargo-chart --set appName=seerr --set image=ghcr.io/hotio/seerr myself: exit 0, 6 well-formed documents (Project/Warehouse/3xStage/PromotionTask), all seerr-scoped, Warehouse imageSelectionStrategy=Digest/constraint=release, zero unresolved {{ }} placeholders, Kargo ${{ }} expressions intact. (4) grep -rniw overseerr apps/arr-stack/ (and repo-wide) returns 0 matches -- confirmed clean, including the developer's flagged near-miss on their own explanatory comment (reworded, does not contain the word). (5) git diff --stat c9d8095 a497fba shows exactly 2 files modified, 0 added, 0 deleted. (6) bootstrap/ diff against c9d8095 is empty. pvg gates --changed c9d8095: PASS (0 warn, 0 skip). pvg verify: vacuous PASS (0 files scanned, .yaml not a scanned extension) as the developer correctly flagged -- not relied upon. No hard-tdd label, no DISCOVERED_BUG, no stale docs (0 overseerr references anywhere in repo). ACCEPTED.
