@@ -8,7 +8,7 @@ parent: AF-j5rz
 created_at: 2026-08-18T18:54:12Z
 created_by: ada
 updated_at: 2026-08-19T15:53:39Z
-content_hash: "sha256:2579c4996561d338914b2f1ce72767110744aa12cc55594e176564aa1d733969"
+content_hash: "sha256:19acdc99b026df73b135d1974ed8c503dc7db9a91208dc97548ef0b5b8847716"
 blocks: [AF-6jta, AF-vm0q]
 was_blocked_by: [AF-q5yh, AF-hb2f]
 follows: [AF-hb2f, AF-iv8x]
@@ -173,6 +173,16 @@ devops-toolkit:akp-platform (mandatory -- confirms the release.yaml contract sha
 
 
 ## Notes
+
+
+## nd_contract
+status: delivered
+
+### evidence
+- Transitioned via pvg story deliver on 2026-08-19.
+
+### proof
+- [ ] Developer evidence block must remain authoritative above this contract.
 
 
 ## History
