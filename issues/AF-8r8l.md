@@ -8,7 +8,7 @@ parent: AF-j5rz
 created_at: 2026-08-18T18:54:12Z
 created_by: ada
 updated_at: 2026-08-19T15:13:01Z
-content_hash: "sha256:372138acdf9a80116107c5d047bee67d312adec95647788b3b5c4194f9bb88e2"
+content_hash: "sha256:ee349063a07c37e02b2b335d417d54c5779d4698f943dd94c2c9d0232e1b2671"
 blocks: [AF-6jta, AF-vm0q]
 was_blocked_by: [AF-q5yh, AF-hb2f]
 assignee: dev-AF-8r8l
@@ -134,3 +134,6 @@ devops-toolkit:akp-platform (mandatory -- confirms the release.yaml contract sha
 
 ### 2026-08-19T15:02:49Z ada
 BUG TRIAGE (Sr PM): discovered by AF-hb2f's deliver-only follow-up developer -- release.yaml's imageTag key holds a digest (per AF-hb2f's delivered tasks.yaml, imageFrom(vars.image).Digest), but this story's original draft seeded a tag-shaped literal (imageTag: release). If bound into app-template's tag: field (AF-6jta's original draft), a digest in a tag field renders an unparseable repository:sha256:... reference. Resolution applied directly to this story's body: seed each app's 3 stage files with that app's real, currently-resolvable sha256 digest for its release-channel tag (mirrors this repo's own apps/akkoma/env/*/release.yaml precedent of seeding a real resolvable value, not a placeholder), never the literal string release or an empty value. AF-6jta amended in lockstep to bind digest: not tag:. AF-vm0q (capstone) amended to verify the corrected shape and to add a regression check for this exact bug. AF-hb2f itself is NOT reopened -- the imageTag key name is unchanged, fixed by its already-merged yaml-update step.
+
+### 2026-08-19T15:13:01Z ada
+loop: reset orphaned in_progress to open (no developer worktree found; prior session presumed dead)
