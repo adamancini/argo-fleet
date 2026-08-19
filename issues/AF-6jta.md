@@ -13,6 +13,7 @@ blocks: [AF-vm0q, AF-o0rw]
 was_blocked_by: [AF-iv8x, AF-8r8l, AF-yse2]
 assignee: dev-AF-6jta
 follows: [AF-iv8x, AF-8r8l, AF-yse2, AF-hb2f]
+labels: [delivered]
 ---
 
 ## Description
