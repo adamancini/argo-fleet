@@ -1,17 +1,18 @@
 ---
 id: AF-iv8x
 title: "Spike: confirm ApplicationSet matrix generator interpolates sibling list params into git files path"
-status: in_progress
+status: closed
 priority: 0
 type: task
 labels: [spike, delivered]
 parent: AF-j5rz
 created_at: 2026-08-18T18:55:02Z
 created_by: ada
-updated_at: 2026-08-18T19:44:17Z
-content_hash: "sha256:5c92b7f0bf020e45dad58cdfe10cb3618f30cdc6ffc4bf8983e841b1f86ffa18"
-blocks: [AF-6jta, AF-vm0q]
+updated_at: 2026-08-19T14:44:32Z
+content_hash: "sha256:a7cac5fa7672a9d69a4301d2b27b24159bdb7929270a40fa49fe742c22a64739"
 assignee: dev-AF-iv8x
+closed_at: 2026-08-19T14:44:32Z
+close_reason: "Accepted: SPIKE resolution independently verified -- all Argo CD source citations (matrix.go:50-55, generator_spec_processor.go:175-176/:57, utils.go:337/:93/:349-361, webhook.go:536-550) confirmed byte-for-byte accurate against local clone @ 21804a2ac; commit history (5515cde64, 98475bc43, v2.5.0 tag) confirmed; diff budget (0 files vs epic/AF-j5rz) confirmed empty via independent git diff/status; live instance spot-check found zero probe-*/arr-* residue among 29 live Applications. Both outcomes and caveats for AF-6jta are persisted in the story's own Notes/Comments, not just chat. AC5 vacuously satisfied (outcome supported)."
 ---
 
 ## Description
@@ -88,10 +89,12 @@ status: delivered
 - 2026-08-18T19:36:09Z status: open -> in_progress
 - 2026-08-18T19:36:09Z claimed by dev-AF-iv8x
 - 2026-08-18T19:43:30Z status: in_progress -> in_progress
+- 2026-08-19T14:44:32Z status: in_progress -> closed
+- 2026-08-19T14:44:32Z dep_removed: no_longer_blocks AF-6jta
+- 2026-08-19T14:44:32Z dep_removed: no_longer_blocks AF-vm0q
 
 ## Links
 - Parent: [[AF-j5rz]]
-- Blocks: [[AF-6jta]], [[AF-vm0q]]
 
 ## Comments
 
