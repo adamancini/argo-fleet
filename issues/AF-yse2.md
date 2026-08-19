@@ -8,7 +8,7 @@ parent: AF-j5rz
 created_at: 2026-08-19T15:40:11Z
 created_by: ada
 updated_at: 2026-08-19T15:57:15Z
-content_hash: "sha256:11a5922d4f9c85bdd352287637116e3803669a6249c698eb3d3af7f9dc166f66"
+content_hash: "sha256:0e811a111581281f0aa11c52adfca938a3dace00cc6e29b8da1828335af3392f"
 blocks: [AF-6jta, AF-vm0q]
 assignee: dev-AF-yse2
 follows: [AF-hb2f, AF-iv8x]
@@ -76,6 +76,16 @@ devops-toolkit:akp-platform (mandatory -- ApplicationSet list-generator conventi
 
 
 ## Notes
+
+
+## nd_contract
+status: delivered
+
+### evidence
+- Transitioned via pvg story deliver on 2026-08-19.
+
+### proof
+- [ ] Developer evidence block must remain authoritative above this contract.
 
 
 ## History
