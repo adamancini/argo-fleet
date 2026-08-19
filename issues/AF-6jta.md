@@ -12,7 +12,7 @@ content_hash: "sha256:5d8cc4b7ff0eaf8c34c50eeded85cf0a99d2197c062ef80c380eb597a2
 was_blocked_by: [AF-iv8x, AF-8r8l, AF-yse2]
 assignee: dev-AF-6jta
 follows: [AF-iv8x, AF-8r8l, AF-yse2, AF-hb2f]
-labels: [delivered]
+labels: [delivered, accepted]
 closed_at: 2026-08-19T20:07:16Z
 close_reason: "Accepted: matrix-generator ApplicationSet verified independently -- digest binding to imageTag confirmed correct via grep + real helm render (bjw-s app-template 4.6.2); hasDownloads true/false rendering confirmed (2 PVCs plus /data vs 1 PVC, no /data); image refs render as valid at-sha256 OCI references; cross-file app/image list matches appset-kargo.yaml and all 18 seeded release.yaml dirs exactly; no overseerr, clusters generator, storageClassName, or tag-binding literals; destination demo2/demo1 plus arr-stack-stage namespace logic correct; port 5055 reconfirmed for hotio/seerr with credible dual-source evidence; diff is exactly 1 file added (173 lines, explained by repo heavily-commented-manifest convention); pvg verify PASSED; pvg gates PASS; e2e SHA matches proof (3f0fd80)."
 ---
