@@ -1,18 +1,19 @@
 ---
 id: AF-hb2f
 title: "Scaffold arr-stack AppProject + vendored Kargo chart + per-app Kargo pipeline ApplicationSet"
-status: in_progress
+status: closed
 priority: 1
 type: task
 labels: [walking-skeleton, delivered]
 parent: AF-j5rz
 created_at: 2026-08-18T19:11:30Z
 created_by: ada
-updated_at: 2026-08-19T14:52:36Z
-content_hash: "sha256:796399d2410141257532ea9107d48365f9c4ca78a4aded5815c43d1f3746c570"
-blocks: [AF-8r8l, AF-vm0q]
+updated_at: 2026-08-19T15:09:39Z
+content_hash: "sha256:2ab147e1ce3d828075e823b2fa906079e8748bea2f78300258ae0a595f511789"
 assignee: dev-AF-hb2f
 follows: [AF-iv8x]
+closed_at: 2026-08-19T15:09:39Z
+close_reason: "Accepted: all 9 ACs independently re-verified against delivered files (helm template renders for sonarr+prowlarr well-formed with zero unresolved placeholders, normalized diff identical proving pure scalar substitution; skip-file-rendering marker present on all 5 chart files; sync-wave -1 present; Warehouse Digest/release strategy and the .Digest-over-.Tag determination spot-checked against akuity/kargo source (digest_selector.go mutableTag, repository_client.go img.Tag=tag, git_commiter.go hasDiffs guard) -- all match; appset-kargo renders 6 elements, destination.name kargo, project arr-stack; no Plex/qBittorrent/rflood/SABnzbd refs; bootstrap/*.yaml untouched (git diff stat empty); no repo-wide name collisions against akkoma/soju and their generated children incl. fleet-kargo-apps' apps/*/kargo glob which arr-stack does not match). pvg gates PASS, pvg verify PASSED. Diff budget 7 files added/0 modified exactly as budgeted; 260 total/181 substantive LOC vs 120-180 estimate is explained entirely by rationale comments the story's own Context section requested -- accepted as judgment call, not scope creep. stages.yaml 3-Stage-per-file shape confirmed as explicitly specified by the story's own IMPLEMENTATION section (not a helm-chart-developer skill violation). git-commit message arr-stack/ prefix fix confirmed present in tasks.yaml and in rendered output. DISCOVERED_BUG on tag-vs-digest downstream wiring confirmed already triaged and resolved in AF-8r8l's own story body -- not re-filed."
 ---
 
 ## Description
@@ -322,10 +323,12 @@ status: delivered
 - 2026-08-18T19:36:16Z claimed by dev-AF-hb2f
 - 2026-08-19T14:52:36Z status: in_progress -> in_progress
 - 2026-08-19T14:52:36Z auto-follows: linked to predecessor AF-iv8x
+- 2026-08-19T15:09:39Z status: in_progress -> closed
+- 2026-08-19T15:09:39Z dep_removed: no_longer_blocks AF-8r8l
+- 2026-08-19T15:09:39Z dep_removed: no_longer_blocks AF-vm0q
 
 ## Links
 - Parent: [[AF-j5rz]]
-- Blocks: [[AF-8r8l]], [[AF-vm0q]]
 - Follows: [[AF-iv8x]]
 
 ## Comments
