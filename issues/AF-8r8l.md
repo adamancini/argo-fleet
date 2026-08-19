@@ -7,8 +7,8 @@ type: task
 parent: AF-j5rz
 created_at: 2026-08-18T18:54:12Z
 created_by: ada
-updated_at: 2026-08-19T15:41:11Z
-content_hash: "sha256:2cec187b9e46580acc3c0ef5a1dee85cdfa012a93fb426378b52a8c54fea75ef"
+updated_at: 2026-08-19T15:44:50Z
+content_hash: "sha256:a93e68be5e6a547a853659d27d483ac6dcb61df52e11a8b5b902b30172800f28"
 blocks: [AF-6jta, AF-vm0q]
 was_blocked_by: [AF-q5yh, AF-hb2f]
 follows: [AF-hb2f, AF-iv8x]
@@ -203,3 +203,38 @@ BUG TRIAGE (Sr PM): discovered by AF-hb2f's deliver-only follow-up developer -- 
 
 ### 2026-08-19T15:13:01Z ada
 loop: reset orphaned in_progress to open (no developer worktree found; prior session presumed dead)
+
+### 2026-08-19T15:44:50Z ada
+DISCOVERED_BUG (posted on behalf of AF-8r8l's developer -- a permission classifier denied that agent's own `pvg issues comment` call, so Sr PM bug triage is persisting the full evidence here):
+
+title: ghcr.io/hotio/overseerr is retired upstream -- overseerr Warehouse can never mint Freight; app renamed to seerr
+
+context:
+hotio deleted the overseerr container image in favour of hotio/seerr (Seerr v3). ghcr.io/hotio/overseerr is no longer a resolvable public image.
+
+Evidence (gathered by this story's developer while trying to seed release.yaml files for all 6 apps):
+- ghcr.io token endpoint for scope repository:hotio/overseerr:pull returns {"errors":[{"code":"DENIED","message":"requested access to the resource is denied"}]} on 3 consecutive attempts. DENIED = repo absent/private: no manifest, no tag list, therefore no digest exists to seed or to promote.
+- Control probe (same method) returns a valid anonymous pull token for hotio/{sonarr,radarr,lidarr,bazarr,prowlarr,plex,qbittorrent,requestrr}. Method is sound; overseerr specifically is gone. hotio/jellyseerr and hotio/readarr are likewise absent.
+- Root cause, hotio's own docs at https://hotio.dev/containers/overseerr/ (HTTP 200): "Warning -- Please migrate from hotio/overseerr to hotio/seerr. Seerr v3 has been released, so this should be safe to do."
+- Successor verified live: ghcr.io/hotio/seerr:release resolves to sha256:6ce42c9cdf64802f93639119009c1f24390bf17497775655698acd970e9920f7
+
+IMPACT BEYOND AF-8r8l -- this broke already-merged code. AF-hb2f's Warehouse (already merged to epic/AF-j5rz) subscribes overseerr to repoURL ghcr.io/hotio/overseerr with imageSelectionStrategy: Digest / constraint: release. That subscription can never resolve, so the overseerr Warehouse mints no Freight and its three Stages are permanently dead -- with or without AF-8r8l's seed files.
+
+affected_files:
+- apps/arr-stack/argocd/appset-kargo.yaml (lines 26-27, merged via AF-hb2f, epic/AF-j5rz)
+- apps/arr-stack/argocd/appproject.yaml (spec.description, merged via AF-hb2f, epic/AF-j5rz)
+- docs/superpowers/specs/2026-08-18-arr-stack-appset-design.md (on main; lines ~14, 84, 120, 170-171, 296-297)
+- apps/arr-stack/env/overseerr/{dev,staging,prod}/release.yaml (AF-8r8l, could not be created -- blocked; renamed to seerr, never created under the overseerr name)
+- apps/arr-stack/argocd/appset-workloads.yaml (AF-6jta, not yet written at discovery time)
+
+discovered_during: AF-8r8l
+
+RESOLUTION (Sr PM bug triage, applied 2026-08-19):
+- AF-j5rz (epic): per-app parameter table and description corrected, sonarr/radarr/lidarr/bazarr/prowlarr/seerr, port 5055 flagged as carried-over-not-reconfirmed for seerr.
+- AF-yse2 (new P0 bug, created this pass): patches AF-hb2f's already-merged appset-kargo.yaml (list-generator element) and appproject.yaml (description text) from overseerr/ghcr.io/hotio/overseerr to seerr/ghcr.io/hotio/seerr. AF-hb2f itself is NOT reopened. AF-yse2 is a hard blocker (`nd dep add AF-6jta AF-yse2`) so AF-6jta cannot be dispatched via `pvg loop next` until the roster patch lands.
+- AF-8r8l (this story): amended -- roster corrected to seerr, notes that 15/18 files already exist on story/AF-8r8l (commit f3ede0758d4f136f85a74420328f8c90106b62ca, pushed to origin/story/AF-8r8l) and only the seerr trio remains; the existing worktree/branch should be resumed, not restarted.
+- AF-6jta: amended -- roster corrected to seerr, port flagged for reconfirmation, hard-blocked on AF-yse2.
+- AF-vm0q (capstone): amended -- cross-file checks, negative assertions, and collision check all updated to seerr; added a dedicated negative assertion + self-validation regression for a stray overseerr reference reappearing.
+- AF-o0rw (human-gated live-merge story): amended -- example ApplicationSet child names corrected from arr-overseerr-prod/kargo-arr-overseerr to arr-seerr-prod/kargo-arr-seerr.
+- AF-pfbv/AF-c17x/AF-4wkn: checked, no overseerr references found, no changes needed.
+- Design spec doc (docs/superpowers/specs/2026-08-18-arr-stack-appset-design.md): left as-is, NOT corrected in place. Sr PM judgment call: the epic's own embedded per-app parameter table (which every story's AC actually checks against, per this repo's self-contained-story discipline) is now corrected and is the operative source of truth; the physical doc is background/historical context no story reads directly, consistent with how the earlier tag-vs-digest doc defect was handled (flagged non-blocking, not edited). Flagged via a comment on the epic rather than a story-driven edit.
