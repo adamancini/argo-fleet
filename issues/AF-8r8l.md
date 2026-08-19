@@ -7,8 +7,8 @@ type: task
 parent: AF-j5rz
 created_at: 2026-08-18T18:54:12Z
 created_by: ada
-updated_at: 2026-08-18T19:13:10Z
-content_hash: "sha256:821af0cad55cd95c0035bfcca67d49b1b53c30afe4e3746fee283a378c14f0c6"
+updated_at: 2026-08-19T15:02:38Z
+content_hash: "sha256:4a3047abf9ba69a3531e9d8e2d3c8a1599e9b52afe31944b4fe97f5761785b62"
 blocks: [AF-6jta, AF-vm0q]
 was_blocked_by: [AF-q5yh]
 blocked_by: [AF-hb2f]
@@ -16,20 +16,30 @@ blocked_by: [AF-hb2f]
 
 ## Description
 Description:
-Seed the 18 `apps/arr-stack/env/<app>/<stage>/release.yaml` contract files (6 apps x dev/staging/prod) that both halves of this design need as a precondition: Kargo's per-app promotion task (AF-hb2f's `tasks.yaml`) writes to them, and `appset-workloads.yaml` (Story 4) reads them via its `git files` generator to know what tag to render.
+Seed the 18 `apps/arr-stack/env/<app>/<stage>/release.yaml` contract files (6 apps x dev/staging/prod) that both halves of this design need as a precondition: Kargo's per-app promotion task (AF-hb2f's `tasks.yaml`) writes to them, and `appset-workloads.yaml` (Story 4 / AF-6jta) reads them via its `git files` generator to know what image reference to render.
+
+BUG RESOLUTION (AF-hb2f discovered-bug follow-up, applied here before any developer claims this story):
+AF-hb2f's delivered `tasks.yaml` writes `${{ imageFrom(vars.image).Digest }}` -- a `sha256:<hex>` string -- into this file's `imageTag` key (the key name is fixed by AF-hb2f's already-merged AC and is NOT renamed by this story; renaming it would require reopening AF-hb2f's yaml-update step, which is explicitly out of scope). That means `imageTag` holds a digest, never a tag, for the entire lifetime of this design. The seed value in this story's original draft (`imageTag: release`) was a tag-shaped literal for a field that only ever holds digests -- if bound into app-template's `tag:` field (which AF-6jta's original draft did), it renders `repository:release` pre-promotion and `repository:sha256:...` post-promotion, and the latter is not a parseable OCI reference (a tag cannot contain a colon). Fixed here: seed each app's three `release.yaml` files with that app's REAL, currently-resolvable digest for its `release` channel tag -- not a placeholder, and not the literal string `release`. This mirrors this repo's own established precedent: `apps/akkoma/env/{dev,staging,prod}/release.yaml` seeds `image.tag: v3.20.0` / `v3.19.0`, a real resolvable version, not a placeholder -- akkoma's Warehouse uses a semver strategy so a real tag was the natural seed; arr-stack's Warehouse uses a Digest strategy, so a real digest is the equivalent seed. AF-6jta (this story's dependent) is amended in lockstep to bind this field to app-template's `digest:` field, not `tag:`.
 
 Context:
-Per the design spec's `env/<app>/<stage>/release.yaml` contract, this is the one genuinely per-instance piece of state in the whole design -- not template-able, because it's exactly what Kargo's promotion writes back to on every promote. The seed content is intentionally minimal and identical across all 18 files: `imageTag: release` (the mutable hotio channel tag every app's Warehouse subscribes to via `imageSelectionStrategy: Digest`/`constraint: release`, per AF-hb2f -- this is the correct pre-promotion seed value, not a placeholder that needs replacing) and `values: {}` (reserved for future stage-specific overrides; empty is correct for this PoC -- the design spec does not call for any stage-specific values beyond what `appset-workloads.yaml`'s template already hardcodes).
+Per the design spec's `env/<app>/<stage>/release.yaml` contract, this is the one genuinely per-instance piece of state in the whole design -- not template-able, because it's exactly what Kargo's promotion writes back to on every promote. The seed content is intentionally minimal and identical ACROSS THE THREE STAGES OF ONE APP (not across all 18 files -- see the correction above): `imageTag: "sha256:<hex>"` (the current digest of that app's `ghcr.io/hotio/<app>:release` tag at seed time -- every app's Warehouse subscribes to that tag via `imageSelectionStrategy: Digest`/`constraint: release`, per AF-hb2f's delivered `warehouse.yaml`) and `values: {}` (reserved for future stage-specific overrides; empty is correct for this PoC -- the design spec does not call for any stage-specific values beyond what `appset-workloads.yaml`'s template already hardcodes).
 
-These files must exist as real files in git BEFORE `appset-workloads.yaml`'s `git files` generator (`path: "apps/arr-stack/env/{{.name}}/*/release.yaml"`) can discover anything -- an ApplicationSet git-files generator only picks up paths that exist at the revision it reads, so Story 4 is `blocked_by` this story regardless of the spike's (Story 3) outcome.
+These files must exist as real files in git BEFORE `appset-workloads.yaml`'s `git files` generator (`path: "apps/arr-stack/env/{{.name}}/*/release.yaml"`) can discover anything -- an ApplicationSet git-files generator only picks up paths that exist at the revision it reads, so Story 4 (AF-6jta) is `blocked_by` this story regardless of the spike's (AF-iv8x, already resolved) outcome.
 
 USER INTENT:
-A developer or reviewer opening any one of these 18 files needs to see, at a glance, exactly what Kargo has most recently promoted for that app/stage -- no ambiguity about whether the file represents "not yet promoted" vs "promoted to X" (both cases render identically here: `imageTag: release`, since promotions to a Digest-strategy subscription track a fixed tag's underlying content, not a changing tag string -- see AF-hb2f's note on `.Tag` vs `.Digest` still needing confirmation for what the promotion task actually writes back). Each file stores exactly the state its app/stage's next Application render will read; the user can trust that this file's content IS the promoted state, not a cached or derived copy of it.
+A developer or reviewer opening any one of these 18 files needs to see, at a glance, exactly what Kargo has most recently promoted for that app/stage -- and needs the pre-promotion (seed) state to be a genuinely pullable image reference, not a placeholder that only becomes valid after the first real promotion. Each file stores exactly the state its app/stage's next Application render will read; the user can trust that this file's content IS the promoted (or, pre-promotion, the seeded-real) state, not a cached or derived copy of it, and that the very first render of the workload Application (before any Kargo promotion has ever run) resolves to a real, pullable image.
 
 IMPLEMENTATION:
-Create all 18 files with identical content:
+For each of the six apps, first resolve the CURRENT digest of that app's `release` channel tag (do this at implementation time, not from memory -- the value will likely already be stale by the time of the epic's live-verification stories, AF-o0rw/AF-c17x/AF-4wkn, and that is expected and harmless: the Warehouse's `Digest` strategy will simply discover the newer digest as the next Freight the moment its `dev` Stage is reconciled, exactly the mechanism the epic exists to prove):
+```bash
+# any one of these resolves the same value; use whichever tool is available
+crane digest ghcr.io/hotio/sonarr:release
+skopeo inspect --format '{{.Digest}}' docker://ghcr.io/hotio/sonarr:release
+docker manifest inspect --verbose ghcr.io/hotio/sonarr:release | jq -r '.Descriptor.digest'
+```
+Repeat for `radarr`, `lidarr`, `bazarr`, `prowlarr`, `overseerr`. Then create all 18 files -- the three stage files for one app share that app's resolved digest (none has been promoted yet, so dev/staging/prod all start from the same initial state, exactly like `apps/akkoma/env/{dev,staging,prod}/release.yaml` all started from one shared initial version before promotions diverged them):
 ```yaml
-imageTag: release
+imageTag: "sha256:<that app's resolved digest, 64 lowercase hex chars>"
 values: {}
 ```
 at these paths:
@@ -53,41 +63,44 @@ apps/arr-stack/env/overseerr/dev/release.yaml
 apps/arr-stack/env/overseerr/staging/release.yaml
 apps/arr-stack/env/overseerr/prod/release.yaml
 ```
-The app names and count (6 apps x 3 stages = 18) must exactly match the per-app parameter table in both AF-hb2f's `appset-kargo.yaml` and Story 4's `appset-workloads.yaml` -- a mismatch here (a 7th app, a missing stage, a typo'd app name) is exactly the class of drift the static verification story (Story 6) is built to catch, so double-check the list against the epic's per-app parameter table before creating files, not against memory.
+The app names and count (6 apps x 3 stages = 18) must exactly match the per-app parameter table in both AF-hb2f's `appset-kargo.yaml` and Story 4's (AF-6jta) `appset-workloads.yaml` -- a mismatch here (a 7th app, a missing stage, a typo'd app name) is exactly the class of drift the static verification story (AF-vm0q) is built to catch, so double-check the list against the epic's per-app parameter table before creating files, not against memory.
 
 KEY FILES:
 Create: the 18 `apps/arr-stack/env/<app>/<stage>/release.yaml` files listed above. No existing file is modified.
 
 OUT OF SCOPE:
 - Any stage-specific `values:` content -- the design specifies `values: {}` for every file; a future story that needs per-stage overrides is separate work, not guessed at here.
-- The Kargo chart that writes to these files (AF-hb2f, already delivered/in-flight as a sibling story) and the workloads ApplicationSet that reads them (Story 4) -- this story only seeds the files themselves.
+- The Kargo chart that writes to these files (AF-hb2f, already delivered) and the workloads ApplicationSet that reads them (AF-6jta) -- this story only seeds the files themselves. AF-6jta binds this file's `imageTag` value to app-template's `digest:` field (not `tag:`) -- that binding change is AF-6jta's scope, not this one's.
+- Renaming the `imageTag` key -- fixed by AF-hb2f's already-delivered `yaml-update` step; out of scope for this story (and for AF-6jta) to change.
 
 DIFF BUDGET:
 18 new files, 0 modified. ~36 LOC total (2 lines per file).
 
 CONSUMES:
 - AF-hb2f: apps/arr-stack/argocd/kargo-chart/templates/tasks.yaml -> PromotionTask `promote`
-    spec: yaml-update step targets path ./src/apps/arr-stack/env/{{ .Values.appName }}/${{ ctx.stage }}/release.yaml, key: imageTag
-    source: AF-hb2f's own PRODUCES block -- confirms the exact per-app/per-stage path shape this story's 18 files must satisfy
+    spec: yaml-update step targets path ./src/apps/arr-stack/env/{{ .Values.appName }}/${{ ctx.stage }}/release.yaml, key: imageTag, value: ${{ imageFrom(vars.image).Digest }} (a sha256:<hex> string, per AF-hb2f's delivered warehouse.yaml using imageSelectionStrategy: Digest)
+    source: AF-hb2f's own PRODUCES block and delivered code -- confirms both the exact per-app/per-stage path shape AND that the value written is always a digest, never a tag
 
 PRODUCES:
 - `apps/arr-stack/env/<app>/<stage>/release.yaml` (18 files) -> promotion-target contract file
-    schema: imageTag (string, mutable-tag name), values (object, empty at seed)
-    source: docs/superpowers/specs/2026-08-18-arr-stack-appset-design.md, `env/<app>/<stage>/release.yaml` contract section, verbatim
+    schema: imageTag (string, "sha256:<64 lowercase hex chars>" -- a digest, never the literal tag name, seeded at authoring time with each app's real current release-tag digest), values (object, empty at seed)
+    source: docs/superpowers/specs/2026-08-18-arr-stack-appset-design.md `env/<app>/<stage>/release.yaml` contract section (key/shape), corrected per this story's BUG RESOLUTION note (value semantics -- the design spec's own literal snippet elsewhere, lines 203-205, is documented as needing a doc-only fix, tracked outside this story)
 
 TESTING:
 No unit-test suite exists for this repo's GitOps manifests -- verification is static only:
-- `ruby -ryaml -e "Dir.glob('apps/arr-stack/env/*/*/release.yaml').each { |f| d = YAML.load(File.read(f)); raise \"#{f}: bad shape\" unless d['imageTag'] == 'release' && d['values'] == {} }; puts 'OK'"` -- confirms all 18 files exist, parse, and share the identical seed shape.
+- `ruby -ryaml -e "Dir.glob('apps/arr-stack/env/*/*/release.yaml').each { |f| d = YAML.load(File.read(f)); raise \"#{f}: bad shape\" unless d['imageTag'] =~ /\Asha256:[0-9a-f]{64}\z/ && d['values'] == {} }; puts 'OK'"` -- confirms all 18 files exist, parse, hold a well-formed digest (not the literal string `release` or any other tag-shaped value), and share the identical `values: {}` shape.
 - `Dir.glob('apps/arr-stack/env/*/*/release.yaml').length` must equal exactly 18, and the discovered app-name set (glob level 1) must exactly equal `{sonarr,radarr,lidarr,bazarr,prowlarr,overseerr}` and the stage set (glob level 2) must exactly equal `{dev,staging,prod}` for every app -- discover by glob, do not hard-code the count check only.
+- Per app, confirm the three stage files' `imageTag` values are byte-identical to each other (none has been promoted yet, so all three stages of one app share one seed digest) -- but do NOT assert equality across different apps (each app has its own image, hence its own digest).
 
 Acceptance Criteria:
 1. [Ubiquitous] Exactly 18 `release.yaml` files exist under `apps/arr-stack/env/`, one per (app, stage) pair for all 6 apps x 3 stages.
-2. [Ubiquitous] Every file's content is exactly `imageTag: release` / `values: {}`.
-3. [Ubiquitous] The app-name set discovered by glob exactly matches the epic's per-app parameter table (`sonarr`, `radarr`, `lidarr`, `bazarr`, `prowlarr`, `overseerr`) -- no extra, no missing, no typo'd name.
-4. [Unwanted] No file shall contain a real/placeholder secret value, a hand-picked non-`release` tag, or any stage-specific override -- every file is byte-identical to every other.
+2. [Ubiquitous] Every file's `values` key is exactly `{}`, and every file's `imageTag` value matches `sha256:<64 lowercase hex chars>` -- a well-formed digest, never the literal string `release` or any other tag-shaped value.
+3. [Ubiquitous] For each app, all three stage files' `imageTag` values are byte-identical to each other (shared seed, no promotion has occurred yet).
+4. [Ubiquitous] The app-name set discovered by glob exactly matches the epic's per-app parameter table (`sonarr`, `radarr`, `lidarr`, `bazarr`, `prowlarr`, `overseerr`) -- no extra, no missing, no typo'd name.
+5. [Unwanted] No file shall contain a real/placeholder secret value, a hand-picked non-digest tag string (including the literal `release`), an empty string, or any stage-specific override -- every file's `imageTag` is a syntactically valid digest.
 
 MANDATORY SKILLS TO REVIEW:
-devops-toolkit:akp-platform (mandatory -- confirms the release.yaml contract shape against its Kargo promotion-patterns reference material before seeding)
+devops-toolkit:akp-platform (mandatory -- confirms the release.yaml contract shape and the Digest-strategy Warehouse semantics against its Kargo promotion-patterns reference material before seeding)
 
 ## Acceptance Criteria
 
