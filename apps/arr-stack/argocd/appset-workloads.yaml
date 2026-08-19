@@ -1,0 +1,173 @@
+# The workload half of the arr-stack design: ONE template, 18 Applications
+# (6 apps x 3 stages), differing only in the four leaf values the per-app list
+# below declares (name / image / port / hasDownloads). Adding a seventh app is
+# one list element here plus its env/<app>/<stage>/release.yaml trio -- this
+# template is never touched again.
+#
+# WHY `values` (raw string) AND NOT `valuesObject`:
+# valuesObject is an object-typed field (backed by RawExtension), so Argo CD's
+# Go-template engine only substitutes into its string leaves -- it cannot add or
+# remove whole mapping keys. The conditional `downloads` persistence block below
+# requires exactly that, so the values payload has to be a plain string that
+# Helm re-parses as YAML *after* substitution. apps/akkoma/argocd/appset.yaml
+# documents the same restriction from the other direction (it spells its
+# structure out because it only needs varying leaves). This is a deliberate
+# divergence from akkoma's pattern, not an inconsistency.
+#
+# WHY THE `{{- if}}` / `{{- end}}` LINES SIT AT THE BLOCK-SCALAR MARGIN:
+# they must be indented to the `values: |` content indent (12 spaces) so they
+# are part of the string. At file column 0 they would be *less* indented than
+# the block scalar and terminate it, which is a YAML syntax error -- not merely
+# ugly. At 12 spaces they land at column 0 *within* the string, which is what
+# the Go-template chomping (`{{-`) needs to leave no blank line behind.
+#
+# WHY `digest:` AND NOT THE `tag:` FIELD:
+# release.yaml's imageTag key always holds a sha256 digest, never a tag -- this
+# app's Warehouse uses imageSelectionStrategy Digest, under which Freight's Tag
+# field is invariantly the constant string `release` and only the digest moves
+# (see kargo-chart/templates/tasks.yaml, which states this contract explicitly).
+# app-template builds `repository + ":" + .image.tag` but
+# `repository + "@" + .image.digest`
+# (charts/common/templates/lib/common/_imageSpecificationToImage.tpl), so
+# routing a digest through the tag field yields ghcr.io/hotio/<app>:sha256:...
+# -- not a parseable OCI reference, since a tag cannot contain a colon.
+#
+# WHY `.imageTag` AND NOT `.values.imageTag`:
+# the git *files* generator exposes a discovered file's TOP-LEVEL keys directly
+# as template parameters, with no prefix (Argo CD's own Git generator docs use
+# `{{.aws_account}}` / `{{.cluster.name}}` for a file whose top-level keys are
+# `aws_account` / `cluster`). tasks.yaml's yaml-update step writes `key:
+# imageTag` -- top level -- so the parameter is `.imageTag`. release.yaml's
+# sibling `values: {}` key is an empty map reserved for future per-stage Helm
+# overrides; reaching through it would resolve nothing and, under
+# goTemplateOptions missingkey=error, abort rendering for all 18 Applications.
+# apps/akkoma/argocd/appset.yaml shows both halves of the same rule: its
+# top-level `chartVersion` is `{{.chartVersion}}`, while `{{.values.image.tag}}`
+# works there only because its release.yaml genuinely nests that under `values`.
+#
+# WHY A STATIC `list` AND NOT A BARE CLUSTER-DISCOVERY GENERATOR:
+# a bare cluster generator on this shared Akuity-hosted instance returns FOUR
+# clusters (demo1, demo2, the control plane in-cluster, and kargo), not the two
+# intended -- see .vault/knowledge/decisions/"Argo CD clusters generator
+# selector convention on Akuity-hosted instances". The static list plus the
+# inline destination.name conditional sidesteps that by construction. If a
+# future iteration ever does switch to cluster discovery, it must carry the
+# fleet-wide `NotIn: [in-cluster, kargo]` selector (docs/infra-dependencies.md).
+#
+# Neither PVC pins a storage class -- both deliberately rely on the cluster's
+# default StorageClass, per the committed design spec. AF-pfbv verifies that
+# assumption against the real instance before any live deploy trusts it; pinning
+# one here would pre-empt that gate.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: arr-stack-workloads
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - matrix:
+        generators:
+          - list:
+              elements:
+                - name: sonarr
+                  image: ghcr.io/hotio/sonarr
+                  port: "8989"
+                  hasDownloads: "true"
+                - name: radarr
+                  image: ghcr.io/hotio/radarr
+                  port: "7878"
+                  hasDownloads: "true"
+                - name: lidarr
+                  image: ghcr.io/hotio/lidarr
+                  port: "8686"
+                  hasDownloads: "true"
+                - name: bazarr
+                  image: ghcr.io/hotio/bazarr
+                  port: "6767"
+                  hasDownloads: "true"
+                - name: prowlarr
+                  image: ghcr.io/hotio/prowlarr
+                  port: "9696"
+                  hasDownloads: "false"
+                # `seerr` is hotio's current name for this app; the pre-v3 repo
+                # it replaced was retired upstream. Port 5055 reconfirmed for
+                # THIS image, not inherited: hotio.dev/containers/seerr
+                # documents `-p 5055:5055`, and the image's own OCI config
+                # carries ExposedPorts 5055/tcp and WEBUI_PORTS=5055/tcp.
+                - name: seerr
+                  image: ghcr.io/hotio/seerr
+                  port: "5055"
+                  hasDownloads: "false"
+          - git:
+              repoURL: https://github.com/adamancini/argo-fleet.git
+              revision: HEAD
+              files:
+                - path: "apps/arr-stack/env/{{.name}}/*/release.yaml"
+  template:
+    metadata:
+      name: "arr-{{.name}}-{{.path.basename}}"
+      annotations:
+        kargo.akuity.io/authorized-stage: "{{.name}}:{{.path.basename}}"
+    spec:
+      project: arr-stack
+      source:
+        repoURL: oci://ghcr.io/bjw-s-labs/helm/app-template
+        targetRevision: 4.x
+        helm:
+          values: |
+            defaultPodOptions:
+              automountServiceAccountToken: false
+            controllers:
+              main:
+                pod:
+                  securityContext:
+                    fsGroup: 100
+                    fsGroupChangePolicy: OnRootMismatch
+                containers:
+                  main:
+                    image:
+                      repository: {{.image}}
+                      digest: "{{.imageTag}}"
+                    env:
+                      - name: PUID
+                        value: "1000"
+                      - name: PGID
+                        value: "1000"
+                      - name: TZ
+                        value: "America/New_York"
+                      - name: UMASK
+                        value: "002"
+            service:
+              main:
+                enabled: true
+                ports:
+                  http:
+                    port: 80
+                    targetPort: {{.port}}
+            ingress:
+              main:
+                enabled: false
+            persistence:
+              config:
+                accessMode: ReadWriteOnce
+                size: 1Gi
+            {{- if eq .hasDownloads "true"}}
+              downloads:
+                accessMode: ReadWriteOnce
+                size: 1Gi
+                advancedMounts:
+                  main:
+                    main:
+                      - path: /data
+            {{- end}}
+      destination:
+        name: "{{- if eq .path.basename \"prod\" -}}demo2{{- else -}}demo1{{- end -}}"
+        namespace: "arr-stack-{{.path.basename}}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
