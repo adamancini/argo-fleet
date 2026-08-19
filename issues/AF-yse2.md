@@ -1,18 +1,19 @@
 ---
 id: AF-yse2
 title: "Bug: ghcr.io/hotio/overseerr retired -- rename merged appset-kargo.yaml/appproject.yaml entries to seerr"
-status: in_progress
+status: closed
 priority: 0
 type: bug
 parent: AF-j5rz
 created_at: 2026-08-19T15:40:11Z
 created_by: ada
-updated_at: 2026-08-19T15:57:15Z
-content_hash: "sha256:0e811a111581281f0aa11c52adfca938a3dace00cc6e29b8da1828335af3392f"
-blocks: [AF-6jta, AF-vm0q]
+updated_at: 2026-08-19T16:03:25Z
+content_hash: "sha256:ad817d911f36a6dc2c34ea2c1c9e1ef6c10dfe5d0c97f62a6e758a0141d7352a"
 assignee: dev-AF-yse2
 follows: [AF-hb2f, AF-iv8x]
 labels: [delivered]
+closed_at: 2026-08-19T16:03:25Z
+close_reason: "Accepted: overseerr->seerr rename verified independently. appset-kargo.yaml element and appproject.yaml description match exactly. helm template renders clean app-scoped Project/Warehouse/3xStage/PromotionTask with Digest/release strategy intact and zero unresolved placeholders. Repo-wide grep for overseerr is clean. Diff vs epic/AF-j5rz base (c9d8095) is exactly 2 files modified, 0 added/deleted. bootstrap/ untouched. Other 5 list elements byte-identical."
 ---
 
 ## Description
@@ -96,10 +97,12 @@ status: delivered
 - 2026-08-19T15:47:37Z claimed by dev-AF-yse2
 - 2026-08-19T15:57:14Z status: in_progress -> in_progress
 - 2026-08-19T15:57:15Z auto-follows: linked to predecessor AF-iv8x
+- 2026-08-19T16:03:25Z status: in_progress -> closed
+- 2026-08-19T16:03:25Z dep_removed: no_longer_blocks AF-6jta
+- 2026-08-19T16:03:25Z dep_removed: no_longer_blocks AF-vm0q
 
 ## Links
 - Parent: [[AF-j5rz]]
-- Blocks: [[AF-6jta]], [[AF-vm0q]]
 - Follows: [[AF-hb2f]], [[AF-iv8x]]
 
 ## Comments
