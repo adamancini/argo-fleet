@@ -1,19 +1,20 @@
 ---
 id: AF-8r8l
 title: "Seed arr-stack release.yaml promotion-target files for all six apps"
-status: in_progress
+status: closed
 priority: 1
 type: task
 parent: AF-j5rz
 created_at: 2026-08-18T18:54:12Z
 created_by: ada
-updated_at: 2026-08-19T15:55:11Z
-content_hash: "sha256:a984aebb4bf6ac67fa2c8484af135d5ebffafe159d663439e48ed88aefc6d8f4"
-blocks: [AF-6jta, AF-vm0q]
+updated_at: 2026-08-19T15:59:15Z
+content_hash: "sha256:ec363a14b8e0ad750f4193d9330677105030044a381dff2dc067cd8ccaa2182f"
 was_blocked_by: [AF-q5yh, AF-hb2f]
 follows: [AF-hb2f, AF-iv8x]
 assignee: dev-AF-8r8l
 labels: [delivered]
+closed_at: 2026-08-19T15:59:15Z
+close_reason: "Verified independently: 18/18 release.yaml files (sonarr/radarr/lidarr/bazarr/prowlarr/seerr, no overseerr), correct dev/staging/prod stage set, imageTag matches sha256:<64 lc hex>, values:{}, per-app byte-identity across stages confirmed via ruby AC suite re-run against worktree files. git diff f3ede07..fbba550 shows exactly 3 files added / 0 modified, matching DIFF BUDGET. Re-ran docker buildx imagetools inspect ghcr.io/hotio/seerr:release --format {{.Manifest.Digest}} -- returned sha256:6ce42c9c...9920f7, matching the seeded value exactly, and confirmed via docker manifest inspect --verbose that the child amd64 manifest digest (sha256:5347b4f6...) differs from the index digest -- developer's index-vs-child-manifest mechanism claim verified correct. pvg verify vacuous-pass caveat independently confirmed (0 files scanned for .yaml). Story body duplication artifact (stale overseerr section) noted as backlog-authoring defect, not counted against delivery."
 ---
 
 ## Description
@@ -204,10 +205,12 @@ status: delivered
 - 2026-08-19T15:47:15Z status: open -> in_progress
 - 2026-08-19T15:47:15Z claimed by dev-AF-8r8l
 - 2026-08-19T15:53:39Z status: in_progress -> in_progress
+- 2026-08-19T15:59:15Z status: in_progress -> closed
+- 2026-08-19T15:59:15Z dep_removed: no_longer_blocks AF-6jta
+- 2026-08-19T15:59:15Z dep_removed: no_longer_blocks AF-vm0q
 
 ## Links
 - Parent: [[AF-j5rz]]
-- Blocks: [[AF-6jta]], [[AF-vm0q]]
 - Was blocked by: [[AF-q5yh]], [[AF-hb2f]]
 - Follows: [[AF-hb2f]], [[AF-iv8x]]
 

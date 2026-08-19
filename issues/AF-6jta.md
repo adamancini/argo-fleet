@@ -8,10 +8,10 @@ parent: AF-j5rz
 created_at: 2026-08-18T18:56:00Z
 created_by: ada
 updated_at: 2026-08-19T15:42:24Z
-content_hash: "sha256:cc626c9d8aeb1ce7dbf6b239b6f44a8e897d994275c8176fc477bc19c67378b9"
-blocked_by: [AF-8r8l, AF-yse2]
+content_hash: "sha256:ab7cc2ca12ac8cebe0a613ae556eab7515fba49e573127fcc514e09fa0707b43"
+blocked_by: [AF-yse2]
 blocks: [AF-vm0q, AF-o0rw]
-was_blocked_by: [AF-iv8x]
+was_blocked_by: [AF-iv8x, AF-8r8l]
 ---
 
 ## Description
@@ -227,12 +227,13 @@ devops-toolkit:akp-platform (mandatory -- its GitOps app-patterns reference mate
 - 2026-08-18T19:06:18Z dep_added: blocks AF-o0rw
 - 2026-08-19T14:44:32Z dep_removed: was_blocked_by AF-iv8x
 - 2026-08-19T15:40:15Z dep_added: blocked_by AF-yse2
+- 2026-08-19T15:59:15Z dep_removed: was_blocked_by AF-8r8l
 
 ## Links
 - Parent: [[AF-j5rz]]
 - Blocks: [[AF-vm0q]], [[AF-o0rw]]
-- Blocked by: [[AF-8r8l]], [[AF-yse2]]
-- Was blocked by: [[AF-iv8x]]
+- Blocked by: [[AF-yse2]]
+- Was blocked by: [[AF-iv8x]], [[AF-8r8l]]
 
 ## Comments
 
