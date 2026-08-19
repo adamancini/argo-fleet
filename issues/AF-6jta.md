@@ -7,8 +7,8 @@ type: task
 parent: AF-j5rz
 created_at: 2026-08-18T18:56:00Z
 created_by: ada
-updated_at: 2026-08-19T19:54:54Z
-content_hash: "sha256:b28eb8ce46006beada869991123d332eb14daf7698e48929cdbf05e838781475"
+updated_at: 2026-08-19T19:56:42Z
+content_hash: "sha256:6dbc736c050555312474d2b392f073741d4ec98f5c21ea1fdf5df9d12d59be62"
 blocks: [AF-vm0q, AF-o0rw]
 was_blocked_by: [AF-iv8x, AF-8r8l, AF-yse2]
 assignee: dev-AF-6jta
@@ -473,3 +473,6 @@ DISCOVERED_BUG:
 - **Watch for forbidden tokens leaking into your own explanatory comments.** My first draft's rationale comments contained `clusters:` and `storageClassName` — both are semantic ACs here (#10, #8) so structural checks pass, but AF-vm0q is a *static/grep* verification story and would plausibly false-positive. Reworded where it cost no clarity; deliberately kept `valuesObject` (the token is load-bearing documentation) and flagged it explicitly so AF-vm0q strips comments before substring checks. Future authors of heavily-commented manifests in this repo should assume grep-based verification and keep forbidden literals out of prose.
 - **Block scalars silently swallow Go-template control flow.** Templating inside `values: |` only works if the `{{- if}}`/`{{- end}}` lines are indented to the block's content margin; at column 0 they are a YAML *syntax error*, not a style nit. Both this story's snippet and the committed design spec get it wrong, which suggests it will be transcribed wrong again — hence the header comment in the file pinning the reason.
 - Process note: the pvg guard blocks `cd` into the dispatcher-managed worktree, and `git push --force-with-lease` was (correctly) denied as an unrequested history rewrite. `git -C <worktree>` + absolute paths covered everything, and a plain fast-forward `git push` was the right call once I checked 1-ahead/0-behind — the lease flag was never needed.
+
+### 2026-08-19T19:56:42Z ada
+PM RATIFICATION (Sr PM bug triage, DISCOVERED_BUG from AF-6jta's own deliver-only follow-up developer): the deviation from AC #3's literal text flagged above is RATIFIED -- .imageTag (top-level) is correct, .values.imageTag is not (values is an empty map in all 18 seeded release.yaml files; under goTemplateOptions missingkey=error that path aborts rendering for all 18 Applications). AC #3 and AC #11's literal text have been amended in this story's own body to .imageTag, and AC #11 now forbids the tag: binding under BOTH the .imageTag and .values.imageTag paths. AF-vm0q's regression check has been amended in lockstep (see its own comments). No code change needed -- apps/arr-stack/argocd/appset-workloads.yaml already ships the correct .imageTag binding; only this story's own AC literal text was out of sync with its actual delivery. The IMPLEMENTATION snippet and its deviation note have also been updated to reflect the corrected param path and to record the {{- if}}/{{- end}} block-scalar-margin indentation as a third (formatting-only) deviation from the design spec's literal snippet. Design spec doc (docs/superpowers/specs/2026-08-18-arr-stack-appset-design.md) is being corrected in a real pass rather than flagged a fourth time -- see AF-j5rz's comments for the consolidated rationale.
