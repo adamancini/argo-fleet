@@ -7,8 +7,8 @@ type: bug
 parent: AF-j5rz
 created_at: 2026-08-19T15:40:11Z
 created_by: ada
-updated_at: 2026-08-19T15:40:11Z
-content_hash: "sha256:02cfdcd42df1e08dc506d95442efea5d54e9c405c4aa5b40c3c57f5764d11487"
+updated_at: 2026-08-19T15:45:55Z
+content_hash: "sha256:386ddd0da14692a50b722d35fa6fc715c5080ae68da9d6744eb0edc6b4d28dcd"
 blocks: [AF-6jta, AF-vm0q]
 ---
 
@@ -43,6 +43,17 @@ POSSIBLE CAUSES:
 
 CONFIG (if relevant):
 Not applicable -- no live cluster config involved; this is a static manifest edit against already-merged files.
+
+KEY FILES:
+Modify: `apps/arr-stack/argocd/appset-kargo.yaml` (list-generator element), `apps/arr-stack/argocd/appproject.yaml` (`spec.description`). No other file is touched -- the vendored `kargo-chart/` is already fully parameterized and needs no change of its own.
+
+PRODUCES:
+- `apps/arr-stack/argocd/appset-kargo.yaml` -> corrected list-generator element
+    spec: `{name: seerr, image: ghcr.io/hotio/seerr}` replaces `{name: overseerr, image: ghcr.io/hotio/overseerr}`; the other 5 elements (sonarr/radarr/lidarr/bazarr/prowlarr) are unchanged
+    source: this bug's own AC #1
+- `apps/arr-stack/argocd/appproject.yaml` -> corrected `spec.description`
+    spec: description string ends `...Prowlarr, Seerr` instead of `...Prowlarr, Overseerr`
+    source: this bug's own AC #2
 
 Acceptance Criteria:
 1. `apps/arr-stack/argocd/appset-kargo.yaml`'s list-generator element renamed from `{name: overseerr, image: ghcr.io/hotio/overseerr}` to `{name: seerr, image: ghcr.io/hotio/seerr}` -- no other element in the list is touched.
