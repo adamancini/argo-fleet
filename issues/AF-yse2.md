@@ -7,11 +7,11 @@ type: bug
 parent: AF-j5rz
 created_at: 2026-08-19T15:40:11Z
 created_by: ada
-updated_at: 2026-08-19T15:57:06Z
-content_hash: "sha256:fa7959cce6815e0cc4ccda117bb7b1bf01b9248bc85d60af6cae68f89e93e410"
+updated_at: 2026-08-19T15:57:14Z
+content_hash: "sha256:11a5922d4f9c85bdd352287637116e3803669a6249c698eb3d3af7f9dc166f66"
 blocks: [AF-6jta, AF-vm0q]
 assignee: dev-AF-yse2
-follows: [AF-hb2f]
+follows: [AF-hb2f, AF-iv8x]
 ---
 
 ## Description
@@ -83,11 +83,13 @@ devops-toolkit:akp-platform (mandatory -- ApplicationSet list-generator conventi
 - 2026-08-19T15:47:37Z status: open -> in_progress
 - 2026-08-19T15:47:37Z auto-follows: linked to predecessor AF-hb2f
 - 2026-08-19T15:47:37Z claimed by dev-AF-yse2
+- 2026-08-19T15:57:14Z status: in_progress -> in_progress
+- 2026-08-19T15:57:15Z auto-follows: linked to predecessor AF-iv8x
 
 ## Links
 - Parent: [[AF-j5rz]]
 - Blocks: [[AF-6jta]], [[AF-vm0q]]
-- Follows: [[AF-hb2f]]
+- Follows: [[AF-hb2f]], [[AF-iv8x]]
 
 ## Comments
 
