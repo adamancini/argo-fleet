@@ -1,14 +1,13 @@
 ---
 id: AF-wg73
 title: "Clean up pre-existing pvg gates repo-wide duplication findings"
-status: in_progress
+status: open
 priority: 3
 type: task
 created_at: 2026-08-07T19:14:07Z
 created_by: ada
-updated_at: 2026-08-19T15:59:16Z
-content_hash: "sha256:63ef691b041ac1c32b9a60031a1fa1175db95af73a1db7e1f76a2b563e13f080"
-assignee: dev-AF-wg73
+updated_at: 2026-08-19T16:00:14Z
+content_hash: "sha256:d0027275ff48dcd31eccd26cc47c64bd4f311c69b6e6289ae9015ac1c52803cb"
 ---
 
 ## Description
@@ -73,6 +72,8 @@ None identified (gates/lint cleanup, no framework-specific pattern involved).
 ## History
 - 2026-08-19T15:59:16Z status: open -> in_progress
 - 2026-08-19T15:59:16Z claimed by dev-AF-wg73
+- 2026-08-19T16:00:14Z status: in_progress -> open
+- 2026-08-19T16:00:14Z released by ada
 
 ## Links
 
