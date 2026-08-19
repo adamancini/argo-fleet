@@ -1,18 +1,18 @@
 ---
 id: AF-6jta
 title: "Implement arr-stack workloads ApplicationSet matrix generator"
-status: open
+status: in_progress
 priority: 1
 type: task
 parent: AF-j5rz
 created_at: 2026-08-18T18:56:00Z
 created_by: ada
-updated_at: 2026-08-19T16:06:32Z
-content_hash: "sha256:b5bd90b907a61bec53f9bb4f4bf952aff824c94845df9802edb23c90c5b72149"
+updated_at: 2026-08-19T16:06:59Z
+content_hash: "sha256:fe36d9b2ee6db14db65683e784a4bf72a12e61a8196c10d8e164730c93256624"
 blocks: [AF-vm0q, AF-o0rw]
 was_blocked_by: [AF-iv8x, AF-8r8l, AF-yse2]
 assignee: dev-AF-6jta
-follows: [AF-iv8x, AF-8r8l, AF-yse2]
+follows: [AF-iv8x, AF-8r8l, AF-yse2, AF-hb2f]
 ---
 
 ## Description
@@ -236,12 +236,15 @@ devops-toolkit:akp-platform (mandatory -- its GitOps app-patterns reference mate
 - 2026-08-19T16:03:26Z auto-follows: linked to predecessor AF-yse2
 - 2026-08-19T16:03:26Z claimed by dev-AF-6jta
 - 2026-08-19T16:06:31Z status: in_progress -> open
+- 2026-08-19T16:06:59Z status: open -> in_progress
+- 2026-08-19T16:06:59Z auto-follows: linked to predecessor AF-hb2f
+- 2026-08-19T16:06:59Z claimed by dev-AF-6jta
 
 ## Links
 - Parent: [[AF-j5rz]]
 - Blocks: [[AF-vm0q]], [[AF-o0rw]]
 - Was blocked by: [[AF-iv8x]], [[AF-8r8l]], [[AF-yse2]]
-- Follows: [[AF-iv8x]], [[AF-8r8l]], [[AF-yse2]]
+- Follows: [[AF-iv8x]], [[AF-8r8l]], [[AF-yse2]], [[AF-hb2f]]
 
 ## Comments
 
