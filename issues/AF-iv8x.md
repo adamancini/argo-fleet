@@ -4,11 +4,11 @@ title: "Spike: confirm ApplicationSet matrix generator interpolates sibling list
 status: closed
 priority: 0
 type: task
-labels: [spike, delivered]
+labels: [spike, delivered, accepted]
 parent: AF-j5rz
 created_at: 2026-08-18T18:55:02Z
 created_by: ada
-updated_at: 2026-08-19T14:44:32Z
+updated_at: 2026-08-19T14:44:39Z
 content_hash: "sha256:a7cac5fa7672a9d69a4301d2b27b24159bdb7929270a40fa49fe742c22a64739"
 assignee: dev-AF-iv8x
 closed_at: 2026-08-19T14:44:32Z
