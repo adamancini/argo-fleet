@@ -7,11 +7,11 @@ type: bug
 parent: AF-j5rz
 created_at: 2026-08-19T15:40:11Z
 created_by: ada
-updated_at: 2026-08-19T16:03:25Z
+updated_at: 2026-08-19T16:03:26Z
 content_hash: "sha256:ad817d911f36a6dc2c34ea2c1c9e1ef6c10dfe5d0c97f62a6e758a0141d7352a"
 assignee: dev-AF-yse2
 follows: [AF-hb2f, AF-iv8x]
-labels: [delivered, accepted]
+labels: [accepted]
 closed_at: 2026-08-19T16:03:25Z
 close_reason: "Accepted: overseerr->seerr rename verified independently. appset-kargo.yaml element and appproject.yaml description match exactly. helm template renders clean app-scoped Project/Warehouse/3xStage/PromotionTask with Digest/release strategy intact and zero unresolved placeholders. Repo-wide grep for overseerr is clean. Diff vs epic/AF-j5rz base (c9d8095) is exactly 2 files modified, 0 added/deleted. bootstrap/ untouched. Other 5 list elements byte-identical."
 ---
