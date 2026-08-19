@@ -8,7 +8,7 @@ parent: AF-j5rz
 created_at: 2026-08-18T18:54:12Z
 created_by: ada
 updated_at: 2026-08-19T15:59:15Z
-content_hash: "sha256:ec363a14b8e0ad750f4193d9330677105030044a381dff2dc067cd8ccaa2182f"
+content_hash: "sha256:c0ced9cec281930209a57b11fd9ad4a47f1890d8dc66a93225e361307dce56f5"
 was_blocked_by: [AF-q5yh, AF-hb2f]
 follows: [AF-hb2f, AF-iv8x]
 assignee: dev-AF-8r8l
@@ -174,6 +174,16 @@ devops-toolkit:akp-platform (mandatory -- confirms the release.yaml contract sha
 
 
 ## Notes
+
+
+## nd_contract
+status: accepted
+
+### evidence
+- PM closeout applied via pvg story accept on 2026-08-19.
+
+### proof
+- [x] Story closed after accepted label was applied.
 
 
 ## nd_contract
