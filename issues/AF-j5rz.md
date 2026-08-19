@@ -6,8 +6,8 @@ priority: 2
 type: epic
 created_at: 2026-08-18T18:50:52Z
 created_by: ada
-updated_at: 2026-08-19T15:39:10Z
-content_hash: "sha256:feb5101574d91881651a612a56b0d01b52f105140801b1b0fa0830fc3f7e5b8a"
+updated_at: 2026-08-19T15:45:01Z
+content_hash: "sha256:666570da87fdd1b03e88b2c063e22d97ceb2ea57367aaf7d54220c417dd9921e"
 ---
 
 ## Description
@@ -95,3 +95,6 @@ devops-toolkit:akp-platform (mandatory for every story in this epic -- `referenc
 
 ### 2026-08-19T15:03:02Z ada
 DOC DEFECT FLAGGED, NON-BLOCKING (Sr PM bug triage): docs/superpowers/specs/2026-08-18-arr-stack-appset-design.md lines ~203-205 (as committed on main at cb8bf2e) show appset-workloads.yaml's image block as 'repository: {{.image}}' / 'tag: "{{.values.imageTag}}"'. This is the same tag/digest mismatch discovered during AF-hb2f's deliver-only follow-up: release.yaml's imageTag key holds a sha256 digest (per AF-hb2f's delivered tasks.yaml), so binding it to app-template's tag: field produces an unparseable repository:sha256:... reference; the correct binding is app-template's digest: field. The fix has been applied directly to AF-8r8l (seed shape) and AF-6jta (binding), and AF-vm0q (capstone verification) -- none of them faithfully implement the spec's buggy literal snippet. This comment only flags that the design spec DOCUMENT ITSELF still contains the uncorrected snippet at those lines and should eventually be corrected for documentation accuracy. Not blocking: no story in this epic reads that snippet as source-of-truth anymore (all three affected stories now carry the corrected shape directly in their own bodies), and no live cluster is touched until the human-gated stories, all of which are downstream of the corrected stories.
+
+### 2026-08-19T15:45:01Z ada
+DOC DEFECT FLAGGED, NON-BLOCKING (Sr PM bug triage, overseerr->seerr rename): docs/superpowers/specs/2026-08-18-arr-stack-appset-design.md (as committed on main at cb8bf2e) still lists the retired app under its old name at lines ~14 (family description), ~84 (env/ tree diagram), ~120 (per-app parameter table), ~170-171 and ~296-297 (appset-workloads.yaml / appset-kargo.yaml literal snippets) -- all say overseerr/ghcr.io/hotio/overseerr. hotio retired that image in favour of hotio/seerr (Seerr v3); ghcr.io/hotio/overseerr is no longer resolvable (see AF-8r8l's DISCOVERED_BUG comment for full evidence). This epic's own body (the actual source of truth every story's AC checks against, per this repo's self-contained-story discipline) has been corrected in place: the per-app parameter table now reads seerr/ghcr.io/hotio/seerr, with port 5055 flagged as carried over from overseerr and not yet independently reconfirmed for seerr. AF-8r8l, AF-6jta, AF-vm0q, and AF-o0rw have all been amended to the corrected roster; a new P0 bug (AF-yse2) patches AF-hb2f's already-merged appset-kargo.yaml/appproject.yaml and is wired as a hard blocker on AF-6jta. Sr PM judgment call, consistent with how the earlier tag-vs-digest doc defect was handled: the physical spec doc itself is NOT corrected in place -- it is background/historical context, not something any story reads directly or re-derives its own context from, so leaving it stale is non-blocking. This comment is the tracked follow-up if someone later wants the doc corrected for historical accuracy; not required for this epic's execution or acceptance.
