@@ -1,0 +1,75 @@
+# +argocd:skip-file-rendering
+#
+# TWO templating layers meet in this one file, and they share a delimiter:
+#   - Helm actions  (dot-Values.appName)  resolve ONCE per app, when Argo CD
+#     renders this chart for that app's kargo-arr-<app> Application.
+#   - Kargo expressions (dollar-brace ctx.stage, vars.*, imageFrom(...)) must
+#     resolve at PROMOTION time, so they have to survive Helm rendering verbatim.
+# Helm has no idea Kargo's syntax exists: it sees the inner braces as its own
+# action and dies with `function "ctx" not defined`. Every Kargo expression is
+# therefore bound to a Helm variable below -- the contents of a Helm string
+# literal are not scanned for actions -- and emitted by reference. Do not inline
+# a raw Kargo expression anywhere in this file. (Same reason the comments here
+# spell the delimiters out in words instead of showing them.)
+{{- $stage := "${{ ctx.stage }}" }}
+{{- $repoURL := "${{ vars.repoURL }}" }}
+{{- $imageDigest := "${{ imageFrom(vars.image).Digest }}" }}
+#
+# One shared task for all three stages: promotion is a real commit to main that
+# pins this app's image for one stage, then nudges that stage's Argo CD app.
+#
+# Why .Digest and not .Tag: this app's Warehouse subscribes with
+# imageSelectionStrategy Digest against the mutable `release` channel tag, and
+# Kargo's digest selector sets Freight's Tag field to the mutable tag it was
+# told to watch (pkg/image/repository_client.go: `img.Tag = tag`). So .Tag is
+# invariantly the literal string "release" for every Freight this Warehouse ever
+# produces -- writing it would rewrite `release` over `release`, git-commit would
+# find nothing to commit, and every promotion would succeed while deploying
+# nothing. .Digest is the only field that moves when hotio republishes the tag.
+#
+# CONTRACT FOR THE WORKLOADS SIDE (Story 4), since this step decides the VALUE
+# but not how it is consumed: `imageTag` here holds a digest ("sha256:..."),
+# not a tag. app-template builds its image ref as repository + ":" + .image.tag
+# but repository + "@" + .image.digest (charts/common/templates/lib/common/
+# _imageSpecificationToImage.tpl). A digest routed into `.image.tag` yields
+# `ghcr.io/hotio/<app>:sha256:...`, which is not a parseable reference -- an OCI
+# tag cannot contain a colon. appset-workloads.yaml must bind this value to
+# app-template's `digest` field, NOT its `tag` field.
+apiVersion: kargo.akuity.io/v1alpha1
+kind: PromotionTask
+metadata:
+  name: promote
+  namespace: {{ .Values.appName }}
+spec:
+  vars:
+  - name: repoURL
+    value: https://github.com/adamancini/argo-fleet.git
+  - name: image
+    value: {{ .Values.image }}
+  steps:
+  - uses: git-clone
+    config:
+      repoURL: {{ $repoURL }}
+      checkout:
+      - branch: main
+        path: ./src
+  - uses: yaml-update
+    as: update-image-tag
+    config:
+      path: ./src/apps/arr-stack/env/{{ .Values.appName }}/{{ $stage }}/release.yaml
+      updates:
+      - key: imageTag
+        value: {{ $imageDigest }}
+  - uses: git-commit
+    as: commit
+    config:
+      path: ./src
+      message: "arr-stack/{{ .Values.appName }}/{{ $stage }}: promote image {{ $imageDigest }}"
+  - uses: git-push
+    config:
+      path: ./src
+      targetBranch: main
+  - uses: argocd-update
+    config:
+      apps:
+      - name: arr-{{ .Values.appName }}-{{ $stage }}

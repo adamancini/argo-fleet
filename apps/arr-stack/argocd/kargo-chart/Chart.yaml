@@ -1,0 +1,15 @@
+# +argocd:skip-file-rendering
+#
+# Every file in this chart carries the marker above. `bootstrap/fleet-argocd-apps.yaml`
+# syncs `apps/*/argocd` as a `directory`-type source with `recurse: true`, which
+# walks EVERY subdirectory here and tries to parse each *.yaml as a literal
+# Kubernetes manifest -- it has no Helm-chart-boundary awareness. Raw template
+# values like `name: {{ .Values.appName }}` are not valid standalone YAML, so
+# without this marker the whole `argocd-arr-stack` Application fails manifest
+# generation. Argo CD skips any file whose bytes contain the marker
+# (reposerver/repository/repository.go: skipFileRenderingMarker). Harmless to
+# real Helm rendering -- it is just a YAML comment.
+apiVersion: v2
+name: arr-stack-kargo
+description: Shared Kargo Project/Warehouse/Stage/Tasks chart, rendered once per *arr app by appset-kargo.yaml
+version: 0.1.0
