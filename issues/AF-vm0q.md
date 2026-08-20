@@ -8,8 +8,8 @@ labels: [capstone, delivered]
 parent: AF-j5rz
 created_at: 2026-08-18T18:57:46Z
 created_by: ada
-updated_at: 2026-08-20T16:19:13Z
-content_hash: "sha256:885ffaba89a7b4ab4dd3349cd7e8bfd17ef274978c19d7f4ccdf5c55e9933fb3"
+updated_at: 2026-08-20T16:19:14Z
+content_hash: "sha256:5c07538736c351802a8b7946a0b5d555cc191066d44b424fa889a43add38d0bc"
 was_blocked_by: [AF-q5yh, AF-iv8x, AF-hb2f, AF-8r8l, AF-yse2, AF-6jta, AF-pfbv, AF-wb16, AF-o0rw, AF-c17x, AF-4wkn]
 assignee: dev-AF-vm0q
 follows: [AF-iv8x, AF-hb2f, AF-8r8l, AF-yse2, AF-6jta, AF-pfbv, AF-wb16, AF-o0rw, AF-c17x, AF-4wkn]
@@ -121,6 +121,16 @@ devops-toolkit:akp-platform (mandatory), devops-toolkit:yaml-kubernetes-validato
 
 
 ## Notes
+
+
+## nd_contract
+status: delivered
+
+### evidence
+- Transitioned via pvg story deliver on 2026-08-20.
+
+### proof
+- [ ] Developer evidence block must remain authoritative above this contract.
 
 
 ## History
