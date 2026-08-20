@@ -1,17 +1,18 @@
 ---
 id: AF-4wkn
 title: "Human-gated release proof: trigger arr-stack promotion, confirm DRY auto-pickup"
-status: deferred
+status: closed
 priority: 0
 type: task
 labels: [human-execution-required, external-integration]
 parent: AF-j5rz
 created_at: 2026-08-18T19:00:10Z
 created_by: ada
-updated_at: 2026-08-20T16:00:18Z
-content_hash: "sha256:647c0e9d6b7724253e46812f2d39aeef1d97747f728cb741b5f9c6afe64614dd"
+updated_at: 2026-08-20T16:00:28Z
+content_hash: "sha256:8841eb8af686fcb3d513232e049000661e1d6d822f537eab45d890dcfdf69dbd"
 was_blocked_by: [AF-vm0q, AF-c17x]
-blocks: [AF-vm0q]
+closed_at: 2026-08-20T16:00:28Z
+close_reason: "Human-verified: real Kargo promotion, render-diff confined to arr-sonarr-dev only, live pod runs new digest, appset-workloads.yaml never touched -- DRY claim proven end-to-end"
 ---
 
 ## Description
@@ -109,10 +110,11 @@ devops-toolkit:akp-platform (mandatory)
 - 2026-08-18T19:06:18Z dep_removed: was_blocked_by AF-vm0q
 - 2026-08-18T19:06:21Z dep_added: blocks AF-vm0q
 - 2026-08-20T15:12:46Z dep_removed: was_blocked_by AF-c17x
+- 2026-08-20T16:00:28Z status: deferred -> closed
+- 2026-08-20T16:00:28Z dep_removed: no_longer_blocks AF-vm0q
 
 ## Links
 - Parent: [[AF-j5rz]]
-- Blocks: [[AF-vm0q]]
 - Was blocked by: [[AF-vm0q]], [[AF-c17x]]
 
 ## Comments
