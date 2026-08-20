@@ -113,7 +113,8 @@ spec:
     spec:
       project: arr-stack
       source:
-        repoURL: oci://ghcr.io/bjw-s-labs/helm/app-template
+        repoURL: ghcr.io/bjw-s-labs/helm
+        chart: app-template
         targetRevision: 4.x
         helm:
           values: |
