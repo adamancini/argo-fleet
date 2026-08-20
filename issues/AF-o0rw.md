@@ -8,8 +8,8 @@ labels: [human-execution-required, external-integration]
 parent: AF-j5rz
 created_at: 2026-08-18T18:58:35Z
 created_by: ada
-updated_at: 2026-08-19T15:44:11Z
-content_hash: "sha256:a8a556a104f2bbfe39d6fd47ac5a68a438466bea2dade06c3d80425f06083c27"
+updated_at: 2026-08-20T15:09:12Z
+content_hash: "sha256:e6f937537af11f0442180f6b4df16231a858c70c3d4249c9452b28cdd41b473e"
 blocks: [AF-c17x, AF-vm0q]
 was_blocked_by: [AF-vm0q, AF-6jta, AF-wb16]
 ---
@@ -119,3 +119,25 @@ devops-toolkit:akp-platform (mandatory)
 - Was blocked by: [[AF-vm0q]], [[AF-6jta]], [[AF-wb16]]
 
 ## Comments
+
+### 2026-08-20T15:09:12Z ada
+HUMAN-SUPERVISED LIVE VERIFICATION (dispatcher-run, user directly present throughout):
+
+Step 0 -- static suite green before merge:
+$ ruby e2e/observability_test.rb
+RESULT: PASS -- 150 assertions, 0 failures
+
+Step 1 -- baseline before merge: 29 pre-existing Applications, 10 ApplicationSets, all Synced/Healthy. No arr-*/kargo-arr-* resources existed. (Note: akp-platform's platform-aoa/argocd-apps/kargo-apps were already fully decommissioned from this instance in an earlier, unrelated session -- their absence is expected, not a gap.)
+
+Step 2 -- merge + push confirmed: epic/AF-j5rz merged to main by the user (commit 63efac6), confirmed present in origin/main via git log.
+
+Step 3 -- wrapper Application: argocd-arr-stack Synced/Healthy, source path apps/arr-stack/argocd, destination in-cluster. The +argocd:skip-file-rendering marker (AF-hb2f) worked correctly on the real repo-server -- no manifest-generation error from kargo-chart/.
+
+Step 4 -- ApplicationSet child counts: arr-stack-workloads generated exactly 18 Applications (arr-<app>-<stage> for sonarr/radarr/lidarr/bazarr/prowlarr/seerr x dev/staging/prod -- confirmed via seerr naming, zero overseerr references). arr-stack-kargo generated exactly 6 (kargo-arr-<app>). Both ApplicationSets report Healthy with ErrorOccurred: False.
+
+INCIDENT DURING STEP 4/5 (found, triaged, and fixed within this same verification session):
+All 18 workload Applications initially failed with InvalidSpecError ('spec.source.repoURL and either spec.source.path or spec.source.chart are required') -- a real defect in appset-workloads.yaml's OCI source shape (chart name embedded in repoURL path instead of a separate chart: field), confirmed against Argo CD's own validation source and never caught by any static check in this epic. Clean validation-time rejection -- nothing was actually deployed, no partial state. Filed as P0 bug AF-wb16, fixed (repoURL: ghcr.io/bjw-s-labs/helm + chart: app-template), reviewed, merged to epic/AF-j5rz then to main (commit 618450b), and re-verified live: all 18 workload Applications now Synced, healthy or normally Progressing (fresh PVC/pod creation), zero InvalidSpecError remaining. Full evidence and root cause on AF-wb16.
+
+Step 5 -- pre-existing resources undisturbed: all 29 baseline Applications remain Synced/Healthy after both merges. One apparent deviation investigated and ruled out: kube-prometheus-stack-demo2 shows Health: Progressing due to kube-prometheus-stack-operator pod being 0/1 Ready -- confirmed via 'kubectl get pods' that this pod is 9 DAYS old with a stable restart count, i.e. a pre-existing condition predating this entire epic/session, not a side effect of this merge. Node resource utilization (18% CPU / 25% memory on demo2) rules out resource-pressure causation too.
+
+AC #1-5 all satisfied. Live proof of the DRY claim's foundation (real Sonarr health, real promotion) proceeds to AF-c17x/AF-4wkn.
