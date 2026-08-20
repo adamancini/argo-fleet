@@ -7,11 +7,11 @@ type: bug
 parent: AF-j5rz
 created_at: 2026-08-20T14:43:53Z
 created_by: ada
-updated_at: 2026-08-20T14:55:20Z
-content_hash: "sha256:c60bd2dcf66f26f462f204ba9d75b1cf26dbc5dcc9aa694e8939b767d5e496fd"
+updated_at: 2026-08-20T14:55:27Z
+content_hash: "sha256:0e925ae6f3ff8245b0e93c16c456da55ab577b8d68338a2f12a1b94cd0de9238"
 blocks: [AF-vm0q, AF-o0rw]
 assignee: dev-AF-wb16
-follows: [AF-pfbv]
+follows: [AF-pfbv, AF-6jta]
 ---
 
 ## Description
@@ -136,11 +136,13 @@ devops-toolkit:akp-platform (mandatory -- ApplicationSet/Application source conv
 - 2026-08-20T14:47:33Z status: open -> in_progress
 - 2026-08-20T14:47:34Z auto-follows: linked to predecessor AF-pfbv
 - 2026-08-20T14:47:34Z claimed by dev-AF-wb16
+- 2026-08-20T14:55:27Z status: in_progress -> in_progress
+- 2026-08-20T14:55:27Z auto-follows: linked to predecessor AF-6jta
 
 ## Links
 - Parent: [[AF-j5rz]]
 - Blocks: [[AF-vm0q]], [[AF-o0rw]]
-- Follows: [[AF-pfbv]]
+- Follows: [[AF-pfbv]], [[AF-6jta]]
 
 ## Comments
 

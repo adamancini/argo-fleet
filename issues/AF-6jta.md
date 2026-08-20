@@ -8,13 +8,14 @@ parent: AF-j5rz
 created_at: 2026-08-18T18:56:00Z
 created_by: ada
 updated_at: 2026-08-19T20:07:17Z
-content_hash: "sha256:08e9c369e5bcc190301cae7aadfe84ca6b7f762f21aba970f4914f243eca19cb"
+content_hash: "sha256:37d6330b9ead79e9b31338b191c288cb6e072f7036dd5483b14f46769e3038cc"
 was_blocked_by: [AF-iv8x, AF-8r8l, AF-yse2]
 assignee: dev-AF-6jta
 follows: [AF-iv8x, AF-8r8l, AF-yse2, AF-hb2f]
 labels: [accepted]
 closed_at: 2026-08-19T20:07:16Z
 close_reason: "Accepted: matrix-generator ApplicationSet verified independently -- digest binding to imageTag confirmed correct via grep + real helm render (bjw-s app-template 4.6.2); hasDownloads true/false rendering confirmed (2 PVCs plus /data vs 1 PVC, no /data); image refs render as valid at-sha256 OCI references; cross-file app/image list matches appset-kargo.yaml and all 18 seeded release.yaml dirs exactly; no overseerr, clusters generator, storageClassName, or tag-binding literals; destination demo2/demo1 plus arr-stack-stage namespace logic correct; port 5055 reconfirmed for hotio/seerr with credible dual-source evidence; diff is exactly 1 file added (173 lines, explained by repo heavily-commented-manifest convention); pvg verify PASSED; pvg gates PASS; e2e SHA matches proof (3f0fd80)."
+led_to: [AF-wb16]
 ---
 
 ## Description
@@ -272,6 +273,7 @@ status: delivered
 - Parent: [[AF-j5rz]]
 - Was blocked by: [[AF-iv8x]], [[AF-8r8l]], [[AF-yse2]]
 - Follows: [[AF-iv8x]], [[AF-8r8l]], [[AF-yse2]], [[AF-hb2f]]
+- Led to: [[AF-wb16]]
 
 ## Comments
 
