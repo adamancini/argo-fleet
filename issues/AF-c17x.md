@@ -1,17 +1,18 @@
 ---
 id: AF-c17x
 title: "Human-gated: confirm Sonarr healthy in arr-stack-dev + Kargo trio healthy on kargo cluster"
-status: deferred
+status: closed
 priority: 1
 type: task
 labels: [human-execution-required, external-integration]
 parent: AF-j5rz
 created_at: 2026-08-18T18:59:18Z
 created_by: ada
-updated_at: 2026-08-20T15:12:36Z
-content_hash: "sha256:1021d36d8de94d44da413d4a41ab7e0a176d320a9a63f84d374fff9b1a57884f"
-blocks: [AF-4wkn, AF-vm0q]
+updated_at: 2026-08-20T15:12:46Z
+content_hash: "sha256:3d14e34fe427c9fe5153d06b392f9a22f1baa0e483be1502ba70a79e2a792d51"
 was_blocked_by: [AF-pfbv, AF-o0rw]
+closed_at: 2026-08-20T15:12:46Z
+close_reason: "Human-verified: Sonarr Synced/Healthy, PVCs Bound, pod Running, Kargo Project/Warehouse/3xStage all reconciled with no Error condition"
 ---
 
 ## Description
@@ -99,10 +100,12 @@ devops-toolkit:akp-platform (mandatory)
 - 2026-08-18T19:06:20Z dep_added: blocks AF-vm0q
 - 2026-08-19T20:26:27Z dep_removed: was_blocked_by AF-pfbv
 - 2026-08-20T15:09:22Z dep_removed: was_blocked_by AF-o0rw
+- 2026-08-20T15:12:46Z status: deferred -> closed
+- 2026-08-20T15:12:47Z dep_removed: no_longer_blocks AF-4wkn
+- 2026-08-20T15:12:47Z dep_removed: no_longer_blocks AF-vm0q
 
 ## Links
 - Parent: [[AF-j5rz]]
-- Blocks: [[AF-4wkn]], [[AF-vm0q]]
 - Was blocked by: [[AF-pfbv]], [[AF-o0rw]]
 
 ## Comments
