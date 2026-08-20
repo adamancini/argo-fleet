@@ -1,18 +1,20 @@
 ---
 id: AF-vm0q
 title: "Static verification suite for arr-stack manifests"
-status: in_progress
+status: closed
 priority: 1
 type: task
 labels: [capstone, delivered]
 parent: AF-j5rz
 created_at: 2026-08-18T18:57:46Z
 created_by: ada
-updated_at: 2026-08-20T16:31:26Z
-content_hash: "sha256:0fd07f24893f664dd0cc6bcb7d44c4ae221bb8302823da863d7908c9838b21f6"
+updated_at: 2026-08-20T16:39:20Z
+content_hash: "sha256:10407e3c76e9860441a7912278daa0d2955f442c5383b9c48b2f18851b070e8f"
 was_blocked_by: [AF-q5yh, AF-iv8x, AF-hb2f, AF-8r8l, AF-yse2, AF-6jta, AF-pfbv, AF-wb16, AF-o0rw, AF-c17x, AF-4wkn]
 assignee: dev-AF-vm0q
 follows: [AF-iv8x, AF-hb2f, AF-8r8l, AF-yse2, AF-6jta, AF-pfbv, AF-wb16, AF-o0rw, AF-c17x, AF-4wkn]
+closed_at: 2026-08-20T16:39:20Z
+close_reason: "Accepted via pvg story accept"
 ---
 
 ## Description
@@ -218,6 +220,7 @@ status: delivered
 - 2026-08-20T16:01:18Z auto-follows: linked to predecessor AF-4wkn
 - 2026-08-20T16:01:18Z claimed by dev-AF-vm0q
 - 2026-08-20T16:19:13Z status: in_progress -> in_progress
+- 2026-08-20T16:39:20Z status: in_progress -> closed
 
 ## Links
 - Parent: [[AF-j5rz]]
