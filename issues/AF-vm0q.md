@@ -8,8 +8,8 @@ labels: [capstone, delivered]
 parent: AF-j5rz
 created_at: 2026-08-18T18:57:46Z
 created_by: ada
-updated_at: 2026-08-20T16:19:14Z
-content_hash: "sha256:5c07538736c351802a8b7946a0b5d555cc191066d44b424fa889a43add38d0bc"
+updated_at: 2026-08-20T16:20:46Z
+content_hash: "sha256:ac3338833e79c8be376c178138820375ca6af88d9e0b86f5b28718c5c877d388"
 was_blocked_by: [AF-q5yh, AF-iv8x, AF-hb2f, AF-8r8l, AF-yse2, AF-6jta, AF-pfbv, AF-wb16, AF-o0rw, AF-c17x, AF-4wkn]
 assignee: dev-AF-vm0q
 follows: [AF-iv8x, AF-hb2f, AF-8r8l, AF-yse2, AF-6jta, AF-pfbv, AF-wb16, AF-o0rw, AF-c17x, AF-4wkn]
@@ -189,3 +189,178 @@ BUG TRIAGE (Sr PM), param-path correction: amended this capstone's IMPLEMENTATIO
 
 ### 2026-08-20T14:44:16Z ada
 LOCKSTEP AMENDMENT (Sr PM bug triage, AF-wb16): a 4th distinct arr-stack drift point was found live during AF-o0rw -- apps/arr-stack/argocd/appset-workloads.yaml's OCI Helm source was missing the mandatory `chart:` field (repoURL carried an `oci://`-prefixed path with the chart name embedded instead), causing all 18 workload Applications to fail Argo CD spec validation (InvalidSpecError) on the real instance. Fixed forward by AF-wb16 (P0, not blocking any closed story); AF-wb16 is wired as a blocker of this capstone and of AF-o0rw's continuation. When this story's static suite is authored, fold in two more checks alongside the existing item-3/item-4 lists: (a) cross-file contract check -- appset-workloads.yaml's template.spec.source has repoURL with no oci:// prefix and a non-empty chart field; (b) negative assertion -- no oci:// substring anywhere under apps/arr-stack/argocd/appset-workloads.yaml. Self-validation (item 7) should add a 9th regression: reintroduce the oci://-prefixed repoURL with chart: removed, confirm the new assertion catches it. Not a required AC change by itself (this comment documents the fold-in so the eventual author doesn't have to re-derive it from AF-wb16), but should be treated as part of "all seven implementation items" once authored.
+
+### 2026-08-20T16:20:46Z ada
+DELIVERED: arr-stack static verification capstone.
+
+Commit: `65ed8e0dbee71629f42911485178e897fcbb2c33` on `story/AF-vm0q`
+File: `e2e/observability_test.rb` (extended in place -- no second test file, no fork of the AF-d66a sections)
+
+## PROOF
+
+### Command and result
+
+```
+$ ruby e2e/observability_test.rb
+RESULT: PASS -- 589 assertions, 0 failures      (exit 0)
+```
+
+Produced from commit `65ed8e0dbee71629f42911485178e897fcbb2c33`, against the real, committed
+`apps/arr-stack/` manifests. Ruby 2.6.10 (stock macOS), helm v4.2.4.
+
+Pre-change baseline re-run from `65ed8e0~1` for comparison: `RESULT: PASS -- 150 assertions, 0 failures`.
+Delta: **+439 assertions, 0 failures, 0 skipped, 0 warnings** (also clean under `ruby -w`).
+
+There are no other test files in the repo (`find` for `*_test*`/`*.spec.*` returns only this file),
+so this run IS the full suite -- nothing was skipped or scoped down. No `skipif`, env-var gate,
+`xfail`, or conditional-skip construct exists anywhere in the file.
+
+### Per-section assertion counts (new sections 10-15)
+
+| Section | Assertions |
+|---|---|
+| 10. arr-stack structural / lint checks | 180 |
+| 11. arr-stack helm template renders | 79 |
+| 12. arr-stack cross-file contracts | 122 |
+| 13. arr-stack negative assertions | 35 |
+| 14. arr-stack repo-wide name collision check | 6 |
+| 15. arr-stack project hard-rule / quality-gate checks | 17 |
+| (pre-existing AF-d66a sections 1-9, unmodified) | 150 |
+
+### `pvg verify`
+
+```
+$ pvg verify e2e/observability_test.rb
+VERIFY: PASSED (1 files scanned, 0 issues)
+```
+
+### Acceptance criteria
+
+| AC | Verdict | Evidence |
+|---|---|---|
+| 1. New `arr_stack` section covers all 7 implementation items (+ AF-wb16 fold-in) | PASS | Sections 10 (item 1), 11 (item 2), 12 (item 3 + fold-in a), 13 (item 4 + fold-in b), 14 (item 5), 15 (item 6); item 7 + fold-in c below |
+| 2. Structural/lint + helm render checks pass, incl. corrected digest reference | PASS | 259 assertions in §10-11. `helm template` of the vendored Kargo chart renders the Project/Warehouse/3xStage/PromotionTask set for sonarr (hasDownloads=true) and prowlarr (false); `helm template` of the real `oci://ghcr.io/bjw-s-labs/helm/app-template` 4.x with the generated values renders `ghcr.io/hotio/sonarr@sha256:e029ce…` -- `@`, never `:sha256:` |
+| 3. Cross-file contracts pass, incl. digest shape, `digest: "{{.imageTag}}"` binding, `seerr` roster, OCI repoURL/chart shape | PASS | §12a four-way roster agreement (table == workloads list == kargo list == `env/*/` glob); §12c all 18 `imageTag` values match `sha256:[0-9a-f]{64}`, `values` is `{}`, per-app stage trio byte-identical; §12d `digest` bound structurally to `{{.imageTag}}` with no `tag` key at all; §12g repoURL has no `oci://` prefix and `chart: app-template` is non-empty |
+| 4. Negative assertions pass, incl. digest/tag + param path, overseerr, `oci://` | PASS | §13: no plex/qbittorrent/rflood/sabnzbd, no kargo-shared/CustomPromotionStep, no `overseerr` (case-insensitive), no `oci://` anywhere, no `tag: "{{.imageTag}}"` or `tag: "{{.values.imageTag}}"`, no `.values.imageTag` path at all, no `imageTag: release`, no `storageClassName`, no Stage `verification`/AnalysisTemplate, bootstrap byte-identical |
+| 5. Repo-wide collision check + quality-gate check pass | PASS | §14 (28 generated names vs 30 discovered pre-existing fleet names, empty intersection); §15 (CreateNamespace=true on both appsets, no secrets, sync-wave + skip-file-rendering + authorized-stage all present, promote-loop guard) |
+| 6. Self-validation with >=9 regressions, each caught by its specific assertion | PASS | **14** regressions, 14/14 caught by the named assertion -- table below |
+| 7. Full extended suite: zero failures against real committed manifests | PASS | `589 assertions, 0 failures`, exit 0 |
+
+### Self-validation (item 7 + AF-wb16 fold-in c): 14/14 regressions caught
+
+Method: for each regression, back the target file up to scratch, introduce exactly ONE deliberate
+defect, run the full suite, require that the **specific named assertion** appears in the `FAIL:`
+output (not merely that something failed), restore from git, and re-confirm `git status` is clean.
+Driver output archived; final state verified clean and back to `589 assertions, 0 failures`.
+
+| # | Regression introduced | Caught by (specific assertion) | Total fails |
+|---|---|---|---|
+| R1 | rename one app in `appset-workloads.yaml`'s list ONLY (`sonarr`->`sonarrr`) | `arr/roster: appset-workloads list == the epic parameter table`; `… == appset-kargo list` | 7 |
+| R2 | remove `+argocd:skip-file-rendering` from `warehouse.yaml` | `arr/chart: EVERY file under kargo-chart/ carries +argocd:skip-file-rendering` | 2 |
+| R3 | delete `env/bazarr/staging/release.yaml` | `arr/release: exactly 18 release.yaml promotion targets exist`; `… full 6x3 cross-product` | 4 |
+| R4 | hard-code `storageClassName: local-path` in the persistence block | `arr/scope: no storageClassName is hard-coded anywhere under apps/arr-stack/`; `arr/values …: no storageClassName in the rendered persistence block` | 3 |
+| R5 | change `lidarr`'s image in `appset-kargo.yaml` ONLY | `arr/params lidarr: appset-kargo image matches the parameter table`; `… agree byte-for-byte on the image` | 2 |
+| **R6** | **revert `digest: "{{.imageTag}}"` -> `tag: "{{.imageTag}}"`** (the original epic bug) | `arr/regress: no \`tag: "{{.imageTag}}"\` binding`; `arr/binding: app-template digest is bound to the top-level {{.imageTag}} parameter`; `arr/binding: the image block binds NO tag field at all`; `arr/values …: derived container image reference is digest-pinned` | 17 |
+| **R7** | **reintroduce `overseerr`/`ghcr.io/hotio/overseerr` in `appset-kargo.yaml`** | `arr/scope: no \`overseerr\` reference anywhere (retired upstream image)`; `arr/roster: appset-kargo list == the epic parameter table` | 6 |
+| **R8** | **wrong param path, right field: `digest: "{{.values.imageTag}}"`** | `arr/regress: the \`.values.imageTag\` param path appears nowhere`; `arr/binding: app-template digest is bound to the top-level {{.imageTag}} parameter` | 9 |
+| **R9** | **reintroduce `repoURL: oci://…/app-template` with `chart:` removed (AF-wb16)** | `arr/oci: source.repoURL carries NO oci:// scheme prefix`; `arr/oci: source.chart is present and non-empty`; `arr/regress: no \`oci://\` substring anywhere in appset-workloads.yaml` | 7 |
+| R10 | revert one `imageTag` to the literal tag-shaped `release` | `arr/regress: no \`imageTag: release\` tag-shaped seed survives`; `arr/regress: every imageTag is digest-shaped…`; `arr/release bazarr/staging: imageTag is a well-formed sha256 digest` | 4 |
+| R11 | flip `prowlarr`'s `hasDownloads` away from the parameter table | `arr/params prowlarr: hasDownloads matches the parameter table` | 1 |
+| R12 | drift the `authorized-stage` annotation from the name template | `arr/authz: authorized-stage annotation is <app>:<stage>`; `arr/authz: the name template and the annotation interpolate the same two tokens` | 4 |
+| R13 | remove `sync-wave: "-1"` from the Kargo Project | `arr/chart: project.yaml carries argocd.argoproj.io/sync-wave "-1"`; `arr/gate: skip-file-rendering + sync-wave + authorized-stage are ALL present` | 4 |
+| R14 | drop `CreateNamespace=true` from `appset-kargo.yaml` | `arr/gate: appset-kargo.yaml syncOptions includes CreateNamespace=true` | 1 |
+
+R6/R8/R9 are the three production bug-triage regressions this capstone exists to guard, and each is
+caught by a *distinct* assertion family -- R6 by the field check, R8 by the param-path check, R9 by
+the OCI-shape check -- so no one of the three can mask another.
+
+R11 and R14 each fire exactly one assertion, which is the precision evidence: the suite pinpoints
+the broken contract rather than collapsing into a wall of noise.
+
+### Notes on scope and honesty
+
+- **Wiring**: this story's deliverable *is* the verification entry point -- `ruby e2e/observability_test.rb`,
+  the same single command the AF-d66a epic gate already uses. It is wired by being the repo's only
+  test file, at the path the completion gate scans, and it exercises the real committed manifests
+  (not fixtures) plus the real upstream `app-template` chart through `helm template`. No mocks anywhere.
+- **Diff budget overrun, declared**: the story budgeted ~150-260 added LOC; actual is **901 added lines
+  (~600 code, ~300 comment/blank)** in 1 file, 0 new files. Driver: the AF-wb16 fold-in plus the full
+  7-item scope across 6 sections and 439 assertions. Code-per-assertion is 1.4 vs the existing file's
+  2.2, so the overrun is scope, not bloat. I trimmed the header prose once (-8 lines) but did not
+  remove assertions to hit a line count. Flagging rather than hiding it.
+- **`pvg gates` FAIL is pre-existing and not mine.** 15 duplication BLOCKs. I verified this properly
+  rather than asserting it: I ran `pvg gates` with my file swapped back to its `65ed8e0~1` content and
+  got byte-identical output (12.1% vs 12.0% total; same 15 files). `pvg gates` also resolves the
+  project root, not this worktree, so it never saw my change either way. No BLOCK names
+  `e2e/observability_test.rb`. See the DISCOVERED_BUG below for the one entry inside this epic.
+- **`file_loc` WARN**: once merged, `e2e/observability_test.rb` is 1254 non-blank lines against a
+  400-line warn threshold (warn, not block). Pre-existing at 463; this story pushes it further. If the
+  team wants it under the threshold, splitting `e2e/` into `observability_test.rb` + `arr_stack_test.rb`
+  is the natural fix -- but the story explicitly forbade a second test file, so I did not do it.
+- **One network dependency, handled without a skip.** §11c renders through the real
+  `oci://ghcr.io/bjw-s-labs/helm/app-template`, which is an external registry. It was reachable on this
+  run and the assertions executed. If it is ever unreachable, the suite prints a `NOTE:` and the
+  digest-vs-tag *outcome* is still asserted offline in §11b, which re-derives app-template's own
+  `repository@digest` vs `repository:tag` rule -- so R6 and R8 are caught with or without network.
+  Nothing is gated behind an env var and no assertion is ever collected-but-unexecuted.
+- The OCI chart reference used by §11c is *derived from the manifest under test*
+  (`oci://<repoURL>/<chart>`), so R9 breaks the render too, not just the structural check.
+- `kargo-chart/templates/*.yaml` are Helm templates, so they are linted post-`helm template` render
+  (per the story's own note) rather than parsed as raw YAML; that render is where `stages.yaml`'s
+  multi-document shape is validated. `verification`/`AnalysisTemplate` are asserted absent
+  *structurally on rendered docs* plus via key-anchored regexes, because both words appear in
+  `stages.yaml`'s explanatory comments -- a prose-level grep would have false-positived on the very
+  comment documenting their absence.
+- Live-cluster checks remain out of scope by design (AF-o0rw/AF-c17x/AF-4wkn). Nothing here touches a cluster.
+
+DISCOVERED_BUG:
+  title: pvg duplication gate blocks on apps/arr-stack/argocd/appset-workloads.yaml (59 duplicated lines)
+  context: `pvg gates` reports `[BLOCK] duplication apps/arr-stack/argocd/appset-workloads.yaml 59>50`,
+    which will block the epic completion gate. This looks like a false positive against the DRY
+    generator design itself: the file's six `list` elements are deliberately near-identical
+    (name/image/port/hasDownloads leaves under one shared template), which is the entire point of
+    the pattern this epic set out to prove. Collapsing them would defeat the design. The repo-wide
+    total (12.0% > 10%) is likewise pre-existing and dominated by files outside this epic
+    (Taskfile.yml 66, apps/akkoma/argocd/appset.yaml 53, apps/soju/kargo/stages.yaml 61, and 10
+    fenced code blocks inside docs/superpowers/plans/2026-08-05-cluster-lifecycle-and-ingress-storage.md).
+    Verified pre-existing: gate output is byte-identical with this story's change reverted. Likely
+    resolutions are a `gates.exclude` entry for docs plan files and generator list-element blocks, or
+    raising `gates.duplication.min_lines` -- a settings decision, not a code fix, and not mine to make.
+  affected_files: apps/arr-stack/argocd/appset-workloads.yaml, Taskfile.yml, apps/akkoma/argocd/appset.yaml,
+    apps/soju/kargo/stages.yaml, docs/superpowers/plans/2026-08-05-cluster-lifecycle-and-ingress-storage.md
+  discovered_during: AF-vm0q
+
+## LEARNINGS
+
+- **`dig_path` silently lies about Kubernetes annotation keys.** The harness's `dig_path` splits on
+  `.`, so `'metadata.annotations.argocd.argoproj.io/sync-wave'` becomes four bogus segments and
+  returns `nil` -- which reads as a *passing* absence check if you wrote the assertion the other way
+  round. Every annotation this epic cares about (`argocd.argoproj.io/sync-wave`,
+  `kargo.akuity.io/authorized-stage`) has dots in its key. I added an `arr_annotation` helper that
+  fetches the map and indexes it directly. Any future story asserting on annotations in this repo
+  needs the same, and any *existing* `dig_path` call with a dotted leaf key is suspect.
+- **Grepping raw text for a forbidden word false-positives on the comment that documents its
+  absence.** `stages.yaml` explains at length why it ships no `verification` block and no
+  `AnalysisTemplate` -- so the obvious `grep -i verification` fires on the proof of correctness.
+  The fix that generalizes: assert on parsed/rendered structure, and where a text check is still
+  wanted, anchor it to YAML key syntax (`/^\s*verification:/`) rather than prose.
+- **Mutation-testing the test suite caught a real defect in my own work, and pure line-counting
+  would not have.** My first pass had a hard-coded `27` expected generated names where the templates
+  produce 28 -- the suite failed immediately on real manifests. Rewriting it as a derived sum
+  (`4 + apps * (1 + stages)`) removed the magic number. Separately, requiring each regression to fire
+  a *named* assertion (not just "something failed") is what proves R6/R8/R9 are independently guarded;
+  R6 alone trips 17 assertions, so "a failure occurred" would have told me nothing about which
+  contract actually holds the line.
+- **Two of the three epic regressions are only catchable structurally, not textually.** `digest:` vs
+  `tag:` and `.imageTag` vs `.values.imageTag` both live inside a `values: |` *block scalar*, i.e.
+  a YAML string, so they are invisible to normal document traversal. Reading that string back as YAML
+  (drop the `{{- if}}`/`{{- end}}` lines, quote the bare leaf actions) turns the binding into
+  something assertable field-by-field, which is strictly stronger than a regex and survives reformatting.
+- **Deriving the epic base commit from history beats hard-coding a SHA.** The bootstrap byte-identity
+  check needs a baseline; `parent of the oldest commit touching apps/arr-stack/` is stable under later
+  merges and even under a squash-to-main, whereas a pinned SHA rots the first time the branch is
+  rebased. Same instinct as globbing instead of listing app names.
+- **Gate output can be about a directory you are not in.** `pvg gates` resolved the project root
+  rather than my worktree, so its FAIL had nothing to do with my change -- and the only way to know
+  that was to swap my file back to its parent commit's content and diff the output. Worth doing before
+  either claiming a gate failure is pre-existing or accepting blame for it.
