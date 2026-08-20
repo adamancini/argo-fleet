@@ -1,15 +1,17 @@
 ---
 id: AF-wb16
 title: "Bug: arr-stack workload Applications fail Argo CD spec validation -- OCI repoURL cannot embed chart name, chart: field is mandatory"
-status: open
+status: in_progress
 priority: 0
 type: bug
 parent: AF-j5rz
 created_at: 2026-08-20T14:43:53Z
 created_by: ada
-updated_at: 2026-08-20T14:43:53Z
-content_hash: "sha256:fb99d19241274e1694a7997abbb8be3e3a73730c52ac641b469be528443c0886"
+updated_at: 2026-08-20T14:47:33Z
+content_hash: "sha256:a2dc00552ed0725bda1b19445cd889343927f3ae17e8e3ab10a030b5dc2755cb"
 blocks: [AF-vm0q, AF-o0rw]
+assignee: dev-AF-wb16
+follows: [AF-pfbv]
 ---
 
 ## Description
@@ -131,9 +133,13 @@ devops-toolkit:akp-platform (mandatory -- ApplicationSet/Application source conv
 ## History
 - 2026-08-20T14:43:59Z dep_added: blocks AF-vm0q
 - 2026-08-20T14:44:00Z dep_added: blocks AF-o0rw
+- 2026-08-20T14:47:33Z status: open -> in_progress
+- 2026-08-20T14:47:34Z auto-follows: linked to predecessor AF-pfbv
+- 2026-08-20T14:47:34Z claimed by dev-AF-wb16
 
 ## Links
 - Parent: [[AF-j5rz]]
 - Blocks: [[AF-vm0q]], [[AF-o0rw]]
+- Follows: [[AF-pfbv]]
 
 ## Comments

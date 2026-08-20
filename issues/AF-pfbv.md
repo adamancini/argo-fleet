@@ -9,9 +9,10 @@ parent: AF-j5rz
 created_at: 2026-08-18T18:56:41Z
 created_by: ada
 updated_at: 2026-08-19T20:26:27Z
-content_hash: "sha256:6b6a1a94fdd61ec3a1128171e8fa5c52c5f37ae008dcb7f487ccdd8a3eead890"
+content_hash: "sha256:8ba51afce77897ed3eb10bb508c08fe51bfb8c5f9a2936e6f890fc8f987ad943"
 closed_at: 2026-08-19T20:26:27Z
 close_reason: "Human-verified: both demo1/demo2 confirm local-path (default) StorageClass"
+led_to: [AF-wb16]
 ---
 
 ## Description
@@ -88,6 +89,7 @@ devops-toolkit:akp-platform (mandatory -- confirms StorageClass/PVC binding conv
 
 ## Links
 - Parent: [[AF-j5rz]]
+- Led to: [[AF-wb16]]
 
 ## Comments
 
