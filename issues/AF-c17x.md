@@ -8,8 +8,8 @@ labels: [human-execution-required, external-integration]
 parent: AF-j5rz
 created_at: 2026-08-18T18:59:18Z
 created_by: ada
-updated_at: 2026-08-18T19:06:10Z
-content_hash: "sha256:63154903a5584b71be68522ad1cf4903cb5676d557227d1675e91c27f049e751"
+updated_at: 2026-08-20T15:12:36Z
+content_hash: "sha256:1021d36d8de94d44da413d4a41ab7e0a176d320a9a63f84d374fff9b1a57884f"
 blocks: [AF-4wkn, AF-vm0q]
 was_blocked_by: [AF-pfbv, AF-o0rw]
 ---
@@ -106,3 +106,29 @@ devops-toolkit:akp-platform (mandatory)
 - Was blocked by: [[AF-pfbv]], [[AF-o0rw]]
 
 ## Comments
+
+### 2026-08-20T15:12:36Z ada
+HUMAN-SUPERVISED LIVE VERIFICATION (dispatcher-run, user directly present throughout, following AF-o0rw and AF-pfbv both closed):
+
+Step 1 -- Sonarr Argo CD Application:
+$ argocd app get arr-sonarr-dev
+Sync Status: Synced to 4.x | Health Status: Healthy
+destination: demo1 / arr-stack-dev
+Children: PVC arr-sonarr-dev-downloads (Healthy), PVC arr-sonarr-dev-config (Healthy), Service arr-sonarr-dev (Healthy), Deployment arr-sonarr-dev (Healthy)
+
+Step 2 -- PVC binding on demo1:
+$ kubectl --context k3d-demo1 -n arr-stack-dev get pvc
+arr-sonarr-dev-config      Bound   local-path
+arr-sonarr-dev-downloads   Bound   local-path
+Both Bound, not Pending. AF-pfbv's StorageClass finding held true live.
+
+Step 3 -- Sonarr pod:
+$ kubectl --context k3d-demo1 -n arr-stack-dev get pods
+arr-sonarr-dev-766965d76-62c67   1/1   Running   0   5m31s
+
+Step 4 -- Kargo trio on the Akuity-hosted kargo control plane (accessed via the kargo CLI, not a separate kubeconfig context -- 'kargo' is not a distinct k3d cluster, it is Akuity's own managed Kargo hosting, confirmed via terraform output showing kargo_hostname as a distinct akuity.cloud endpoint with kargo_agent_ids registered against demo1/demo2):
+$ kargo get project sonarr -> READY: True, 'Project is synced and ready for use'
+$ kargo get warehouse --project sonarr -> sonarr warehouse present; -o yaml confirms conditions Ready=True, Healthy=True (ReconciliationSucceeded), and it has ALREADY autonomously discovered real Freight (735f2fe4.../'veering-ibex', origin Warehouse/sonarr, from ghcr.io/hotio/sonarr:release digest sha256:2a67fa7b... -- naturally drifted from AF-8r8l's seed digest since time passed, exactly as that story anticipated and documented as expected/harmless)
+$ kargo get stage --project sonarr -> dev/staging/prod all present, all show READY: False / 'Stage has no current Freight' -- confirmed via -o yaml this is reason: NoFreight, NOT an Error condition (no Error reason anywhere in any Stage's conditions). This is the expected pre-promotion state: Freight has been discovered by the Warehouse but not yet promoted into any Stage, which is exactly what Story AF-4wkn (trigger one real promotion) exists to do next -- not a defect here.
+
+AC #1-5 all satisfied. One complete vertical slice (Sonarr, workload + Kargo pipeline) confirmed genuinely live-healthy, real PVCs Bound, real pod Running, real Freight already discovered. Foundation is solid for AF-4wkn's promotion trigger.
