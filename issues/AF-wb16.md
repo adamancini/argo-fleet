@@ -11,7 +11,7 @@ updated_at: 2026-08-20T14:59:37Z
 content_hash: "sha256:d2dcba3dbb1b2d9e0390b4f12d7d7c5569f64f13c377d877f8ab8b7e248ff867"
 assignee: dev-AF-wb16
 follows: [AF-pfbv, AF-6jta]
-labels: [delivered, accepted]
+labels: [accepted]
 closed_at: 2026-08-20T14:59:37Z
 close_reason: "Accepted: explicit chart field fixes InvalidSpecError on 18 workload Applications. Verified independently: diff dda74d9..HEAD is exactly 1 file +2/-1 touching only repoURL/chart lines; 63efac6..HEAD log for stages.yaml and the design-spec doc is empty (branch never touched them); merge-base --is-ancestor confirms neither main-only commit is ancestor of HEAD; fixed file confirms repoURL: ghcr.io/bjw-s-labs/helm, chart: app-template, targetRevision: 4.x unchanged, zero oci:// occurrences; bootstrap/*.yaml untouched; re-ran ruby e2e/observability_test.rb -- 150/150, 0 failures; independently confirmed both Argo CD citations (util/argo/argo.go:610/613, reposerver/repository/repository.go:1225-1226); pvg verify and pvg gates both clean."
 ---
