@@ -8,8 +8,8 @@ labels: [capstone]
 parent: AF-j5rz
 created_at: 2026-08-18T18:57:46Z
 created_by: ada
-updated_at: 2026-08-19T19:56:52Z
-content_hash: "sha256:340e20074860b47d241a7caec31c2580c572e2a35f82099a0af6b383fd3a00d7"
+updated_at: 2026-08-20T14:44:16Z
+content_hash: "sha256:575e6edf0ed08847b54a427f52ed6544517dc87ad5f403373f412b761b890e85"
 blocked_by: [AF-o0rw, AF-c17x, AF-4wkn, AF-wb16]
 was_blocked_by: [AF-q5yh, AF-iv8x, AF-hb2f, AF-8r8l, AF-yse2, AF-6jta, AF-pfbv]
 ---
@@ -158,3 +158,6 @@ BUG TRIAGE (Sr PM): amended this capstone's static verification IMPLEMENTATION/A
 
 ### 2026-08-19T19:56:52Z ada
 BUG TRIAGE (Sr PM), param-path correction: amended this capstone's IMPLEMENTATION/ACs/CONSUMES in lockstep with AF-6jta's own deliver-only follow-up discovery -- the digest binds to .imageTag (top-level key in release.yaml), NOT .values.imageTag (values is an empty map in all 18 seeded files; that path aborts rendering under this ApplicationSet's own goTemplateOptions missingkey=error). Item 2's render check, item 3's cross-file contract check, item 4's negative assertion, item 7's self-validation regression list, and AC #3/#4/#6 are all amended to assert digest: "{{.imageTag}}" and to forbid tag: under BOTH the .imageTag and .values.imageTag paths (either wrong-field variant, under either path, is the same class of regression this suite must catch). Self-validation regression count raised from 7 to 8 to add the wrong-param-path-right-field variant (digest: "{{.values.imageTag}}") as its own distinct regression, since a suite that only catches the tag:-vs-digest field swap could still miss a path regression. AF-6jta's actual delivered appset-workloads.yaml already ships the corrected .imageTag path; this amendment only brings this capstone's own regression check into agreement with that delivered file (previously it was written to assert the now-superseded .values.imageTag literal, which would have caused this capstone's own suite to fail against the correct, already-delivered file). See AF-6jta's comments for full discovered-bug evidence.
+
+### 2026-08-20T14:44:16Z ada
+LOCKSTEP AMENDMENT (Sr PM bug triage, AF-wb16): a 4th distinct arr-stack drift point was found live during AF-o0rw -- apps/arr-stack/argocd/appset-workloads.yaml's OCI Helm source was missing the mandatory `chart:` field (repoURL carried an `oci://`-prefixed path with the chart name embedded instead), causing all 18 workload Applications to fail Argo CD spec validation (InvalidSpecError) on the real instance. Fixed forward by AF-wb16 (P0, not blocking any closed story); AF-wb16 is wired as a blocker of this capstone and of AF-o0rw's continuation. When this story's static suite is authored, fold in two more checks alongside the existing item-3/item-4 lists: (a) cross-file contract check -- appset-workloads.yaml's template.spec.source has repoURL with no oci:// prefix and a non-empty chart field; (b) negative assertion -- no oci:// substring anywhere under apps/arr-stack/argocd/appset-workloads.yaml. Self-validation (item 7) should add a 9th regression: reintroduce the oci://-prefixed repoURL with chart: removed, confirm the new assertion catches it. Not a required AC change by itself (this comment documents the fold-in so the eventual author doesn't have to re-derive it from AF-wb16), but should be treated as part of "all seven implementation items" once authored.
