@@ -9,7 +9,7 @@ parent: AF-j5rz
 created_at: 2026-08-18T18:57:46Z
 created_by: ada
 updated_at: 2026-08-20T16:39:21Z
-content_hash: "sha256:10407e3c76e9860441a7912278daa0d2955f442c5383b9c48b2f18851b070e8f"
+content_hash: "sha256:671e22bb46e7f66cfc6ef8ed42ae80162055a045ff4d70d00bfe86a6787c3eb6"
 was_blocked_by: [AF-q5yh, AF-iv8x, AF-hb2f, AF-8r8l, AF-yse2, AF-6jta, AF-pfbv, AF-wb16, AF-o0rw, AF-c17x, AF-4wkn]
 assignee: dev-AF-vm0q
 follows: [AF-iv8x, AF-hb2f, AF-8r8l, AF-yse2, AF-6jta, AF-pfbv, AF-wb16, AF-o0rw, AF-c17x, AF-4wkn]
@@ -169,6 +169,17 @@ file_loc WARN is real, pre-existing, and unrelated to duplication.
 
 Confirmed post-change: `pvg gates` PASS (1 warn), `pvg rtm check` PASSED,
 `pvg lint` PASSED (no artifact collisions).
+
+
+## nd_contract
+status: accepted
+
+### evidence
+- PM closeout applied via pvg story accept on 2026-08-20.
+
+### proof
+- [x] Story closed after accepted label was applied.
+
 
 ## nd_contract
 status: delivered
