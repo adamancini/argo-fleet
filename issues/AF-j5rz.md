@@ -6,8 +6,8 @@ priority: 2
 type: epic
 created_at: 2026-08-18T18:50:52Z
 created_by: ada
-updated_at: 2026-08-20T14:44:28Z
-content_hash: "sha256:375be380492b94dd15a99702489f8bcfd0c1fac7f90c9ec2eab3880d925c202b"
+updated_at: 2026-08-20T16:31:37Z
+content_hash: "sha256:752020faa03f3ca44cdb17daaf28aa1a0297b4f199a3214d9896f240c8e4487c"
 ---
 
 ## Description
@@ -83,7 +83,27 @@ devops-toolkit:akp-platform (mandatory for every story in this epic -- `referenc
 
 
 ## Notes
+Repo-wide tooling note from AF-vm0q bug triage: `pvg gates`'s duplication
+check (jscpd under the hood) was firing 14 pre-existing BLOCK findings across
+this repo, ALL of them docs/superpowers/{plans,specs}/*.md design/planning
+documents quoting real manifests/terraform verbatim (or duplicating
+themselves), not real code-vs-code duplication. Added a repo-root
+.jscpd.json ({"ignore": ["docs/superpowers/**"]}) to exclude that planning
+tree from the duplication gate going forward -- any future story in this
+epic (or elsewhere in the repo) that adds a docs/superpowers/plans or
+docs/superpowers/specs document quoting real manifest/terraform content
+should not expect a duplication BLOCK on that doc. Manifest/source files
+themselves (including this epic's appset-workloads.yaml and appset-kargo.yaml
+generator-list files) remain fully subject to duplication scanning -- this
+does NOT exempt the arr-stack ApplicationSets from future genuine
+duplication checks, e.g. if a similar list-generator pattern is copy-pasted
+into a new app family instead of reusing this epic's shared template.
 
+Also noted: `pvg settings gates.exclude=...` does not currently affect the
+duplication gate in pvg 1.62.0 (verified empirically) -- only
+gates.duplication.min_lines/max_pct are honored. Future gates.exclude-based
+remediations in this repo should verify with `pvg gates` before/after rather
+than assuming the setting took effect. Full detail on AF-vm0q.
 
 ## History
 
