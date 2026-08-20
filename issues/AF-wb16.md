@@ -8,8 +8,8 @@ parent: AF-j5rz
 created_at: 2026-08-20T14:43:53Z
 created_by: ada
 updated_at: 2026-08-20T14:43:53Z
-content_hash: "sha256:75774686ea077f9537ecea3e6e3909f402b4b87d48cd0ccb5d70001e0a589bfe"
-blocks: [AF-vm0q]
+content_hash: "sha256:fb99d19241274e1694a7997abbb8be3e3a73730c52ac641b469be528443c0886"
+blocks: [AF-vm0q, AF-o0rw]
 ---
 
 ## Description
@@ -130,9 +130,10 @@ devops-toolkit:akp-platform (mandatory -- ApplicationSet/Application source conv
 
 ## History
 - 2026-08-20T14:43:59Z dep_added: blocks AF-vm0q
+- 2026-08-20T14:44:00Z dep_added: blocks AF-o0rw
 
 ## Links
 - Parent: [[AF-j5rz]]
-- Blocks: [[AF-vm0q]]
+- Blocks: [[AF-vm0q]], [[AF-o0rw]]
 
 ## Comments
