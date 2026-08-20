@@ -7,8 +7,8 @@ type: bug
 parent: AF-j5rz
 created_at: 2026-08-20T14:43:53Z
 created_by: ada
-updated_at: 2026-08-20T14:47:33Z
-content_hash: "sha256:a2dc00552ed0725bda1b19445cd889343927f3ae17e8e3ab10a030b5dc2755cb"
+updated_at: 2026-08-20T14:55:20Z
+content_hash: "sha256:c60bd2dcf66f26f462f204ba9d75b1cf26dbc5dcc9aa694e8939b767d5e496fd"
 blocks: [AF-vm0q, AF-o0rw]
 assignee: dev-AF-wb16
 follows: [AF-pfbv]
@@ -143,3 +143,141 @@ devops-toolkit:akp-platform (mandatory -- ApplicationSet/Application source conv
 - Follows: [[AF-pfbv]]
 
 ## Comments
+
+### 2026-08-20T14:55:20Z ada
+DELIVERED: AF-wb16 -- explicit `chart:` field on the arr-stack workload source
+
+COMMIT: 01a49e4e1f13b4d49ae5034adf3874c11d4c8db8 (branch story/AF-wb16, pushed)
+BASE:   dda74d9 (epic/AF-j5rz)
+DIFF:   1 file changed, 2 insertions(+), 1 deletion(-) -- exactly the 3 line-level
+        changes the story specified. `git diff dda74d9..HEAD --stat` =
+        apps/arr-stack/argocd/appset-workloads.yaml | 3 ++-
+
+THE CHANGE (apps/arr-stack/argocd/appset-workloads.yaml, template.spec.source):
+-        repoURL: oci://ghcr.io/bjw-s-labs/helm/app-template
++        repoURL: ghcr.io/bjw-s-labs/helm
++        chart: app-template
+         targetRevision: 4.x
+
+PROOF
+=====
+All results produced at SHA 01a49e4 with a clean working tree.
+
+Commands run (all synchronous, static only -- no live cluster touch):
+  1. git -C <wt> show 63efac6:apps/arr-stack/argocd/appset-workloads.yaml  (baseline capture)
+  2. diff <baseline> <worktree file>                     -> IDENTICAL before edit
+  3. sed -n '115,118p' <file>                            -> AC1, AC2
+  4. grep -n 'oci://' <file>                             -> exit 1, 0 matches (AC5)
+  5. grep -cE '^[[:space:]]*chart:' <file>               -> 1  (AC2)
+  6. git -C <wt> diff 63efac6 --numstat -- <file>        -> 2  1  (AC6)
+  7. diff of unchanged regions + shasum -a 256           -> AC3
+  8. ruby scratchpad/ac4_handsub.rb <file>               -> AC4 PASS (exit 0)
+  9. ruby e2e/observability_test.rb                      -> 150 assertions, 0 failures, exit 0 (AC8)
+ 10. pvg verify <file> --format text                     -> VERIFY: PASSED (0 issues)
+ 11. pvg verify <wt> --check-e2e --format text           -> E2E CHECK: PASSED (1 file)
+
+TEST / ASSERTION COUNTS
+  e2e/observability_test.rb  POST-FIX:  150 assertions, 0 failures, exit 0
+  e2e/observability_test.rb  BASELINE:  150 assertions, 0 failures  (run against the
+      `main` checkout, which still carries the pre-fix file; the test file itself is
+      byte-identical between main and this branch --
+      sha256 79af15bf30d7f97c461a4fbf5cc7491a6a24d8562e7cd723a9cc44205a206d72 on both)
+  => 150/150 before, 150/150 after. No new failures, no new warnings, no skipped tests.
+  AC4 hand-substitution harness: 14 assertions across 2 rendered Applications, 0 failures.
+  pvg verify: 0 issues. Note it reports "0 files scanned" -- .yaml is not a recognized
+  source extension for the scanner, so it is a no-op on this change by design (this is a
+  manifest-only repo); the e2e suite is the real static gate and it is green.
+
+ACCEPTANCE CRITERIA VERIFICATION
+| # | AC | Result | Evidence |
+|---|----|--------|----------|
+| 1 | repoURL is `ghcr.io/bjw-s-labs/helm`, no `oci://` prefix | PASS | line 116 of file; ruby YAML load reports repoURL="ghcr.io/bjw-s-labs/helm" |
+| 2 | explicit `chart: app-template` present | PASS | line 117; `grep -cE '^\s*chart:'` = 1, value `app-template`; YAML source keys = ["repoURL","chart","targetRevision","helm"] |
+| 3 | targetRevision 4.x + entire helm.values byte-identical | PASS | lines 1-115 diff-clean vs 63efac6; lines 117..EOF (pre) vs 118..EOF (post) diff-clean AND identical sha256 4170a28c95d655216f5c7ace246fa9f1d391739ed0895f6bee9373c6c785f244 -- covers targetRevision, both hasDownloads branches, destination, syncPolicy |
+| 4 | hand-substituted true/false hasDownloads specs satisfy Argo CD's rule | PASS | see AC4 detail below -- 0 conditions for both |
+| 5 | no `oci://` substring anywhere in the file | PASS | `grep -n 'oci://'` exit 1, 0 matches |
+| 6 | diff vs 63efac6 touches only the repoURL/chart lines | PASS | numstat 2/1; the single diff hunk is @@ -113,7 +113,8 @@ and contains only the repoURL replacement + the new chart line |
+| 7 | bootstrap/*.yaml not modified | PASS | `git diff 63efac6 --name-only -- bootstrap/` = 0 files; my commit's own file list is 1 file |
+| 8 | e2e/observability_test.rb passes, 0 failures | PASS | 150 assertions, 0 failures, exit 0 -- identical to pre-fix baseline |
+| 9 | root cause documented in commit message w/ both Argo CD citations | PASS | commit 01a49e4 body cites util/argo/argo.go:599-617 (rule transcribed) and reposerver/repository/repository.go:1225-1226 (oci:// TrimPrefix + its comment), plus the Kargo-Warehouse-vs-Application schema conflation |
+
+AC4 DETAIL -- hand-substitution against the real validation rule
+I transcribed Argo CD's single-source check verbatim from my local clone
+(~/src/github.com/argoproj/argo-cd, rev 21804a2acfe096ed748d3309c25b4b1211b1d912):
+
+  util/argo/argo.go:599  func validateSourcePermissions(source, hasMultipleSources)
+  util/argo/argo.go:610      if source.RepoURL == "" || (source.Path == "" && source.Chart == "")
+  util/argo/argo.go:613          Message: "spec.source.repoURL and either spec.source.path or spec.source.chart are required"
+  reposerver/repository/repository.go:1225-1226
+                             // trimming oci:// prefix since it is currently not
+                             // supported by Argo CD (OCI repos just have no scheme)
+                             Repo: strings.TrimPrefix(r.Repository, "oci://")
+
+(Story cited argo.go:598-614; the exact current lines are 599-617 with the
+single-source branch at 610 and the message at 613 -- same code, same rule.)
+
+Then I hand-substituted the real matrix + git-files params, taking imageTag from the
+actual committed release.yaml files, and rendered template.spec.source:
+
+  arr-sonarr-dev        (hasDownloads=true,  imageTag sha256:e029ce19...)
+  arr-prowlarr-staging  (hasDownloads=false, imageTag sha256:fd65c1cb...)
+
+Both rendered to:
+    source:
+      repoURL: ghcr.io/bjw-s-labs/helm
+      chart: app-template
+      targetRevision: 4.x
+Checks on each: chart non-empty PASS / repoURL has no oci:// prefix PASS / no `path`
+field on source PASS / repoURL non-empty PASS / validateSourcePermissions returns 0
+conditions PASS. The rendered helm.values re-parses as YAML in both cases, with
+persistence keys ["config","downloads"] for sonarr and ["config"] for prowlarr --
+confirming the hasDownloads conditional still chomps correctly on both branches --
+and image.digest (not image.tag) carries the sha256.
+
+NEGATIVE CONTROL (the check discriminates, it does not merely pass):
+The same harness run against the pre-fix file (git show 63efac6:...) FAILS both cases
+and returns, verbatim:
+  ["InvalidSpecError: spec.source.repoURL and either spec.source.path or spec.source.chart are required"]
+which is character-for-character the condition AF-o0rw observed live on all 18
+Applications. So the harness reproduces the real defect and clears it after the fix.
+
+DIFF PROVENANCE NOTE (for the acceptor)
+`git diff main --name-only` from this branch lists three files, which looks like scope
+creep but is not. `apps/akkoma/kargo/stages.yaml` and
+`docs/superpowers/specs/2026-08-18-arr-stack-appset-design.md` are MAIN-ONLY commits
+(3b5fb78, cb8bf2e) that landed after this branch's base; `git merge-base --is-ancestor`
+confirms neither is an ancestor of my HEAD, and `git log 63efac6..HEAD -- <those files>`
+is empty -- this branch never touched them. My branch is simply behind main on them.
+Authoritative scope check: `git diff dda74d9..HEAD --stat` = 1 file, +2/-1.
+
+OUT OF SCOPE, NOT DONE (per the story)
+No live cluster was touched. Confirming the 18 workload Applications actually reach
+Synced/Healthy is AF-o0rw's continuation, run by the dispatcher after this merges.
+No permanent regression assertion was added to e2e/observability_test.rb -- AF-vm0q
+owns that.
+
+DISCOVERED BUGS: none. No errors or warnings appeared in any command output.
+
+LEARNINGS
+=========
+- Transcribing the upstream validation predicate into a throwaway harness and running
+  it against BOTH the pre-fix and post-fix file is worth far more than asserting the
+  post-fix file looks right. The pre-fix run reproduced the live InvalidSpecError string
+  character-for-character, which upgrades "my fix satisfies the rule I read" into "my
+  harness reproduces the real failure and my fix clears it" -- without a cluster.
+- Byte-identity claims (AC3) are much stronger as a sha256 over the unchanged region
+  than as a visual diff read. Splitting the file at the edit boundary (pre 117..EOF vs
+  post 118..EOF) and hashing both halves proves the untouched tail in one line, and it
+  would have caught an accidental whitespace change that eyeballing a diff hunk misses.
+- Beware `git diff main` as a scope check on a branch whose base is behind main: it
+  reported 3 changed files for a 1-file commit. `git diff <base>..HEAD` plus
+  `merge-base --is-ancestor` is the honest scope check, and the difference is worth
+  pre-empting in the delivery note or the acceptor will read it as scope creep.
+- The `oci://` trap is a schema-conflation bug, not a typo: Kargo's Warehouse chart
+  subscription genuinely wants the chart name unset for an OCI repoURL, and an Argo CD
+  Application.spec.source genuinely requires the opposite. Both rules are correct in
+  their own schema. Any doc stating one should name the schema it applies to, or the
+  next reader will carry it across.
+- pvg verify is a no-op on .yaml (0 files scanned) in this manifest-only repo, so it
+  cannot be the pre-delivery gate here -- the Ruby e2e suite is. Worth saying explicitly
+  in proof rather than letting "VERIFY: PASSED" imply coverage it does not have.
