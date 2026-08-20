@@ -4,7 +4,7 @@ title: "Static verification suite for arr-stack manifests"
 status: closed
 priority: 1
 type: task
-labels: [capstone, delivered]
+labels: [capstone, delivered, accepted]
 parent: AF-j5rz
 created_at: 2026-08-18T18:57:46Z
 created_by: ada
