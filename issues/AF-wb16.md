@@ -7,11 +7,12 @@ type: bug
 parent: AF-j5rz
 created_at: 2026-08-20T14:43:53Z
 created_by: ada
-updated_at: 2026-08-20T14:55:27Z
+updated_at: 2026-08-20T14:55:28Z
 content_hash: "sha256:0e925ae6f3ff8245b0e93c16c456da55ab577b8d68338a2f12a1b94cd0de9238"
 blocks: [AF-vm0q, AF-o0rw]
 assignee: dev-AF-wb16
 follows: [AF-pfbv, AF-6jta]
+labels: [delivered]
 ---
 
 ## Description
