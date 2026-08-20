@@ -9,10 +9,11 @@ parent: AF-j5rz
 created_at: 2026-08-18T19:00:10Z
 created_by: ada
 updated_at: 2026-08-20T16:00:28Z
-content_hash: "sha256:8841eb8af686fcb3d513232e049000661e1d6d822f537eab45d890dcfdf69dbd"
+content_hash: "sha256:aabf4d32584ec944c3918446f048fd2fe721274db58831e19dd58c54ea6138af"
 was_blocked_by: [AF-vm0q, AF-c17x]
 closed_at: 2026-08-20T16:00:28Z
 close_reason: "Human-verified: real Kargo promotion, render-diff confined to arr-sonarr-dev only, live pod runs new digest, appset-workloads.yaml never touched -- DRY claim proven end-to-end"
+led_to: [AF-vm0q]
 ---
 
 ## Description
@@ -116,6 +117,7 @@ devops-toolkit:akp-platform (mandatory)
 ## Links
 - Parent: [[AF-j5rz]]
 - Was blocked by: [[AF-vm0q]], [[AF-c17x]]
+- Led to: [[AF-vm0q]]
 
 ## Comments
 

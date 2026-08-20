@@ -8,13 +8,13 @@ parent: AF-j5rz
 created_at: 2026-08-19T15:40:11Z
 created_by: ada
 updated_at: 2026-08-19T16:04:19Z
-content_hash: "sha256:0d8f9e7edcbdcea3cb2882c8cb2377e7c44619fd5a1f35e64f279896531376f0"
+content_hash: "sha256:62110ef869a4dc3f8e28498464225188d465f086ef37ccc119333bd5ab2a9dd3"
 assignee: dev-AF-yse2
 follows: [AF-hb2f, AF-iv8x]
 labels: [accepted]
 closed_at: 2026-08-19T16:03:25Z
 close_reason: "Accepted: overseerr->seerr rename verified independently. appset-kargo.yaml element and appproject.yaml description match exactly. helm template renders clean app-scoped Project/Warehouse/3xStage/PromotionTask with Digest/release strategy intact and zero unresolved placeholders. Repo-wide grep for overseerr is clean. Diff vs epic/AF-j5rz base (c9d8095) is exactly 2 files modified, 0 added/deleted. bootstrap/ untouched. Other 5 list elements byte-identical."
-led_to: [AF-6jta]
+led_to: [AF-6jta, AF-vm0q]
 ---
 
 ## Description
@@ -115,7 +115,7 @@ status: delivered
 ## Links
 - Parent: [[AF-j5rz]]
 - Follows: [[AF-hb2f]], [[AF-iv8x]]
-- Led to: [[AF-6jta]]
+- Led to: [[AF-6jta]], [[AF-vm0q]]
 
 ## Comments
 

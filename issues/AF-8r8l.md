@@ -8,14 +8,14 @@ parent: AF-j5rz
 created_at: 2026-08-18T18:54:12Z
 created_by: ada
 updated_at: 2026-08-19T15:59:15Z
-content_hash: "sha256:5706dc37c88220ec4a5fd482de0fa1b21dbec021ee0efe4eb88b7857cc53ed2f"
+content_hash: "sha256:2a07eec2f97f59e2844c0fa84146bf43df5dc60bc465f361bd2a65cf58967001"
 was_blocked_by: [AF-q5yh, AF-hb2f]
 follows: [AF-hb2f, AF-iv8x]
 assignee: dev-AF-8r8l
 labels: [accepted]
 closed_at: 2026-08-19T15:59:15Z
 close_reason: "Verified independently: 18/18 release.yaml files (sonarr/radarr/lidarr/bazarr/prowlarr/seerr, no overseerr), correct dev/staging/prod stage set, imageTag matches sha256:<64 lc hex>, values:{}, per-app byte-identity across stages confirmed via ruby AC suite re-run against worktree files. git diff f3ede07..fbba550 shows exactly 3 files added / 0 modified, matching DIFF BUDGET. Re-ran docker buildx imagetools inspect ghcr.io/hotio/seerr:release --format {{.Manifest.Digest}} -- returned sha256:6ce42c9c...9920f7, matching the seeded value exactly, and confirmed via docker manifest inspect --verbose that the child amd64 manifest digest (sha256:5347b4f6...) differs from the index digest -- developer's index-vs-child-manifest mechanism claim verified correct. pvg verify vacuous-pass caveat independently confirmed (0 files scanned for .yaml). Story body duplication artifact (stale overseerr section) noted as backlog-authoring defect, not counted against delivery."
-led_to: [AF-6jta]
+led_to: [AF-6jta, AF-vm0q]
 ---
 
 ## Description
@@ -224,7 +224,7 @@ status: delivered
 - Parent: [[AF-j5rz]]
 - Was blocked by: [[AF-q5yh]], [[AF-hb2f]]
 - Follows: [[AF-hb2f]], [[AF-iv8x]]
-- Led to: [[AF-6jta]]
+- Led to: [[AF-6jta]], [[AF-vm0q]]
 
 ## Comments
 

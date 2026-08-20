@@ -1,16 +1,18 @@
 ---
 id: AF-vm0q
 title: "Static verification suite for arr-stack manifests"
-status: open
+status: in_progress
 priority: 1
 type: task
 labels: [capstone]
 parent: AF-j5rz
 created_at: 2026-08-18T18:57:46Z
 created_by: ada
-updated_at: 2026-08-20T14:44:16Z
-content_hash: "sha256:abd077b024a3d4276e1fc77cf94b7b4b3d3cc944d8662ee1c4059ba7fe683b40"
+updated_at: 2026-08-20T16:01:17Z
+content_hash: "sha256:f58f7a86e000d4e790f178bcc3a50d17c6a94f4fa9f981327225942f1ba31f82"
 was_blocked_by: [AF-q5yh, AF-iv8x, AF-hb2f, AF-8r8l, AF-yse2, AF-6jta, AF-pfbv, AF-wb16, AF-o0rw, AF-c17x, AF-4wkn]
+assignee: dev-AF-vm0q
+follows: [AF-iv8x, AF-hb2f, AF-8r8l, AF-yse2, AF-6jta, AF-pfbv, AF-wb16, AF-o0rw, AF-c17x, AF-4wkn]
 ---
 
 ## Description
@@ -148,10 +150,23 @@ devops-toolkit:akp-platform (mandatory), devops-toolkit:yaml-kubernetes-validato
 - 2026-08-20T15:09:22Z dep_removed: was_blocked_by AF-o0rw
 - 2026-08-20T15:12:47Z dep_removed: was_blocked_by AF-c17x
 - 2026-08-20T16:00:28Z dep_removed: was_blocked_by AF-4wkn
+- 2026-08-20T16:01:17Z status: open -> in_progress
+- 2026-08-20T16:01:17Z auto-follows: linked to predecessor AF-iv8x
+- 2026-08-20T16:01:17Z auto-follows: linked to predecessor AF-hb2f
+- 2026-08-20T16:01:17Z auto-follows: linked to predecessor AF-8r8l
+- 2026-08-20T16:01:17Z auto-follows: linked to predecessor AF-yse2
+- 2026-08-20T16:01:17Z auto-follows: linked to predecessor AF-6jta
+- 2026-08-20T16:01:17Z auto-follows: linked to predecessor AF-pfbv
+- 2026-08-20T16:01:17Z auto-follows: linked to predecessor AF-wb16
+- 2026-08-20T16:01:17Z auto-follows: linked to predecessor AF-o0rw
+- 2026-08-20T16:01:17Z auto-follows: linked to predecessor AF-c17x
+- 2026-08-20T16:01:18Z auto-follows: linked to predecessor AF-4wkn
+- 2026-08-20T16:01:18Z claimed by dev-AF-vm0q
 
 ## Links
 - Parent: [[AF-j5rz]]
 - Was blocked by: [[AF-q5yh]], [[AF-iv8x]], [[AF-hb2f]], [[AF-8r8l]], [[AF-yse2]], [[AF-6jta]], [[AF-pfbv]], [[AF-wb16]], [[AF-o0rw]], [[AF-c17x]], [[AF-4wkn]]
+- Follows: [[AF-iv8x]], [[AF-hb2f]], [[AF-8r8l]], [[AF-yse2]], [[AF-6jta]], [[AF-pfbv]], [[AF-wb16]], [[AF-o0rw]], [[AF-c17x]], [[AF-4wkn]]
 
 ## Comments
 

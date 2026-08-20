@@ -9,10 +9,11 @@ parent: AF-j5rz
 created_at: 2026-08-18T18:58:35Z
 created_by: ada
 updated_at: 2026-08-20T15:09:22Z
-content_hash: "sha256:cc47a2e8decd95c4e07b118a8ce78e6002c6269a6de4bb8efa3a3d000bcd9c79"
+content_hash: "sha256:ab9d8ca40b7d06b425da6ed46f0a10d68c432cc7e8d23c33468b4e9c109860be"
 was_blocked_by: [AF-vm0q, AF-6jta, AF-wb16]
 closed_at: 2026-08-20T15:09:22Z
 close_reason: "Human-verified: epic merged to main, wrapper + both ApplicationSets healthy with exact child counts, live-discovered InvalidSpecError bug found+fixed+re-verified, pre-existing resources undisturbed"
+led_to: [AF-vm0q]
 ---
 
 ## Description
@@ -120,6 +121,7 @@ devops-toolkit:akp-platform (mandatory)
 ## Links
 - Parent: [[AF-j5rz]]
 - Was blocked by: [[AF-vm0q]], [[AF-6jta]], [[AF-wb16]]
+- Led to: [[AF-vm0q]]
 
 ## Comments
 

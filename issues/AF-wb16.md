@@ -8,12 +8,13 @@ parent: AF-j5rz
 created_at: 2026-08-20T14:43:53Z
 created_by: ada
 updated_at: 2026-08-20T14:59:38Z
-content_hash: "sha256:4764ab7c2040ec8301c35643c9bc46bbd9238f9b4e0c6726fddaa26bb527a8f8"
+content_hash: "sha256:a5d42a50d5175802c7689670ad1463aebee7f76994ff67e6928051abe7079a15"
 assignee: dev-AF-wb16
 follows: [AF-pfbv, AF-6jta]
 labels: [accepted]
 closed_at: 2026-08-20T14:59:37Z
 close_reason: "Accepted: explicit chart field fixes InvalidSpecError on 18 workload Applications. Verified independently: diff dda74d9..HEAD is exactly 1 file +2/-1 touching only repoURL/chart lines; 63efac6..HEAD log for stages.yaml and the design-spec doc is empty (branch never touched them); merge-base --is-ancestor confirms neither main-only commit is ancestor of HEAD; fixed file confirms repoURL: ghcr.io/bjw-s-labs/helm, chart: app-template, targetRevision: 4.x unchanged, zero oci:// occurrences; bootstrap/*.yaml untouched; re-ran ruby e2e/observability_test.rb -- 150/150, 0 failures; independently confirmed both Argo CD citations (util/argo/argo.go:610/613, reposerver/repository/repository.go:1225-1226); pvg verify and pvg gates both clean."
+led_to: [AF-vm0q]
 ---
 
 ## Description
@@ -167,6 +168,7 @@ status: delivered
 ## Links
 - Parent: [[AF-j5rz]]
 - Follows: [[AF-pfbv]], [[AF-6jta]]
+- Led to: [[AF-vm0q]]
 
 ## Comments
 

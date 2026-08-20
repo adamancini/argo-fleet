@@ -9,10 +9,11 @@ parent: AF-j5rz
 created_at: 2026-08-18T18:59:18Z
 created_by: ada
 updated_at: 2026-08-20T15:12:46Z
-content_hash: "sha256:3d14e34fe427c9fe5153d06b392f9a22f1baa0e483be1502ba70a79e2a792d51"
+content_hash: "sha256:87f7f5e713c28f63fec3bb4e8e04af3281d518fe44485e732c45e820be15afcf"
 was_blocked_by: [AF-pfbv, AF-o0rw]
 closed_at: 2026-08-20T15:12:46Z
 close_reason: "Human-verified: Sonarr Synced/Healthy, PVCs Bound, pod Running, Kargo Project/Warehouse/3xStage all reconciled with no Error condition"
+led_to: [AF-vm0q]
 ---
 
 ## Description
@@ -107,6 +108,7 @@ devops-toolkit:akp-platform (mandatory)
 ## Links
 - Parent: [[AF-j5rz]]
 - Was blocked by: [[AF-pfbv]], [[AF-o0rw]]
+- Led to: [[AF-vm0q]]
 
 ## Comments
 
