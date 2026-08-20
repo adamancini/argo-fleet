@@ -4,11 +4,11 @@ title: "Static verification suite for arr-stack manifests"
 status: closed
 priority: 1
 type: task
-labels: [capstone, delivered, accepted]
+labels: [capstone, accepted]
 parent: AF-j5rz
 created_at: 2026-08-18T18:57:46Z
 created_by: ada
-updated_at: 2026-08-20T16:39:20Z
+updated_at: 2026-08-20T16:39:21Z
 content_hash: "sha256:10407e3c76e9860441a7912278daa0d2955f442c5383b9c48b2f18851b070e8f"
 was_blocked_by: [AF-q5yh, AF-iv8x, AF-hb2f, AF-8r8l, AF-yse2, AF-6jta, AF-pfbv, AF-wb16, AF-o0rw, AF-c17x, AF-4wkn]
 assignee: dev-AF-vm0q
