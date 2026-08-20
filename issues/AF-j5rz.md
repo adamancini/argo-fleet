@@ -1,13 +1,15 @@
 ---
 id: AF-j5rz
 title: "arr-stack DRY ApplicationSet + generated Kargo pipelines PoC"
-status: open
+status: closed
 priority: 2
 type: epic
 created_at: 2026-08-18T18:50:52Z
 created_by: ada
-updated_at: 2026-08-20T16:31:37Z
-content_hash: "sha256:752020faa03f3ca44cdb17daaf28aa1a0297b4f199a3214d9896f240c8e4487c"
+updated_at: 2026-08-20T16:53:11Z
+content_hash: "sha256:4bd688f7a220647c21d07a9170a2878c39b5408a9c9a9e7453633999304f1c73"
+closed_at: 2026-08-20T16:53:11Z
+close_reason: "All 11 stories accepted, completion gate passed (589/589 e2e assertions, all deferrals fired, Anchor VALIDATED), merged to main"
 ---
 
 ## Description
@@ -106,7 +108,7 @@ remediations in this repo should verify with `pvg gates` before/after rather
 than assuming the setting took effect. Full detail on AF-vm0q.
 
 ## History
-
+- 2026-08-20T16:53:11Z status: open -> closed
 
 ## Links
 
