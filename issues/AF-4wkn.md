@@ -8,8 +8,8 @@ labels: [human-execution-required, external-integration]
 parent: AF-j5rz
 created_at: 2026-08-18T19:00:10Z
 created_by: ada
-updated_at: 2026-08-18T19:06:19Z
-content_hash: "sha256:78f8a5500e109a768f694d803c2842074aee54b9f4a79b7cfc988a666c522250"
+updated_at: 2026-08-20T16:00:18Z
+content_hash: "sha256:647c0e9d6b7724253e46812f2d39aeef1d97747f728cb741b5f9c6afe64614dd"
 was_blocked_by: [AF-vm0q, AF-c17x]
 blocks: [AF-vm0q]
 ---
@@ -116,3 +116,40 @@ devops-toolkit:akp-platform (mandatory)
 - Was blocked by: [[AF-vm0q]], [[AF-c17x]]
 
 ## Comments
+
+### 2026-08-20T16:00:18Z ada
+HUMAN-SUPERVISED LIVE VERIFICATION (dispatcher-run, user directly present throughout, following AF-vm0q... wait, capstone AF-vm0q not yet run -- see note below on dependency ordering):
+
+Step 1 -- render-diff baseline captured before promotion (18 results, array shape as expected):
+$ argocd appset generate apps/arr-stack/argocd/appset-workloads.yaml -o json --grpc-web > before.json
+arr-sonarr-dev digest (before): sha256:e029ce1988241f9d213ebafbc73012c4684d3c698523f18b597bb014b88d551a (AF-8r8l's original seed)
+
+Step 2 -- promotion triggered via path (b), the real Warehouse-discovered Freight, by the user:
+$ kargo promote --project sonarr --stage dev --freight-alias veering-ibex
+REAL INCIDENT DISCOVERED AND FIXED along the way: first promotion attempt (dev.01m0fy1nrzwp97q1svkj2s4t4q.735f2fe) Errored at the git-push step: 'fatal: could not read Username for https://github.com: No such device or address'. Root cause: NONE of the 6 new Kargo projects created by this epic (sonarr/radarr/lidarr/bazarr/prowlarr/seerr) had git write credentials registered -- a genuine backlog gap, since AGENTS.md's own onboarding checklist item ('New Kargo project -> new git write credentials for it') was never captured as a story in this epic, unlike akkoma/soju which already had per-project github-creds registered 14 days prior. User registered credentials live (kargo create repo-credentials); a second promotion (dev.01m0fy7pf8baqxgvrn5jc4hvrb.735f2fe) then Succeeded.
+
+Step 3 -- commit confirmed on origin/main:
+$ git log --oneline -n 3 origin/main -- apps/arr-stack/env/sonarr/dev/release.yaml
+e812598 arr-stack/sonarr/dev: promote image sha256:2a67fa7b63de93f8fe4b2292b2ba968b4c6beb33dfa7b53eb94018c16f6ffc9a
+Confirmed committed by 'Kargo <no-reply@kargo.io>', exactly 1 file changed (release.yaml), 1 line.
+
+Step 4 -- render-diff after promotion (had to recapture once -- the first appset-generate call raced ahead of the repo-server's own git refresh and returned a stale snapshot; recaptured ~45s later):
+$ diff -u before.json after.json
+Diff touches ONLY arr-sonarr-dev's rendered helm.values digest field: e029ce19... -> 2a67fa7b.... All other 17 rendered Applications byte-identical. Confirmed via direct field extraction on both files independently, not just the diff tool.
+
+Step 5 -- live sync + running pod confirmed:
+$ argocd app get arr-sonarr-dev -> Synced to 4.x / Healthy
+$ kubectl --context k3d-demo1 -n arr-stack-dev get pod ... -o jsonpath='{.items[0].spec.containers[0].image}'
+ghcr.io/hotio/sonarr@sha256:2a67fa7b63de93f8fe4b2292b2ba968b4c6beb33dfa7b53eb94018c16f6ffc9a
+Fresh pod (arr-sonarr-dev-7fd9fb7bbf-qhg7r), 1/1 Running, 25s old at check time -- the rolling update from the digest change had already happened.
+
+Step 6 -- no manual appset-workloads.yaml edit:
+$ git log --oneline -n 5 origin/main -- apps/arr-stack/argocd/appset-workloads.yaml
+Most recent commit is 01a49e4 (AF-wb16's hotfix, already accounted for) -- zero commits since, confirming this file was never touched to make the promotion take effect.
+
+Step 5-extra -- no app/stage other than sonarr/dev touched:
+$ git show --stat e812598 -> exactly 1 file (apps/arr-stack/env/sonarr/dev/release.yaml), 1 line changed.
+
+NOTE ON DEPENDENCY ORDERING: this story's own header states it assumes 'AF-vm0q and AF-c17x are both complete' as a precondition, but the actual nd dependency graph (and the epic's own design intent, documented on AF-vm0q's own body: 'capstone... closes LAST, re-confirming the static suite still holds after this story's live promotion') has AF-vm0q blocked_by THIS story, not the reverse -- AF-vm0q could not possibly have run first without a dependency cycle. Proceeded per the actual dependency graph and the epic's own stated intent (capstone last), not per this story's own header prose, which appears to be a copy-paste inconsistency from AF-c17x's equivalent precondition line. Flagging for the record, not blocking.
+
+AC #1-6 ALL SATISFIED. The epic's central DRY claim is proven end-to-end: a real Kargo promotion updated release.yaml, the generated ApplicationSet auto-re-rendered with zero manual edits, and a real pod now runs the newly-promoted image. Epic's target state delivered. Only the capstone (AF-vm0q) and epic completion gate remain.
