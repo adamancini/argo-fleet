@@ -8,8 +8,8 @@ labels: [capstone, delivered]
 parent: AF-j5rz
 created_at: 2026-08-18T18:57:46Z
 created_by: ada
-updated_at: 2026-08-20T16:20:46Z
-content_hash: "sha256:ac3338833e79c8be376c178138820375ca6af88d9e0b86f5b28718c5c877d388"
+updated_at: 2026-08-20T16:31:26Z
+content_hash: "sha256:0fd07f24893f664dd0cc6bcb7d44c4ae221bb8302823da863d7908c9838b21f6"
 was_blocked_by: [AF-q5yh, AF-iv8x, AF-hb2f, AF-8r8l, AF-yse2, AF-6jta, AF-pfbv, AF-wb16, AF-o0rw, AF-c17x, AF-4wkn]
 assignee: dev-AF-vm0q
 follows: [AF-iv8x, AF-hb2f, AF-8r8l, AF-yse2, AF-6jta, AF-pfbv, AF-wb16, AF-o0rw, AF-c17x, AF-4wkn]
@@ -121,7 +121,52 @@ devops-toolkit:akp-platform (mandatory), devops-toolkit:yaml-kubernetes-validato
 
 
 ## Notes
+Bug triage (pvg gates duplication false positive) resolved -- NOT a code defect.
 
+Actual root cause (differs from the discovering developer's hypothesis): the
+59-line duplication BLOCK on apps/arr-stack/argocd/appset-workloads.yaml is
+jscpd matching that file's rendered template block against a near-verbatim
+copy embedded in docs/superpowers/specs/2026-08-18-arr-stack-appset-design.md
+(the design spec quotes the manifest for explanatory purposes), NOT
+self-duplication from the per-app `list` generator's 6 near-identical
+elements as originally suspected. Verified directly with `jscpd . --reporters
+console`, which prints both sides of every clone pair -- every one of the 14
+pre-existing BLOCKs in this repo (Taskfile.yml, apps/akkoma/argocd/appset.yaml,
+apps/soju/kargo/stages.yaml, and the terraform/cluster-lifecycle plan doc) has
+a docs/superpowers/{plans,specs}/*.md file on at least one side. Zero real
+code-vs-code duplication exists in this repo today.
+
+Tooling limitation found: `pvg settings gates.exclude=...` (any glob syntax
+tried: bare dir, trailing slash, `**`, `**/*.md`) has NO effect on the
+duplication gate in pvg 1.62.0 -- confirmed by direct A/B testing (jscpd
+itself honors the identical glob via `--ignore`, but `pvg gates` output was
+byte-identical with and without the setting). Only the numeric
+`gates.duplication.min_lines`/`max_pct` settings are actually honored by this
+pvg build. This means the "narrow gates.exclude for one file" remediation
+shape described in the bug is currently non-functional and should not be
+relied on until pvg fixes the wiring.
+
+Remediation applied instead: added `.jscpd.json` at repo root with
+`{"ignore": ["docs/superpowers/**"]}`. jscpd (which `pvg gates` shells out to)
+auto-discovers this file from cwd, independent of pvg's own settings layer.
+This clears all 14 duplication BLOCKs + the aggregate total BLOCK (`pvg
+gates` now PASSes except the pre-existing, unrelated file_loc WARN on
+e2e/observability_test.rb) without touching gates.duplication.min_lines/
+max_pct (left at defaults, 50/10%) and without excluding any manifest file
+itself -- apps/arr-stack, apps/akkoma, apps/soju, Taskfile.yml, and
+terraform/ remain fully subject to duplication scanning against each other
+and any future real code. Only the docs/superpowers/{plans,specs}/ planning
+artifact tree (which by the superpowers writing-plans/brainstorming skill's
+own convention quotes real manifests/terraform verbatim as design records) is
+excluded. Verified via full jscpd clone-pair listing that nothing else would
+be masked by this exclusion.
+
+This does not block AF-vm0q's own review. AF-vm0q's actual deliverable (the
+extended e2e/observability_test.rb) is untouched by this change; its 463>400
+file_loc WARN is real, pre-existing, and unrelated to duplication.
+
+Confirmed post-change: `pvg gates` PASS (1 warn), `pvg rtm check` PASSED,
+`pvg lint` PASSED (no artifact collisions).
 
 ## nd_contract
 status: delivered
