@@ -7,8 +7,8 @@ type: bug
 parent: AF-j5rz
 created_at: 2026-08-20T14:43:53Z
 created_by: ada
-updated_at: 2026-08-20T14:59:37Z
-content_hash: "sha256:d2dcba3dbb1b2d9e0390b4f12d7d7c5569f64f13c377d877f8ab8b7e248ff867"
+updated_at: 2026-08-20T14:59:38Z
+content_hash: "sha256:4764ab7c2040ec8301c35643c9bc46bbd9238f9b4e0c6726fddaa26bb527a8f8"
 assignee: dev-AF-wb16
 follows: [AF-pfbv, AF-6jta]
 labels: [accepted]
@@ -130,6 +130,16 @@ devops-toolkit:akp-platform (mandatory -- ApplicationSet/Application source conv
 
 
 ## Notes
+
+
+## nd_contract
+status: accepted
+
+### evidence
+- PM closeout applied via pvg story accept on 2026-08-20.
+
+### proof
+- [x] Story closed after accepted label was applied.
 
 
 ## nd_contract
